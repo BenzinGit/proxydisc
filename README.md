@@ -37,8 +37,8 @@ Game images (agent portraits, disc icons, backgrounds, enemies) are not in this 
 
 ## Data and privacy
 
-- No accounts and no server-side storage of user data; saved discs and loadouts live in the user's browser.
-- The contact form is sent through [Web3Forms](https://web3forms.com), and the site shows ads through Google AdSense. Both are described in [privacy.html](privacy.html).
+- No accounts, no ads, no analytics, and no server-side storage of user data. Saved discs and loadouts live in the user's browser.
+- Contact is by email: contact@proxydisc.com. See [privacy.html](privacy.html).
 
 ## Roadmap
 

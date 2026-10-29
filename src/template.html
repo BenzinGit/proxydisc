@@ -926,32 +926,8 @@
             <span style="font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.13em;text-transform:uppercase;color:#8a9099;white-space:nowrap">Contact</span>
             <span style="flex:1;height:1px;background:#262a31"></span>
           </div>
-          <p style="margin:0 0 16px;font:400 16px/1.5 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">Questions, corrections to a build, bug reports or suggestions are all welcome. Messages are read by the person who maintains ProxyDisc.</p>
-          <sc-if value="{{ ctSent }}">
-            <div style="display:flex;align-items:center;gap:10px;padding:14px;margin-bottom:14px;background:#4ade800d;border:1px solid #4ade8055">
-              <span style="font:700 16px/1 sans-serif;color:#4ade80">✓</span>
-              <span style="font:500 16px/1.4 Barlow,sans-serif;color:#ecefe6">Thanks, your message is on its way.</span>
-            </div>
-          </sc-if>
-          <form sc-camel-on-submit="{{ onCtSend }}" style="display:grid;gap:12px">
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
-              <label style="display:grid;gap:7px"><span style="font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.13em;text-transform:uppercase;color:#8a9099">Name</span>
-                <input type="text" value="{{ ctName }}" sc-camel-on-change="{{ onCtName }}" autocomplete="name" style="background:#0f1114;border:1px solid #2e333b;color:#ecefe6;padding:11px 12px;font:500 16px/1.35 Barlow,sans-serif;outline:none;width:100%;box-sizing:border-box">
-              </label>
-              <label style="display:grid;gap:7px"><span style="font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.13em;text-transform:uppercase;color:#8a9099">Email <span style="color:#5f656e;letter-spacing:.06em">· optional</span></span>
-                <input type="email" value="{{ ctEmail }}" sc-camel-on-change="{{ onCtEmail }}" autocomplete="email" placeholder="Only if you'd like a reply" style="background:#0f1114;border:1px solid #2e333b;color:#ecefe6;padding:11px 12px;font:500 16px/1.35 Barlow,sans-serif;outline:none;width:100%;box-sizing:border-box">
-              </label>
-            </div>
-            <label style="display:grid;gap:7px"><span style="font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.13em;text-transform:uppercase;color:#8a9099">Message</span>
-              <textarea value="{{ ctMsg }}" sc-camel-on-change="{{ onCtMsg }}" rows="5" style="background:#0f1114;border:1px solid #2e333b;color:#ecefe6;padding:11px 12px;font:500 16px/1.35 Barlow,sans-serif;outline:none;width:100%;box-sizing:border-box;resize:vertical;min-height:120px"></textarea>
-            </label>
-            <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-              <button type="submit" disabled="{{ ctSending }}" style="{{ ctBtnStyle }}">{{ ctBtnLabel }}</button>
-              <sc-if value="{{ ctHasErr }}">
-                <span style="font:500 15px/1.4 Barlow,sans-serif;color:#ff8a95">{{ ctErr }}</span>
-              </sc-if>
-            </div>
-          </form>
+          <p style="margin:0 0 16px;font:400 16px/1.5 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">Questions, corrections to a build, bug reports or suggestions are all welcome by email. Messages are read by the person who maintains ProxyDisc.</p>
+          <p style="margin:0;font:500 17px/1.5 Barlow,sans-serif;color:#ecefe6">Email <a href="mailto:contact@proxydisc.com" style="color:#ffda58">contact@proxydisc.com</a></p>
         </div>
       </div>
     </sc-if>
@@ -1172,7 +1148,7 @@
             <span style="flex:0 0 auto;font:700 13px/1.4 'JetBrains Mono',monospace;letter-spacing:.1em;color:#ffda58">09</span>
             <div style="flex:1;min-width:0">
               <div style="font:700 19px/1.2 'Chakra Petch',sans-serif;text-transform:uppercase;margin-bottom:5px">Contact</div>
-              <p style="margin:0;font:400 16px/1.5 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">Send a question, a build correction, a bug report or a suggestion.</p>
+              <p style="margin:0;font:400 16px/1.5 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">Email a question, a build correction, a bug report or a suggestion to contact@proxydisc.com.</p>
             </div>
           </div>
           <div style="display:flex;gap:14px;padding:15px 0;border-top:1px solid #1e2228">
@@ -2628,8 +2604,6 @@
     <p style="margin:0;font:700 10px/1 'JetBrains Mono',monospace;letter-spacing:.16em;color:#5f656e">© 2026 PROXYDISC · AGENT AND DISC DATA LAST UPDATED OCTOBER 2026</p>
   </footer>
 
-  <!-- AD SLOT DISABLED — the inline adsbygoogle push scripts run outside <helmet>, which this template does not allow, and the reserved 90-250px boxes sat empty either way. Re-enable by removing this wrapper once the loader lives in <helmet>.
-       <div id="pd-ad-anchor" data-pd-ad="1" data-pd-label="Ad"></div> -->
 </div>
 
 
@@ -2673,4 +2647,3 @@
       </div>
     </div>
   </sc-if>
-

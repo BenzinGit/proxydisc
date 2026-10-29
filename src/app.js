@@ -1126,7 +1126,6 @@ class Component extends DCLogic {
       adsOn: (() => { try { return !localStorage.getItem("discTriage_adsOff"); } catch(e){ return true; } })(),
       patrolSkip: (() => { try { return JSON.parse(localStorage.getItem("discTriage_patrolSkip") || "[]") || []; } catch(e){ return []; } })(),
       patrolView: "", patrolAllSets: false, patrolPickOpen: false,
-      ctName: "", ctEmail: "", ctMsg: "", ctStatus: "", ctErr: "",
       // Which column the roster table is sorted by, and which direction. Defaults to the best
       // overall fit first — the RECOMMENDED-2PC / BEST-MAIN-STAT toggles this replaced are now
       // just a click on the SET / MAIN STAT column header instead of a separate hide/show filter.
@@ -2378,38 +2377,6 @@ class Component extends DCLogic {
     const shown = Array.from(new Set(names));
     this.persist(shown);
     this.setState({shown: shown});
-  }
-  // Contact form: posts to Web3Forms, which forwards the message to the owner's inbox. The access
-  // key is public by design — it only identifies which inbox to deliver to.
-  async sendContact(){
-    const st = this.state;
-    const name = st.ctName.trim(), email = st.ctEmail.trim(), msg = st.ctMsg.trim();
-    if(!name || !msg){
-      this.setState({ctStatus: "error", ctErr: "Add your name and a message."});
-      return;
-    }
-    if(email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
-      this.setState({ctStatus: "error", ctErr: "That email doesn't look right. Fix it, or leave it blank."});
-      return;
-    }
-    this.setState({ctStatus: "sending", ctErr: ""});
-    try {
-      const res = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        headers: {"Content-Type": "application/json", "Accept": "application/json"},
-        body: JSON.stringify({access_key: "REMOVED-KEY",
-          subject: "ProxyDisc message from " + name, from_name: "ProxyDisc",
-          name: name, email: email || "Not given", message: msg})
-      });
-      const out = await res.json().catch(() => ({}));
-      if(res.ok && out.success !== false){
-        this.setState({ctStatus: "sent", ctName: "", ctEmail: "", ctMsg: ""});
-      } else {
-        this.setState({ctStatus: "error", ctErr: out.message || "That didn't go through. Try again in a moment."});
-      }
-    } catch(e){
-      this.setState({ctStatus: "error", ctErr: "Couldn't reach the server. Check your connection and try again."});
-    }
   }
   finishSetup(){
     try { localStorage.setItem("discTriage_setupDone", "1"); } catch(e){}
@@ -7154,17 +7121,6 @@ class Component extends DCLogic {
       footLinks: [["help","Help"],["contact","Contact"],["settings","Settings"],["backup","Backup"]].map(([id, l]) => ({
         label: l,
         onClick: e => { if(e && e.preventDefault) e.preventDefault(); this.setState({tab: id}); window.scrollTo({top: 0, behavior: "smooth"}); }})),
-      ctName: st.ctName, ctEmail: st.ctEmail, ctMsg: st.ctMsg,
-      onCtName: e => this.setState({ctName: e.target.value, ctStatus: st.ctStatus === "sent" ? "" : st.ctStatus}),
-      onCtEmail: e => this.setState({ctEmail: e.target.value}),
-      onCtMsg: e => this.setState({ctMsg: e.target.value}),
-      onCtSend: e => { if(e && e.preventDefault) e.preventDefault(); if(this.state.ctStatus !== "sending") this.sendContact(); },
-      ctSending: st.ctStatus === "sending", ctSent: st.ctStatus === "sent", ctHasErr: st.ctStatus === "error",
-      ctErr: st.ctErr,
-      ctBtnLabel: st.ctStatus === "sending" ? "Sending…" : "Send message",
-      ctBtnStyle: {background: st.ctStatus === "sending" ? "#8a7a2a" : "#ffda58", color:"#0b0c0e", border:"none",
-        padding:"12px 20px", font:"700 13px/1 'JetBrains Mono',monospace", letterSpacing:".12em",
-        textTransform:"uppercase", cursor: st.ctStatus === "sending" ? "wait" : "pointer", minHeight:"44px"},
       mineDrawerOpen: st.tab === "mine" && st.mineView === "disc" && !!st.mineSel && st.discs.some(d => d.id === st.mineSel),
       ...(() => {
         const A = this.constructor;
@@ -7550,5 +7506,3 @@ class Component extends DCLogic {
     };
   }
 }
-
-
