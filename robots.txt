@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://proxydisc.com/sitemap.xml

@@ -1,0 +1,6 @@
+# HoYoverse game assets (copyrighted, not mine)
+*.webp
+
+# secrets and junk
+.env
+node_modules/

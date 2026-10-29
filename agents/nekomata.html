@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nekomata Best Drive Discs &amp; Build — Zenless Zone Zero | ProxyDisc</title>
+<meta name="description" content="Nekomata drive disc build: Woodpecker Electro 4-piece, main stats for slots 4 to 6, and substat priority (CRIT Rate/CRIT DMG/ATK% &gt; PEN/ATK).">
+<link rel="canonical" href="https://proxydisc.com/agents/nekomata">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4522294718667340" crossorigin="anonymous"></script>
+<style>
+html{color-scheme:dark;}
+html,body{margin:0;padding:0;background:#0b0c0e;}
+*{box-sizing:border-box;}
+a{color:#ffda58;text-decoration:none;}
+a:hover{color:#f3ff9c;text-decoration:underline;}
+option{background:#0f1114;color:#ecefe6;}
+select:focus-visible,input:focus-visible,button:focus-visible{outline:2px solid #ffda58;outline-offset:1px;}
+*{transition:background-color .16s ease,border-color .16s ease,color .16s ease,box-shadow .16s ease,opacity .16s ease,filter .16s ease;}
+button,select,input,a{cursor:pointer;}
+button{transition:background-color .16s ease,border-color .16s ease,color .16s ease,box-shadow .16s ease,filter .12s ease,transform .1s ease;}
+button:disabled,button[style*="not-allowed"]{cursor:not-allowed;}
+button:not(:disabled):not([style*="not-allowed"]):hover{filter:brightness(1.15);}
+button:not(:disabled):not([style*="not-allowed"]):active{filter:brightness(.88);transform:scale(.97);}
+select:not(:disabled):hover,input[type="search"]:hover{border-color:#4d535c;}
+/* One agent in focus: its rig takes the whole column beside the bay and stat panes. Top level,
+   not inside a breakpoint — focus mode exists at every width. */
+/* Browse: two agents per row, each card as wide as its half. Focus keeps one card at a width the
+   six-across disc row fits comfortably. */
+[data-pd="riggrid"]{grid-template-columns:repeat(3,minmax(0,1fr)) !important;}
+/* hover art fades in over the resting art; the editor card keeps it showing */
+[data-disccard]:hover [data-heroart="hover"],[data-pd="rigone"] [data-heroart="hover"],[data-agent-card]:hover [data-heroart="hover"]{opacity:1 !important;}
+/* the dark overlay lifts on hover so the art shows closer to full colour */
+[data-disccard]:hover [data-heroshade],[data-pd="rigone"] [data-heroshade],[data-agent-card]:hover [data-heroshade]{opacity:.3;}
+[data-heroscrim]{opacity:0;transition:opacity .35s ease;}
+[data-disccard]:hover [data-heroscrim],[data-pd="rigone"] [data-heroscrim],[data-agent-card]:hover [data-heroscrim]{opacity:1;}
+[data-heroscrim] ~ *{text-shadow:0 1px 2px rgba(0,0,0,.85),0 0 10px rgba(0,0,0,.55);}
+/* cut-out art is transparent, so the resting picture must fade out or both show at once */
+[data-disccard]:hover [data-heroart="base"][data-hashover="1"],[data-pd="rigone"] [data-heroart="base"][data-hashover="1"],[data-agent-card]:hover [data-heroart="base"][data-hashover="1"]{opacity:0 !important;}
+@media (max-width:1300px){[data-pd="riggrid"]{grid-template-columns:repeat(2,minmax(0,1fr)) !important;}}
+/* Character-card body: six discs as a 3×2 grid, each with its slot, grade and level beside it. */
+[data-pd="rig"]{grid-template-columns:repeat(3,minmax(0,1fr)) !important;gap:12px 10px !important;}
+[data-pd="rig"] > button{display:grid !important;grid-template-columns:76px 44px;grid-template-rows:auto auto auto;column-gap:11px;align-items:center;justify-content:center;text-align:left !important;padding:4px 2px !important;}
+[data-pd="rig"] > button > span:nth-child(1){grid-column:2;grid-row:1;margin:0 !important;align-self:end;}
+[data-pd="rig"] > button > span:nth-child(2){grid-column:1;grid-row:1 / 4;width:76px !important;margin:0 !important;}
+[data-pd="rig"] > button > span:nth-child(3){grid-column:2;grid-row:2;margin:5px 0 0 !important;width:auto !important;min-width:2.2em;height:20px !important;border-bottom:none !important;padding-bottom:0 !important;}
+[data-pd="rig"] > button > span:nth-child(4){grid-column:2;grid-row:3;margin:2px 0 0 !important;align-self:start;}
+[data-pd="strip"] > button:hover{background:#171a1f !important;}
+[data-pd="hex"] > div:first-child > button:nth-child(odd){transform:translateX(40px);}
+[data-pd="hex"] > div:last-child > button:nth-child(odd){transform:translateX(-40px);}
+[data-pd="hex"] > div:first-child > button:nth-child(odd):active,[data-pd="hex"] > div:last-child > button:nth-child(odd):active{filter:brightness(.88);}
+@media (max-width:640px){
+  [data-pd="hex"]{gap:6px !important;padding:16px 4px !important;}
+  [data-pd="hex"] > div:first-child > button,[data-pd="hex"] > div:last-child > button{width:84px !important;}
+  [data-pd="hex"] > div:first-child > button:nth-child(odd){transform:translateX(22px);}
+  [data-pd="hex"] > div:last-child > button:nth-child(odd){transform:translateX(-22px);}
+  [data-pd="hex"] > div:nth-child(2) > div:first-child{width:104px !important;height:104px !important;}
+}
+[data-pd="rigone"]{flex:0 0 640px !important;max-width:640px !important;grid-template-columns:1fr !important;}
+/* Focusing slides the card in from where the bay opens, so the panes read as pushing it across
+   rather than the card being swapped out. */
+@keyframes focusSlide{from{opacity:0;transform:translateX(-34px);}to{opacity:1;transform:none;}}
+@keyframes bayIn{from{opacity:0;transform:translateX(-18px);}to{opacity:1;transform:none;}}
+[data-pd="rigone"] > *{animation:focusSlide .34s cubic-bezier(.22,.7,.32,1) both;}
+[data-pd="bay"],[data-pd="baystats"]{animation:bayIn .3s cubic-bezier(.22,.7,.32,1) both;}
+[data-pd="baystats"]{animation-delay:.05s;}
+
+/* --- 1100px: the header panel is the first thing to collide, well before phone width --- */
+@media (max-width:1240px){
+  /* Focus mode's row is a non-shrinkable 586px card plus two panes at their minimums — about
+     1224px of viewport. Below that the three simply stack, in DOM order: rig, bay, stats. */
+  [data-pd="baysplit"]{flex-wrap:wrap !important;}
+  [data-pd="bay"],[data-pd="baystats"]{flex:1 1 100% !important;min-width:0 !important;width:auto !important;position:static !important;}
+  [data-pd="rigone"]{flex:1 1 100% !important;min-width:0 !important;}
+}
+
+@media (max-width:1100px){
+  [data-pd="hpanel"]{gap:18px;padding:18px 20px;}
+  [data-pd="ident"]{gap:16px;}
+  [data-pd="mark"]{width:52px !important;height:52px !important;flex:0 0 52px !important;}
+  [data-pd="mark"] > div:first-child{inset:10px !important;}
+  [data-pd="wordmark"]{font-size:36px !important;}
+  [data-pd="tagline"]{font-size:12px !important;letter-spacing:.16em !important;margin-top:7px !important;}
+  [data-pd="hudlabel"]{font-size:11px !important;}
+  [data-pd="hudval"]{font-size:22px !important;margin-top:6px !important;}
+  [data-pd="hudcell"]{padding:9px 13px !important;}
+  [data-pd="hudwrap"]{gap:10px;}
+  .support-cta{padding:0 14px !important;gap:9px !important;}
+  .support-cta span:first-child{font-size:12px !important;}
+  .support-cta span:last-child{font-size:13px !important;}
+  [data-pd="hazard"]{height:5px !important;margin-top:12px !important;}
+  [data-pd="navrow"] button{font-size:14px !important;padding:14px 10px 13px !important;}
+  [data-pd="navrow"] button[style*="JetBrains"]{font-size:11px !important;padding:14px 7px 13px !important;}
+  /* nine tabs no longer fit one row at this width — let the utility tabs drop to a second line */
+  [data-pd="navrow"]{flex-wrap:wrap !important;overflow:visible !important;}
+  /* Loadouts: one agent per row well before a card gets narrower than a rig can draw. */
+}
+
+/* --- 760px: tablets and large phones. Columns stack, so the sticky form column has to
+       stop being sticky — pinned above the results it would eat most of the screen. --- */
+@media (max-width:760px){
+  [data-pd="riggrid"]{grid-template-columns:1fr !important;}
+  [data-pd="header"],[data-pd="nav"],[data-pd="main"],[data-pd="footer"]{padding-left:14px !important;padding-right:14px !important;}
+  [data-pd="cols"]{gap:14px !important;}
+  [data-pd="formcol"]{position:static !important;max-width:none !important;min-width:0 !important;flex:1 1 100% !important;}
+  [data-pd="rescol"]{min-width:0 !important;flex:1 1 100% !important;}
+  [data-pd="agentgrid"]{grid-template-columns:1fr !important;gap:14px !important;}
+  [data-pd="discgrid"]{grid-template-columns:1fr !important;}
+  [data-pd="baysplit"]{flex-wrap:wrap !important;}
+  [data-pd="bay"],[data-pd="baystats"]{position:static !important;flex:1 1 100% !important;width:auto !important;}
+  /* Grid items default to min-width:auto, so an agent card refuses to shrink below its
+     min-content no matter what the track says — this is what lets the 1fr track win. */
+  [data-pd="agentgrid"] > *{min-width:0 !important;}
+  /* The variant tab strips are nowrap at desktop width; on a phone they wrap to a second
+     line instead of setting a floor under the whole card. */
+  [data-pd="vartabs"]{flex-wrap:wrap !important;height:auto !important;min-width:0 !important;row-gap:5px;}
+  [data-pd="vartabstrip"]{flex-wrap:wrap !important;min-width:0 !important;row-gap:5px;}
+  /* Main-stat rows: fixed 46px and one line of chips at desktop. Phone cards are one per
+     row, so uniform row height buys nothing here and legible chips are worth more. */
+  [data-pd="mainrow"]{min-width:0 !important;height:auto !important;min-height:46px;}
+  [data-pd="mainchips"]{flex-wrap:wrap !important;overflow:visible !important;padding:7px 9px !important;row-gap:5px;}
+  /* Substat ladder: 4 columns of 78px need 339px; 64px lets four fit a phone card, and the
+     name box grows instead of clipping the longer stat names at that width. */
+  [data-pd="subcol"]{flex:1 1 64px !important;min-width:64px !important;}
+  [data-pd="subcol"] > div:last-child{height:auto !important;min-height:34px;overflow:visible !important;}
+  [data-agent-card]{padding:13px !important;}
+  /* The 2pc "+N" popover is a fixed 260px anchored to a chip near the card's right edge, and
+     its rows are nowrap — on a phone that runs off-screen. On touch there is no hover, so
+     :focus-within opens it on tap and it has to fit the viewport. */
+  [data-pairpop]{width:min(260px,68vw) !important;}
+  [data-pairpop] span{white-space:normal !important;overflow-wrap:anywhere;}
+}
+
+/* --- 640px: phones. The header's two halves each take a full row, the support link
+       becomes a full-width tap target, and the roster table reflows (see .roster-grid
+       above). Everything that was sized for a 1840px canvas comes down a step. --- */
+@media (max-width:640px){
+  [data-pd="hpanel"]{gap:14px;padding:14px 16px;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px) !important;}
+  [data-pd="ident"]{flex:1 1 100% !important;gap:13px;}
+  [data-pd="mark"]{width:44px !important;height:44px !important;flex:0 0 44px !important;}
+  [data-pd="mark"] > div:first-child{inset:8px !important;}
+  [data-pd="mark"] > div:last-child{width:13px !important;height:13px !important;box-shadow:0 0 0 4px rgba(11,12,14,.8) !important;}
+  [data-pd="wordmark"]{font-size:30px !important;}
+  [data-pd="tagline"]{font-size:10px !important;letter-spacing:.14em !important;margin-top:5px !important;}
+  /* readout drops to its own full-width row, reading left-to-right like a stat line */
+  [data-pd="hudwrap"]{flex:1 1 100% !important;margin-left:0 !important;justify-content:stretch !important;gap:8px;}
+  [data-pd="hud"]{flex:1 1 auto !important;}
+  [data-pd="hudcell"]{flex:1 1 0 !important;text-align:left !important;padding:8px 11px !important;}
+  [data-pd="hudlabel"]{font-size:10px !important;letter-spacing:.1em !important;}
+  [data-pd="hudval"]{font-size:19px !important;margin-top:5px !important;}
+  /* 44px min-height keeps the one off-site link a comfortable tap target */
+  .support-cta{flex:1 1 100% !important;align-self:auto !important;justify-content:center;min-height:44px;padding:0 12px !important;}
+  [data-pd="hazard"]{height:4px !important;margin-top:10px !important;}
+  [data-pd="nav"]{gap:6px !important;}
+  [data-pd="navrow"]{flex-wrap:wrap !important;overflow:visible !important;}
+  [data-pd="nav"] button{font-size:13px !important;padding:9px 11px !important;gap:6px !important;min-height:44px;}
+  /* Touch targets: the tab strip, the form's Clear links and the roster toggles are all
+     comfortably clickable with a mouse but under 44px on a finger. Padding is what grows —
+     the type stays where the design put it. */
+  [data-pd="main"] button:not([data-pd="switch"]){min-height:34px;}
+  /* Toggle switches are buttons with a fixed 18px pill track — the tap-target rule above
+     would stretch them into boxes, and their label sits in the same row anyway. */
+  [data-pd="bkgrid"]{grid-template-columns:repeat(2,1fr) !important;}
+  /* The rig's centre portrait is a hard 112px; on a phone card that leaves the slot columns too
+     little, so the portrait shrinks and the grade/level captions tighten rather than wrap. */
+  /* the bay stops being a sidebar once the rigs need the full width */
+  [data-pd="baysplit"]{flex-wrap:wrap !important;}
+  [data-pd="bay"],[data-pd="baystats"]{position:static !important;flex:1 1 100% !important;width:auto !important;}
+  [data-pd="rig"]{gap:8px 6px !important;}
+  [data-pd="rig"] > button{grid-template-columns:48px minmax(0,1fr);column-gap:7px;}
+  [data-pd="rig"] > button > span:nth-child(2){width:48px !important;}
+  [data-pd="herofacewrap"]{flex:0 0 76px !important;width:76px !important;height:76px !important;}
+  [data-pd="switch"]{min-height:0 !important;height:18px !important;flex:0 0 34px;}
+  /* "Commonly desired" reads as side-by-side columns on a wide screen, but on a phone four
+     104px columns wrap into a ragged block and the ranking stops being obvious. One row per
+     attribute instead, ranked top-to-bottom, with the depth bar turned into a left-hand rule
+     so the colour scale still carries the rank. */
+  [data-pd="desirelist"]{flex-direction:column !important;gap:1px !important;}
+  [data-pd="desireitem"]{flex:1 1 auto !important;min-width:0 !important;
+    display:flex;align-items:center;gap:10px;background:#0f1114;padding:9px 11px;}
+  [data-pd="desireitem"] > div:first-child{width:4px !important;flex:0 0 4px;
+    height:20px !important;margin:0 !important;}
+  [data-pd="desireitem"] > div:last-child{min-width:0;overflow-wrap:anywhere;}
+  [data-pd="main"] select,[data-pd="main"] input{min-height:44px;}
+  /* the roster table's fixed track list is flex:2 1 300px on desktop; on a phone it takes
+     its own line under the agent name rather than fighting it for width */
+  .roster-grid{flex:1 1 100% !important;}
+  /* My-discs group header: the 6-slot rack is a hard 260px, which on a phone pushed the tracked
+     toggle outside the card and squeezed the name block to nothing. It drops to its own full-width
+     row and the cells shrink so all six still fit. */
+  [data-pd="grouphead"]{flex-wrap:wrap !important;}
+  [data-pd="rack"]{flex:1 1 100% !important;order:3;}
+  [data-pd="rack"] > *{flex:1 1 0 !important;width:auto !important;min-width:0 !important;}
+  /* Each row already carries its own .rc-cap captions on a phone, so the column-header strip
+     is pure duplication — and it cannot line up with anything once the grid reflows. */
+  [data-pd="sorthead"]{display:none !important;}
+  /* One attribute per row, caption left and value right, so an agent match reads as a short
+     labelled list instead of a 3-across grid that reflows differently on every row. */
+  .roster-grid{grid-template-columns:1fr !important;gap:0 !important;}
+  .roster-grid .rc{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:6px 0;border-top:1px solid #1e2228;}
+  .roster-grid .rc:first-child{border-top:0;}
+  .rc-cap{margin-bottom:0 !important;flex:0 0 auto;}
+}
+
+/* --- 400px: small phones. Last step down; below this the wordmark wraps at the <wbr>. --- */
+/* ---- Ad slots ----------------------------------------------------------------
+   Height is reserved up front so a late-filling creative can't shift the layout (CLS).
+   While empty the slot shows a dashed outline and a small caption, matching the empty
+   rack cells; the moment the network injects an iframe the :has() rule strips both, so a
+   filled slot is just the ad. Slots stay visibly empty offline and on localhost — ads only
+   fill on the live domain, and that is expected, not broken. */
+[data-pd-ad]{display:flex;align-items:center;justify-content:center;overflow:hidden;
+  border:1px dashed #262a31;background:#0f1114;}
+[data-pd-ad]::before{content:attr(data-pd-label);font:500 11px/1 'JetBrains Mono',monospace;
+  letter-spacing:.16em;text-transform:uppercase;color:#4d535c;}
+[data-pd-ad]:has(iframe),[data-pd-ad]:has(ins),[data-pd-ad]:has(div){border-color:transparent;background:none;}
+[data-pd-ad]:has(iframe)::before,[data-pd-ad]:has(ins)::before,[data-pd-ad]:has(div)::before{content:none;}
+/* The mobile anchor is fixed to the bottom of the viewport, so the page gets matching
+   bottom padding — otherwise it covers the footer and the last card in every grid. */
+/* Anchor-ad rules parked with the slots themselves — nothing to reserve space for.
+@media (max-width:760px){
+  body{padding-bottom:64px;}
+  #pd-ad-anchor{position:fixed;left:0;right:0;bottom:0;z-index:60;height:50px;
+    border:none;border-top:1px solid #262a31;background:#0b0c0e;}
+}
+@media (min-width:761px){ #pd-ad-anchor{display:none;} } */
+
+/* The header's support link is an <a>, not a <button> — the generic button-hover rule above
+   never touches it, so its solid-fill hover state needs its own rule. */
+.support-cta:hover{background:#ffda58 !important;border-color:#ffda58 !important;}
+.support-cta:hover span{color:#0b0c0e !important;}
+/* Roster table: BUILD/SET/MAIN/SUBSTATS/RATING live in a fixed-width grid (150/60/100/124/50px)
+   so the row reads as aligned columns at desktop width — that same grid can't shrink and blows
+   past a phone's width. Below the breakpoint it reflows to auto-wrapping cells, and each data
+   cell (not the header, which already labels itself) grows a small caption above its value so a
+   stacked card still reads without the column headers lined up above it. */
+.rc-cap{display:none;}
+/* My-discs rows have no header strip above them, so their captions show at all widths. */
+[data-discrow] .rc-cap{display:block;font:700 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;color:#5f656e;margin-bottom:4px;}
+@media (max-width:640px){
+  .roster-grid{grid-template-columns:repeat(auto-fit,minmax(96px,1fr)) !important;}
+  .rc-cap{display:block;font:700 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;color:#5f656e;margin-bottom:3px;}
+}
+select:not(:disabled):focus,input[type="search"]:focus{border-color:#ffda58;box-shadow:0 0 0 3px rgba(232,255,69,.15);}
+
+/* ===================== RESPONSIVE =====================
+   The design is authored for a wide desktop (50px wordmark, 19px row type, 500px card
+   tracks). Everything below re-scales that for narrow viewports; no desktop rule is
+   touched. Hooks are data-pd="..." attributes on the structural containers only, so the
+   inline styles stay the single source of truth for the desktop look. */
+
+@media (max-width:400px){
+  [data-pd="wordmark"]{font-size:25px !important;}
+  [data-pd="mark"]{width:38px !important;height:38px !important;flex:0 0 38px !important;}
+  [data-pd="nav"] button{font-size:12px !important;padding:8px 9px !important;}
+  [data-pd="hudval"]{font-size:17px !important;}
+}
+@keyframes discEnter{from{transform:translateX(-100%);}to{transform:translateX(0);}}
+@keyframes discSpin{to{transform:rotate(360deg);}}
+@keyframes pulseDot{0%,100%{opacity:1;}50%{opacity:.3;}}
+/* Agent-card set discs: no animation at rest, spin while the mouse is anywhere over that
+   agent's card. Using animation-name itself (not animation-play-state) so leaving the card
+   drops the animation entirely and the disc snaps back to its start position, rather than
+   freezing mid-turn. No hover on touch, so there they just spin continuously. */
+[data-agent-card]:hover [data-setdisc="1"]{animation:discSpin 14s linear infinite;}
+[data-disccard]:hover [data-setdisc="1"]{animation:discSpin 14s linear infinite;}
+/* A focused rig turns on its own — it's the thing you're working on, so it stays alive without
+   needing the cursor over it. */
+[data-pd="rigone"] [data-setdisc="1"]{animation:discSpin 14s linear infinite;}
+@media (hover:none){[data-setdisc="1"]{animation:discSpin 14s linear infinite;}}
+[data-setdisabled="1"] [data-setdisc]{animation:none !important;filter:grayscale(1) !important;}
+/* Ignored agents: content mutes out and discs stop spinning even on hover, while the outer
+   card frame and the Ignored/Track-Again overlay (a sibling, not a descendant, so this filter
+   never touches it) stay fully visible and easy to find. */
+[data-cardcontent][data-cardignored="1"]{filter:grayscale(1);opacity:.55;}
+[data-cardcontent][data-cardignored="1"] [data-setdisc]{animation:none !important;}
+@keyframes paneIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+@keyframes drawerIn{from{transform:translateX(40px);opacity:0;}to{transform:none;opacity:1;}}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+[data-minetile]:hover [data-setdisc="1"]{animation:discSpin 14s linear infinite;}
+@media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important;}}
+/* Row icon wells are 46px — far too small for the slot's empty-state caption, which lives in
+   shadow DOM. Reaching in via ::part is the only way to quiet it down to a bare drop target;
+   the dashed ring still marks it as droppable, and a filled slot is unaffected. */
+image-slot[data-mini]::part(empty){font-size:0;line-height:0;gap:0;padding:0;color:transparent;}
+/* Same treatment for the agent-card disc wells — too small for the empty-state caption too. */
+image-slot[data-discslot]::part(empty){font-size:0;line-height:0;gap:0;padding:0;color:transparent;}
+/* 2pc alternatives live in a hover popover off the "+N" chip, so a build with five partners
+   takes exactly as much card as a build with one. Descendant-on-hover can't be inline, hence
+   these rules; the hover target is the chip only, never the whole tile. */
+[data-pairpop]{opacity:0;visibility:hidden;transform:translateY(-5px);transition:opacity .14s ease,transform .14s ease,visibility .14s;pointer-events:none;}
+[data-pairwrap]:hover [data-pairpop],[data-pairwrap]:focus-within [data-pairpop]{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto;}
+[data-pairwrap]:hover [data-pairchip],[data-pairwrap]:focus-within [data-pairchip]{background:#6cc6ff1c;color:#6cc6ff;border-color:#6cc6ff3d;}
+/* The recommended pick (marked data-pairfirstrow) picks up the accent colour on its name span
+   — star included, since it inherits — while the chip is actually being looked at. Icon spans
+   never match: this targets the row's last span specifically, not the leading icon. */
+[data-pairwrap]:hover [data-pairpop] [data-pairfirstrow] span:last-child,
+[data-pairwrap]:focus-within [data-pairpop] [data-pairfirstrow] span:last-child{color:#ffda58 !important;}
+[data-pd="nav"] button:not([style*="not-allowed"]):hover{color:#ecefe6 !important;}
+[data-pd="navrow"]::-webkit-scrollbar{display:none;}
+[data-pd="navrow"] button{flex:0 0 auto;}
+
+/* Stacked layouts only: a shortcut back up to the disc bay from the stat panel. */
+@media (max-width:760px){ [data-pd="mobonly"]{display:inline-flex !important;} }
+/* ===== Phones (≤640px). Additive only: nothing here applies on desktop. ===== */
+@media (max-width:640px){
+  .support-cta span:first-child{font-size:13px !important;letter-spacing:.06em !important;}
+  /* the tab playhead tracks a single row; on a wrapped phone nav it points at the wrong place */
+  [data-pd="playhead"]{display:none !important;}
+  [data-pd="nowlabel"]{font-size:13px !important;line-height:1.25 !important;letter-spacing:.08em !important;}
+  [data-pd="herometa"]{font-size:13px !important;letter-spacing:.04em !important;}
+  [data-pd="minetiles"]{grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:8px !important;}
+  [data-pd="mineview"] > button{flex:1 1 0;white-space:nowrap;padding:11px 8px !important;}
+  [data-pd="slotrow"]{flex-wrap:nowrap !important;flex:1 1 230px !important;min-width:230px;}
+  [data-pd="slotrow"] > button{flex:1 1 0 !important;width:auto !important;min-width:34px !important;min-height:40px;}
+  [data-pd="uplist"]{max-height:340px;overflow-y:auto;overscroll-behavior:contain;padding-right:2px;}
+  /* one scroll area inside the setup window, not two nested ones */
+  [data-pd="setupgrid"]{max-height:none !important;overflow:visible !important;grid-template-columns:repeat(2,minmax(0,1fr)) !important;}
+  /* small switches keep their look but get a finger-sized hit area */
+  [data-pd="switch"]::after{content:"";position:absolute;inset:-13px -10px;}
+}
+
+
+  body{margin:0;background:#0b0c0e;color:#ecefe6}
+  a{color:#ffda58} a:hover{color:#fff1a8}
+  .pd-wrap{max-width:1180px;margin:0 auto;padding:20px 24px 60px}
+  .pd-top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:0 0 16px;margin-bottom:16px;border-bottom:1px solid #262a31}
+  .pd-brand{font:700 26px/1 'Chakra Petch',sans-serif;letter-spacing:.02em;color:#ecefe6;text-decoration:none}
+  .pd-brand span{color:#ffda58}
+  .pd-open{display:inline-flex;align-items:center;white-space:nowrap;font:700 12px/1.2 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;background:#ffda58;color:#0b0c0e;text-decoration:none;padding:11px 15px}
+  .pd-open:hover{color:#0b0c0e;filter:brightness(1.08)}
+  .pd-crumbs{font:500 13px/1.4 'JetBrains Mono',monospace;letter-spacing:.06em;color:#8a9099;margin:0 0 14px}
+  .pd-crumbs a{color:#9aa0a8}
+  .pd-h1{font:700 32px/1.1 'Chakra Petch',sans-serif;text-transform:uppercase;margin:0 0 6px}
+  .pd-lead{margin:0 0 18px;font:400 18px/1.55 Barlow,sans-serif;color:#9aa0a8;max-width:70ch}
+  .pd-grid{display:grid;grid-template-columns:minmax(0,600px) minmax(0,1fr);gap:18px;align-items:start}
+  .pd-side{display:grid;gap:14px}
+  .pd-panel{background:repeating-linear-gradient(115deg,rgba(255,255,255,.016) 0 2px,transparent 2px 10px),#131519;border:1px solid #262a31;padding:16px;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px)}
+  .pd-lbl{display:flex;align-items:center;gap:10px;margin:0 0 11px}
+  .pd-lbl span{font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.13em;text-transform:uppercase;color:#8a9099;white-space:nowrap}
+  .pd-lbl i{flex:1;height:1px;background:#262a31}
+  .pd-facts{display:grid;gap:7px;margin:0;padding:0;list-style:none}
+  .pd-facts li{padding:10px 12px;background:#0f1114;border:1px solid #1e2228;font:400 16px/1.45 Barlow,sans-serif;color:#9aa0a8}
+  .pd-facts li strong{color:#ecefe6;font-weight:600}
+  .pd-dead{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+  .pd-dead span{font:500 14px/1.2 'JetBrains Mono',monospace;padding:5px 8px;border:1px solid #2e333b;color:#5f656e;text-decoration:line-through}
+  .pd-cta p{margin:0 0 12px;font:400 16px/1.45 Barlow,sans-serif;color:#9aa0a8}
+  .pd-agents{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px}
+  .pd-agent{display:flex;align-items:center;gap:9px;padding:7px 9px;background:#0f1114;border:1px solid #1e2228;text-decoration:none;color:#ecefe6;font:600 15px/1.2 Barlow,sans-serif}
+  .pd-agent:hover{border-color:#ffda5888;color:#ecefe6}
+  .pd-agent img{width:32px;height:32px;border-radius:50%;flex:0 0 32px;background:#131519}
+  .pd-foot{margin-top:44px;padding-top:20px;border-top:1px solid #262a31;font:400 15px/1.5 Barlow,sans-serif;color:#8a9099}
+  .pd-foot nav{display:flex;gap:8px 20px;flex-wrap:wrap;margin-bottom:12px}
+  .pd-foot a{color:#9aa0a8}
+  [data-combo][hidden]{display:none}
+  [data-settab],[data-stattab]{cursor:pointer}
+  @media (max-width:900px){ .pd-grid{grid-template-columns:minmax(0,1fr)} }
+</style>
+</head>
+<body>
+<div class="pd-wrap">
+<header class="pd-top"><a class="pd-brand" href="../">Proxy<span>Disc</span></a><a class="pd-open" href="../">Open the tool</a></header>
+<main>
+<p class="pd-crumbs"><a href="../">ProxyDisc</a> / <a href="./">Agent builds</a> / Nekomata</p>
+<h1 class="pd-h1">Nekomata drive disc build</h1>
+<p class="pd-lead">Nekomata is an S-rank Physical attack agent. Use the tabs on the card to see their alternative build.</p>
+<div class="pd-grid">
+  <div data-combos="1"><div data-combo="0-0">
+            <div data-agent-card="1" style="position:relative;background:radial-gradient(120% 78% at 50% 64%,rgba(255,255,255,.05),rgba(255,255,255,0) 62%),repeating-linear-gradient(115deg,rgba(255,255,255,.016) 0 2px,transparent 2px 10px),#131519;border:1px solid #262a31;padding:16px;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px)">
+              <div data-cardcontent="1" data-cardignored="0">
+              <div data-heroband="1" style="position:relative;overflow:hidden;margin:-16px -16px 14px;padding:16px;min-height:152px;box-sizing:border-box;display:flex;align-items:center;border-bottom:1px solid #262a31">
+                <div data-heroart="base" data-hashover="0" style="position:absolute;inset:0px;z-index:0;pointer-events:none;background-image:url(&quot;../backgrounds/Nekomata.webp&quot;);background-repeat:no-repeat;background-size:auto 136%;background-position:-12% 57%;transform:scaleX(-1);mask-image:none;-webkit-mask-image:none;transition:opacity .35s ease"></div>
+                <div data-heroart="hover" style="position:absolute;inset:0px;z-index:0;pointer-events:none;background-image:url(&quot;../backgrounds/Nekomata-hover.webp&quot;);background-repeat:no-repeat;background-size:auto 136%;background-position:-12% 57%;transform:scaleX(-1);mask-image:none;-webkit-mask-image:none;opacity:0;transition:opacity .35s ease"></div>
+                <div data-heroshade="1" style="position:absolute;inset:0;z-index:0;pointer-events:none;transition:opacity .35s ease;background:linear-gradient(90deg,rgba(19,21,25,.92) 0%,rgba(19,21,25,.62) 45%,rgba(19,21,25,.15) 100%),rgba(0,0,0,.12)"></div>
+<div data-heroscrim="1" style="position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(90deg,rgba(11,12,14,.82) 0%,rgba(11,12,14,.6) 38%,rgba(11,12,14,0) 66%)"></div>
+                <div style="position:relative;z-index:1;display:flex;gap:13px;align-items:flex-start;width:100%">
+                <div style="position:relative;width:84px;height:84px;flex:0 0 84px;border-radius:50%;box-shadow:0 0 9px 2px #f5a62340">
+                  <div style="position:absolute;inset:0;border-radius:50%;overflow:hidden;border:2px solid #f5a623d9">
+                    <img src="../icons/Agent_Nekomata_Circle_Icon.webp" alt="" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;border-radius:50%;">
+                  </div>
+                </div>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:7px">
+                  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                    <span style="font:700 23px/1.1 'Chakra Petch',sans-serif;text-transform:uppercase">Nekomata</span>
+                    <span style="display:inline-block;width:15px;height:15px;flex:0 0 15px;background-image:url('../icons/Icon_AgentRank_S.webp');background-size:contain;background-repeat:no-repeat;background-position:center;vertical-align:middle"></span>
+                    
+                  </div>
+                  <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;font:400 15px/1.4 'JetBrains Mono',monospace;letter-spacing:.08em;color:#8a9099">
+                    <span style="display:inline-block;width:13px;height:13px;flex:0 0 13px;background-image:url('../icons/Icon_Attack.webp');background-size:contain;background-repeat:no-repeat;background-position:center;vertical-align:middle"></span><span>ATTACK</span>
+                    
+                      <span>·</span><span style="display:inline-block;width:13px;height:13px;flex:0 0 13px;background-image:url('../icons/Icon_Physical.webp');background-size:contain;background-repeat:no-repeat;background-position:center;vertical-align:middle"></span><span>PHYSICAL</span>
+                    
+                    
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    
+                    <span style="font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.08em;color:#4ade80"></span>
+                  </div>
+                </div>
+              </div>
+              </div>
+
+              <div data-pd="vartabs" style="display:flex;align-items:flex-end;flex-wrap:nowrap;height:27px;margin-bottom:8px;border-bottom:1px solid #262a31">
+                
+                  <div data-pd="vartabstrip" style="display:flex;align-items:flex-end;gap:3px">
+                    
+                      <button title="Primary is the one to aim for." style="font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.06em;padding:6px 11px 7px;cursor:pointer;white-space:nowrap;flex:0 0 auto;margin-bottom:-1px;text-transform:uppercase;clip-path:polygon(5px 0,100% 0,100% 100%,0 100%);background:#ffda58;color:#0b0c0e;border:1px solid #ffda58" data-settab="0">Primary</button>
+                    
+                      <button title="Alternative disc set." style="font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.06em;padding:6px 11px 7px;cursor:pointer;white-space:nowrap;flex:0 0 auto;margin-bottom:-1px;text-transform:uppercase;clip-path:polygon(5px 0,100% 0,100% 100%,0 100%);background:#0f1114;color:#8a9099;border:1px solid #262a31" data-settab="1">With Dialyn</button>
+                    
+                  </div>
+                
+                
+                
+              </div>
+              
+
+              <div style="position:relative;display:flex;gap:12px;align-items:stretch">
+                
+                  <div style="position:relative;flex:50 1 0;min-width:0;background:#0f1114;border:1px solid #262a31;display:flex;flex-direction:column">
+                    <div style="display:flex;justify-content:center;padding:15px 10px 13px">
+                      <div data-setdisabled="0" style="width:70px;height:70px;border-radius:50%;overflow:hidden;background:#171a1f;box-shadow:inset 0 0 0 1px rgba(255,255,255,.16),inset 0 0 16px rgba(0,0,0,.55)">
+                        <div style="width:100%;height:100%">
+                          <div style="position:relative;width:100%;height:100%;border-radius:50%;overflow:hidden">
+                            
+                              <div data-setdisc="1" style="position:absolute;inset:0;width:100%;height:100%">
+                                <img src="../discs/Drive_Disc_Woodpecker_Electro_Icon.webp" alt="" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;border-radius:50%;">
+                              </div>
+                            
+                            
+                            <div style="position:absolute;top:50%;left:50%;width:19px;height:19px;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;background:radial-gradient(circle,#0f5837,#093320);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)"></div>
+                            <div style="position:absolute;top:50%;left:50%;width:8px;height:8px;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;background:#0b0c0e;box-shadow:0 0 0 2px rgba(11,12,14,.8)"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div style="padding:11px 12px 13px;border-top:1px solid #262a31;flex:1">
+                      <div style="height:34px;overflow:hidden"><span style="display:block;font:600 17px/1.3 Barlow,sans-serif;color:#ecefe6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Woodpecker Electro</span></div>
+                      <div style="font:500 12px/1.3 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#8a9099;margin-top:3px">4-piece bonus</div>
+                      <div style="height:64px;overflow:hidden;margin-top:6px">
+                        
+                          <span style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font:400 15px/1.4 Barlow,sans-serif;color:#9aa0a8">Crit hits via Basic Attack, Dodge Counter, or EX Special grant ATK +9% for 6s (tracked per skill).</span>
+                        
+                      </div>
+                    </div>
+                  </div>
+                
+                  <div style="position:relative;flex:50 1 0;min-width:0;background:#0f1114;border:1px solid #262a31;display:flex;flex-direction:column">
+                    <div style="display:flex;justify-content:center;padding:15px 10px 13px">
+                      <div data-setdisabled="0" style="width:70px;height:70px;border-radius:50%;overflow:hidden;background:#171a1f;box-shadow:inset 0 0 0 1px rgba(255,255,255,.16),inset 0 0 16px rgba(0,0,0,.55)">
+                        <div style="width:100%;height:100%">
+                          <div style="position:relative;width:100%;height:100%;border-radius:50%;overflow:hidden">
+                            
+                              <div data-setdisc="1" style="position:absolute;inset:0;width:100%;height:100%">
+                                <img src="../discs/Drive_Disc_Puffer_Electro_Icon.webp" alt="" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;border-radius:50%;">
+                              </div>
+                            
+                            
+                            <div style="position:absolute;top:50%;left:50%;width:19px;height:19px;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;background:radial-gradient(circle,#787c81,#46484c);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)"></div>
+                            <div style="position:absolute;top:50%;left:50%;width:8px;height:8px;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;background:#0b0c0e;box-shadow:0 0 0 2px rgba(11,12,14,.8)"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                      <div data-pairwrap="1" style="position:absolute;top:8px;right:8px;z-index:30">
+                        <span data-pairchip="1" tabindex="0" style="display:block;font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.06em;padding:5px 7px;background:#171a1f;border:1px solid #2e333b;color:#8a9099;cursor:pointer;white-space:nowrap">+4</span>
+                        <div data-pairpop="1" style="position:absolute;top:-5px;right:-5px;width:260px;background:#171a1f;border:1px solid #3a4048;box-shadow:0 10px 26px rgba(0,0,0,.6);padding:10px 12px 11px">
+                          <div style="display:flex;flex-direction:column;gap:8px">
+                            
+                              
+                                <div data-pairfirstrow="1" style="display:flex;align-items:center;gap:8px">
+                                  <span style="display:inline-block;width:22px;height:22px;flex:0 0 22px;background-image:url('../discs/Drive_Disc_Puffer_Electro_Icon.webp');background-size:contain;background-repeat:no-repeat;background-position:center;vertical-align:middle"></span>
+                                  <span style="font:600 13px/1.3 'JetBrains Mono',monospace;letter-spacing:.02em;color:#ecefe6">Puffer Electro<span style="margin-left:4px"> ★</span></span>
+                                </div>
+                              
+                              
+                            
+                              
+                              
+                                <div style="display:flex;align-items:center;gap:8px">
+                                  <span style="display:inline-block;width:22px;height:22px;flex:0 0 22px;background-image:url('../discs/Drive_Disc_Branch_&amp;_Blade_Song_Icon.webp');background-size:contain;background-repeat:no-repeat;background-position:center;vertical-align:middle"></span>
+                                  <span style="font:400 13px/1.3 'JetBrains Mono',monospace;letter-spacing:.02em;color:#ecefe6">Branch &amp; Blade Song</span>
+                                </div>
+                              
+                            
+                              
+                              
+                                <div style="display:flex;align-items:center;gap:8px">
+                                  <span style="display:inline-block;width:22px;height:22px;flex:0 0 22px;background-image:url('../discs/Drive_Disc_Fanged_Metal_Icon.webp');background-size:contain;background-repeat:no-repeat;background-position:center;vertical-align:middle"></span>
+                                  <span style="font:400 13px/1.3 'JetBrains Mono',monospace;letter-spacing:.02em;color:#ecefe6">Fanged Metal</span>
+                                </div>
+                              
+                            
+                              
+                              
+                                <div style="display:flex;align-items:center;gap:8px">
+                                  <span style="display:inline-block;width:22px;height:22px;flex:0 0 22px;background-image:url('../discs/Drive_Disc_Astral_Voice_Icon.webp');background-size:contain;background-repeat:no-repeat;background-position:center;vertical-align:middle"></span>
+                                  <span style="font:400 13px/1.3 'JetBrains Mono',monospace;letter-spacing:.02em;color:#ecefe6">Astral Voice</span>
+                                </div>
+                              
+                            
+                              
+                              
+                                <div style="display:flex;align-items:center;gap:8px">
+                                  <span style="display:inline-block;width:22px;height:22px;flex:0 0 22px;background-image:url('../discs/Drive_Disc_Hormone_Punk_Icon.webp');background-size:contain;background-repeat:no-repeat;background-position:center;vertical-align:middle"></span>
+                                  <span style="font:400 13px/1.3 'JetBrains Mono',monospace;letter-spacing:.02em;color:#ecefe6">Hormone Punk</span>
+                                </div>
+                              
+                            
+                          </div>
+                        </div>
+                      </div>
+                    
+                    <div style="padding:11px 12px 13px;border-top:1px solid #262a31;flex:1">
+                      <div style="height:34px;overflow:hidden"><span style="display:block;font:600 17px/1.3 Barlow,sans-serif;color:#ecefe6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Puffer Electro</span></div>
+                      <div style="font:500 12px/1.3 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#8a9099;margin-top:3px">2-piece bonus</div>
+                      <div style="height:64px;overflow:hidden;margin-top:6px">
+                        
+                          <span style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font:400 15px/1.4 Barlow,sans-serif;color:#9aa0a8">PEN Ratio +8%.</span>
+                        
+                      </div>
+                    </div>
+                  </div>
+                
+                
+                  <span style="position:absolute;top:48px;left:calc(50% + 0px);transform:translate(-50%,-50%);width:22px;height:22px;border-radius:50%;background:#171a1f;border:1px solid #2e333b;color:#8a9099;font:700 14px/1 'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center">+</span>
+                
+                
+              </div>
+
+              <div data-pd="vartabs" style="display:flex;align-items:flex-end;flex-wrap:nowrap;height:27px;margin:15px 0 8px;border-bottom:1px solid #262a31">
+                
+                
+                  <span style="font:700 14px/1 'JetBrains Mono',monospace;letter-spacing:.1em;color:#8a9099;white-space:nowrap;padding-bottom:4px">Main stat</span>
+                
+                
+              </div>
+              
+              <div style="display:grid;gap:1px;background:#262a31;border:1px solid #262a31">
+                
+                  <div data-pd="mainrow" style="display:flex;align-items:stretch;background:#0f1114;height:46px">
+                    <div style="flex:0 0 42px;display:flex;align-items:center;justify-content:center;border-right:1px solid #262a31;font:700 15px/1 'Chakra Petch',sans-serif;letter-spacing:.02em;color:#8a9099">04</div>
+                    <div data-pd="mainchips" style="flex:1;min-width:0;display:flex;align-items:center;gap:6px;padding:0 10px;overflow:hidden">
+                      
+                        <span style="display:flex;align-items:center;gap:6px;padding:4px 8px 4px 4px;white-space:nowrap;flex:0 1 auto;min-width:0;background:#6cc6ff14;border:1px solid #6cc6ff55">
+                          <span style="display:block;width:3px;height:15px;flex:0 0 3px;background:#6cc6ff;opacity:1"></span>
+                          <span style="font:600 14px/1.2 Barlow,sans-serif;color:#ecefe6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">CRIT Rate</span>
+                        </span>
+                      
+                        <span style="display:flex;align-items:center;gap:6px;padding:4px 8px 4px 4px;white-space:nowrap;flex:0 1 auto;min-width:0;background:transparent;border:1px solid #2e333b">
+                          <span style="display:block;width:3px;height:15px;flex:0 0 3px;background:#4ade80;opacity:0.8"></span>
+                          <span style="font:400 14px/1.2 Barlow,sans-serif;color:#9aa0a8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">CRIT DMG</span>
+                        </span>
+                      
+                        <span style="display:flex;align-items:center;gap:6px;padding:4px 8px 4px 4px;white-space:nowrap;flex:0 1 auto;min-width:0;background:transparent;border:1px solid #2e333b">
+                          <span style="display:block;width:3px;height:15px;flex:0 0 3px;background:#4ade80;opacity:0.8"></span>
+                          <span style="font:400 14px/1.2 Barlow,sans-serif;color:#9aa0a8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">ATK%</span>
+                        </span>
+                      
+                    </div>
+                  </div>
+                
+                  <div data-pd="mainrow" style="display:flex;align-items:stretch;background:#0f1114;height:46px">
+                    <div style="flex:0 0 42px;display:flex;align-items:center;justify-content:center;border-right:1px solid #262a31;font:700 15px/1 'Chakra Petch',sans-serif;letter-spacing:.02em;color:#8a9099">05</div>
+                    <div data-pd="mainchips" style="flex:1;min-width:0;display:flex;align-items:center;gap:6px;padding:0 10px;overflow:hidden">
+                      
+                        <span style="display:flex;align-items:center;gap:6px;padding:4px 8px 4px 4px;white-space:nowrap;flex:0 1 auto;min-width:0;background:#6cc6ff14;border:1px solid #6cc6ff55">
+                          <span style="display:block;width:3px;height:15px;flex:0 0 3px;background:#6cc6ff;opacity:1"></span>
+                          <span style="font:600 14px/1.2 Barlow,sans-serif;color:#ecefe6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">PEN Ratio</span>
+                        </span>
+                      
+                        <span style="display:flex;align-items:center;gap:6px;padding:4px 8px 4px 4px;white-space:nowrap;flex:0 1 auto;min-width:0;background:transparent;border:1px solid #2e333b">
+                          <span style="display:block;width:3px;height:15px;flex:0 0 3px;background:#4ade80;opacity:0.8"></span>
+                          <span style="font:400 14px/1.2 Barlow,sans-serif;color:#9aa0a8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">ATK%</span>
+                        </span>
+                      
+                        <span style="display:flex;align-items:center;gap:6px;padding:4px 8px 4px 4px;white-space:nowrap;flex:0 1 auto;min-width:0;background:transparent;border:1px solid #2e333b">
+                          <span style="display:block;width:3px;height:15px;flex:0 0 3px;background:#b4dd5c;opacity:0.8"></span>
+                          <span style="font:400 14px/1.2 Barlow,sans-serif;color:#9aa0a8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">Physical DMG</span>
+                        </span>
+                      
+                    </div>
+                  </div>
+                
+                  <div data-pd="mainrow" style="display:flex;align-items:stretch;background:#0f1114;height:46px">
+                    <div style="flex:0 0 42px;display:flex;align-items:center;justify-content:center;border-right:1px solid #262a31;font:700 15px/1 'Chakra Petch',sans-serif;letter-spacing:.02em;color:#8a9099">06</div>
+                    <div data-pd="mainchips" style="flex:1;min-width:0;display:flex;align-items:center;gap:6px;padding:0 10px;overflow:hidden">
+                      
+                        <span style="display:flex;align-items:center;gap:6px;padding:4px 8px 4px 4px;white-space:nowrap;flex:0 1 auto;min-width:0;background:#6cc6ff14;border:1px solid #6cc6ff55">
+                          <span style="display:block;width:3px;height:15px;flex:0 0 3px;background:#6cc6ff;opacity:1"></span>
+                          <span style="font:600 14px/1.2 Barlow,sans-serif;color:#ecefe6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">ATK%</span>
+                        </span>
+                      
+                    </div>
+                  </div>
+                
+              </div>
+
+              <div style="font:700 14px/1 'JetBrains Mono',monospace;letter-spacing:.1em;color:#8a9099;margin:14px 0 8px">Substat priority</div>
+              <div style="display:flex;gap:9px;flex-wrap:wrap">
+                
+                  <div data-pd="subcol" style="flex:1 1 84px;min-width:78px">
+                    <div style="height:3px;background:#6cc6ff;opacity:1;margin-bottom:6px"></div>
+                    <div style="height:48px;overflow:hidden">
+                      <span style="font:600 14px/1.3 'JetBrains Mono',monospace;color:#ecefe6;letter-spacing:.02em">CRIT Rate<span title="Until 100%." style="color:#ffda58;cursor:help"> *</span></span>
+                    </div>
+                  </div>
+                
+                  <div data-pd="subcol" style="flex:1 1 84px;min-width:78px">
+                    <div style="height:3px;background:#6cc6ff;opacity:1;margin-bottom:6px"></div>
+                    <div style="height:48px;overflow:hidden">
+                      <span style="font:600 14px/1.3 'JetBrains Mono',monospace;color:#ecefe6;letter-spacing:.02em">CRIT DMG</span>
+                    </div>
+                  </div>
+                
+                  <div data-pd="subcol" style="flex:1 1 84px;min-width:78px">
+                    <div style="height:3px;background:#6cc6ff;opacity:1;margin-bottom:6px"></div>
+                    <div style="height:48px;overflow:hidden">
+                      <span style="font:600 14px/1.3 'JetBrains Mono',monospace;color:#ecefe6;letter-spacing:.02em">ATK%</span>
+                    </div>
+                  </div>
+                
+                  <div data-pd="subcol" style="flex:1 1 84px;min-width:78px">
+                    <div style="height:3px;background:#4ade80;opacity:1;margin-bottom:6px"></div>
+                    <div style="height:48px;overflow:hidden">
+                      <span style="font:400 14px/1.3 'JetBrains Mono',monospace;color:#c3c8ce;letter-spacing:.02em">PEN</span>
+                    </div>
+                  </div>
+                
+                  <div data-pd="subcol" style="flex:1 1 84px;min-width:78px">
+                    <div style="height:3px;background:#4ade80;opacity:1;margin-bottom:6px"></div>
+                    <div style="height:48px;overflow:hidden">
+                      <span style="font:400 14px/1.3 'JetBrains Mono',monospace;color:#c3c8ce;letter-spacing:.02em">ATK</span>
+                    </div>
+                  </div>
+                
+              </div>
+              </div>
+              
+            </div>
+          </div><div data-combo="1-0" hidden>
+            <div data-agent-card="1" style="position:relative;background:radial-gradient(120% 78% at 50% 64%,rgba(255,255,255,.05),rgba(255,255,255,0) 62%),repeating-linear-gradient(115deg,rgba(255,255,255,.016) 0 2px,transparent 2px 10px),#131519;border:1px solid #262a31;padding:16px;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px)">
+              <div data-cardcontent="1" data-cardignored="0">
+              <div data-heroband="1" style="position:relative;overflow:hidden;margin:-16px -16px 14px;padding:16px;min-height:152px;box-sizing:border-box;display:flex;align-items:center;border-bottom:1px solid #262a31">
+                <div data-heroart="base" data-hashover="0" style="position:absolute;inset:0px;z-index:0;pointer-events:none;background-image:url(&quot;../backgrounds/Nekomata.webp&quot;);background-repeat:no-repeat;background-size:auto 136%;background-position:-12% 57%;transform:scaleX(-1);mask-image:none;-webkit-mask-image:none;transition:opacity .35s ease"></div>
+                <div data-heroart="hover" style="position:absolute;inset:0px;z-index:0;pointer-events:none;background-image:url(&quot;../backgrounds/Nekomata-hover.webp&quot;);background-repeat:no-repeat;background-size:auto 136%;background-position:-12% 57%;transform:scaleX(-1);mask-image:none;-webkit-mask-image:none;opacity:0;transition:opacity .35s ease"></div>
+                <div data-heroshade="1" style="position:absolute;inset:0;z-index:0;pointer-events:none;transition:opacity .35s ease;background:linear-gradient(90deg,rgba(19,21,25,.92) 0%,rgba(19,21,25,.62) 45%,rgba(19,21,25,.15) 100%),rgba(0,0,0,.12)"></div>
+<div data-heroscrim="1" style="position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(90deg,rgba(11,12,14,.82) 0%,rgba(11,12,14,.6) 38%,rgba(11,12,14,0) 66%)"></div>
+                <div style="position:relative;z-index:1;display:flex;gap:13px;align-items:flex-start;width:100%">
+                <div style="position:relative;width:84px;height:84px;flex:0 0 84px;border-radius:50%;box-shadow:0 0 9px 2px #f5a62340">
+                  <div style="position:absolute;inset:0;border-radius:50%;overflow:hidden;border:2px solid #f5a623d9">
+                    <img src="../icons/Agent_Nekomata_Circle_Icon.webp" alt="" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;border-radius:50%;">
+                  </div>
+                </div>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:7px">
+                  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                    <span style="font:700 23px/1.1 'Chakra Petch',sans-serif;text-transform:uppercase">Nekomata</span>
+                    <span style="display:inline-block;width:15px;height:15px;flex:0 0 15px;background-image:url('../icons/Icon_AgentRank_S.webp');background-size:contain;background-repeat:no-repeat;background-position:center;vertical-align:middle"></span>
+                    
+                  </div>
+                  <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;font:400 15px/1.4 'JetBrains Mono',monospace;letter-spacing:.08em;color:#8a9099">
+                    <span style="display:inline-block;width:13px;height:13px;flex:0 0 13px;background-image:url('../icons/Icon_Attack.webp');background-size:contain;background-repeat:no-repeat;background-position:center;vertical-align:middle"></span><span>ATTACK</span>
+                    
+                      <span>·</span><span style="display:inline-block;width:13px;height:13px;flex:0 0 13px;background-image:url('../icons/Icon_Physical.webp');background-size:contain;background-repeat:no-repeat;background-position:center;vertical-align:middle"></span><span>PHYSICAL</span>
+                    
+                    
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    
+                    <span style="font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.08em;color:#4ade80"></span>
+                  </div>
+                </div>
+              </div>
+              </div>
+
+              <div data-pd="vartabs" style="display:flex;align-items:flex-end;flex-wrap:nowrap;height:27px;margin-bottom:8px;border-bottom:1px solid #262a31">
+                
+                  <div data-pd="vartabstrip" style="display:flex;align-items:flex-end;gap:3px">
+                    
+                      <button title="Primary is the one to aim for." style="font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.06em;padding:6px 11px 7px;cursor:pointer;white-space:nowrap;flex:0 0 auto;margin-bottom:-1px;text-transform:uppercase;clip-path:polygon(5px 0,100% 0,100% 100%,0 100%);background:#0f1114;color:#8a9099;border:1px solid #262a31" data-settab="0">Primary</button>
+                    
+                      <button title="Alternative disc set." style="font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.06em;padding:6px 11px 7px;cursor:pointer;white-space:nowrap;flex:0 0 auto;margin-bottom:-1px;text-transform:uppercase;clip-path:polygon(5px 0,100% 0,100% 100%,0 100%);background:#ffda58;color:#0b0c0e;border:1px solid #ffda58" data-settab="1">With Dialyn</button>
+                    
+                  </div>
+                
+                
+                
+              </div>
+              
+
+              <div style="position:relative;display:flex;gap:12px;align-items:stretch">
+                
+                  <div style="position:relative;flex:50 1 0;min-width:0;background:#0f1114;border:1px solid #262a31;display:flex;flex-direction:column">
+                    <div style="display:flex;justify-content:center;padding:15px 10px 13px">
+                      <div data-setdisabled="0" style="width:70px;height:70px;border-radius:50%;overflow:hidden;background:#171a1f;box-shadow:inset 0 0 0 1px rgba(255,255,255,.16),inset 0 0 16px rgba(0,0,0,.55)">
+                        <div style="width:100%;height:100%">
+                          <div style="position:relative;width:100%;height:100%;border-radius:50%;overflow:hidden">
+                            
+                              <div data-setdisc="1" style="position:absolute;inset:0;width:100%;height:100%">
+                                <img src="../discs/Drive_Disc_Puffer_Electro_Icon.webp" alt="" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;border-radius:50%;">
+                              </div>
+                            
+                            
+                            <div style="position:absolute;top:50%;left:50%;width:19px;height:19px;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;background:radial-gradient(circle,#787c81,#46484c);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)"></div>
+                            <div style="position:absolute;top:50%;left:50%;width:8px;height:8px;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;background:#0b0c0e;box-shadow:0 0 0 2px rgba(11,12,14,.8)"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div style="padding:11px 12px 13px;border-top:1px solid #262a31;flex:1">
+                      <div style="height:34px;overflow:hidden"><span style="display:block;font:600 17px/1.3 Barlow,sans-serif;color:#ecefe6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Puffer Electro</span></div>
+                      <div style="font:500 12px/1.3 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#8a9099;margin-top:3px">4-piece bonus</div>
+                      <div style="height:64px;overflow:hidden;margin-top:6px">
+                        
+                          <span style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font:400 15px/1.4 Barlow,sans-serif;color:#9aa0a8">Ultimate DMG increases by 20%. Launching an Ultimate increases the equipper's ATK by 15% for 12s.</span>
+                        
+                      </div>
+                    </div>
+                  </div>
+                
+                  <div style="position:relative;flex:50 1 0;min-width:0;background:#0f1114;border:1px solid #262a31;display:flex;flex-direction:column">
+                    <div style="display:flex;justify-content:center;padding:15px 10px 13px">
+                      <div data-setdisabled="0" style="width:70px;height:70px;border-radius:50%;overflow:hidden;background:#171a1f;box-shadow:inset 0 0 0 1px rgba(255,255,255,.16),inset 0 0 16px rgba(0,0,0,.55)">
+                        <div style="width:100%;height:100%">
+                          <div style="position:relative;width:100%;height:100%;border-radius:50%;overflow:hidden">
+                            
+                              <div data-setdisc="1" style="position:absolute;inset:0;width:100%;height:100%">
+                                <img src="../discs/Drive_Disc_Woodpecker_Electro_Icon.webp" alt="" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;border-radius:50%;">
+                              </div>
+                            
+                            
+                            <div style="position:absolute;top:50%;left:50%;width:19px;height:19px;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;background:radial-gradient(circle,#0f5837,#093320);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)"></div>
+                            <div style="position:absolute;top:50%;left:50%;width:8px;height:8px;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;background:#0b0c0e;box-shadow:0 0 0 2px rgba(11,12,14,.8)"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                      <div data-pairwrap="1" style="position:absolute;top:8px;right:8px;z-index:30">
+                        <span data-pairchip="1" tabindex="0" style="display:block;font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.06em;padding:5px 7px;background:#171a1f;border:1px solid #2e333b;color:#8a9099;cursor:pointer;white-space:nowrap">+4</span>
+                        <div data-pairpop="1" style="position:absolute;top:-5px;right:-5px;width:260px;background:#171a1f;border:1px solid #3a4048;box-shadow:0 10px 26px rgba(0,0,0,.6);padding:10px 12px 11px">
+                          <div style="display:flex;flex-direction:column;gap:8px">
+                            
+                              
+                                <div data-pairfirstrow="1" style="display:flex;align-items:center;gap:8px">
+                                  <span style="display:inline-block;width:22px;height:22px;flex:0 0 22px;background-image:url('../discs/Drive_Disc_Woodpecker_Electro_Icon.webp');background-size:contain;background-repeat:no-repeat;background-position:center;vertical-align:middle"></span>
+                                  <span style="font:600 13px/1.3 'JetBrains Mono',monospace;letter-spacing:.02em;color:#ecefe6">Woodpecker Electro<span style="margin-left:4px"> ★</span></span>
+                                </div>
+                              
+                              
+                            
+                              
+                              
+                                <div style="display:flex;align-items:center;gap:8px">
+                                  <span style="display:inline-block;width:22px;height:22px;flex:0 0 22px;background-image:url('../discs/Drive_Disc_Branch_&amp;_Blade_Song_Icon.webp');background-size:contain;background-repeat:no-repeat;background-position:center;vertical-align:middle"></span>
+                                  <span style="font:400 13px/1.3 'JetBrains Mono',monospace;letter-spacing:.02em;color:#ecefe6">Branch &amp; Blade Song</span>
+                                </div>
+                              
+                            
+                              
+                              
+                                <div style="display:flex;align-items:center;gap:8px">
+                                  <span style="display:inline-block;width:22px;height:22px;flex:0 0 22px;background-image:url('../discs/Drive_Disc_Fanged_Metal_Icon.webp');background-size:contain;background-repeat:no-repeat;background-position:center;vertical-align:middle"></span>
+                                  <span style="font:400 13px/1.3 'JetBrains Mono',monospace;letter-spacing:.02em;color:#ecefe6">Fanged Metal</span>
+                                </div>
+                              
+                            
+                              
+                              
+                                <div style="display:flex;align-items:center;gap:8px">
+                                  <span style="display:inline-block;width:22px;height:22px;flex:0 0 22px;background-image:url('../discs/Drive_Disc_Astral_Voice_Icon.webp');background-size:contain;background-repeat:no-repeat;background-position:center;vertical-align:middle"></span>
+                                  <span style="font:400 13px/1.3 'JetBrains Mono',monospace;letter-spacing:.02em;color:#ecefe6">Astral Voice</span>
+                                </div>
+                              
+                            
+                              
+                              
+                                <div style="display:flex;align-items:center;gap:8px">
+                                  <span style="display:inline-block;width:22px;height:22px;flex:0 0 22px;background-image:url('../discs/Drive_Disc_Hormone_Punk_Icon.webp');background-size:contain;background-repeat:no-repeat;background-position:center;vertical-align:middle"></span>
+                                  <span style="font:400 13px/1.3 'JetBrains Mono',monospace;letter-spacing:.02em;color:#ecefe6">Hormone Punk</span>
+                                </div>
+                              
+                            
+                          </div>
+                        </div>
+                      </div>
+                    
+                    <div style="padding:11px 12px 13px;border-top:1px solid #262a31;flex:1">
+                      <div style="height:34px;overflow:hidden"><span style="display:block;font:600 17px/1.3 Barlow,sans-serif;color:#ecefe6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Woodpecker Electro</span></div>
+                      <div style="font:500 12px/1.3 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#8a9099;margin-top:3px">2-piece bonus</div>
+                      <div style="height:64px;overflow:hidden;margin-top:6px">
+                        
+                          <span style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font:400 15px/1.4 Barlow,sans-serif;color:#9aa0a8">CRIT Rate +8%.</span>
+                        
+                      </div>
+                    </div>
+                  </div>
+                
+                
+                  <span style="position:absolute;top:48px;left:calc(50% + 0px);transform:translate(-50%,-50%);width:22px;height:22px;border-radius:50%;background:#171a1f;border:1px solid #2e333b;color:#8a9099;font:700 14px/1 'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center">+</span>
+                
+                
+              </div>
+
+              <div data-pd="vartabs" style="display:flex;align-items:flex-end;flex-wrap:nowrap;height:27px;margin:15px 0 8px;border-bottom:1px solid #262a31">
+                
+                
+                  <span style="font:700 14px/1 'JetBrains Mono',monospace;letter-spacing:.1em;color:#8a9099;white-space:nowrap;padding-bottom:4px">Main stat</span>
+                
+                
+              </div>
+              
+              <div style="display:grid;gap:1px;background:#262a31;border:1px solid #262a31">
+                
+                  <div data-pd="mainrow" style="display:flex;align-items:stretch;background:#0f1114;height:46px">
+                    <div style="flex:0 0 42px;display:flex;align-items:center;justify-content:center;border-right:1px solid #262a31;font:700 15px/1 'Chakra Petch',sans-serif;letter-spacing:.02em;color:#8a9099">04</div>
+                    <div data-pd="mainchips" style="flex:1;min-width:0;display:flex;align-items:center;gap:6px;padding:0 10px;overflow:hidden">
+                      
+                        <span style="display:flex;align-items:center;gap:6px;padding:4px 8px 4px 4px;white-space:nowrap;flex:0 1 auto;min-width:0;background:#6cc6ff14;border:1px solid #6cc6ff55">
+                          <span style="display:block;width:3px;height:15px;flex:0 0 3px;background:#6cc6ff;opacity:1"></span>
+                          <span style="font:600 14px/1.2 Barlow,sans-serif;color:#ecefe6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">CRIT Rate</span>
+                        </span>
+                      
+                        <span style="display:flex;align-items:center;gap:6px;padding:4px 8px 4px 4px;white-space:nowrap;flex:0 1 auto;min-width:0;background:transparent;border:1px solid #2e333b">
+                          <span style="display:block;width:3px;height:15px;flex:0 0 3px;background:#4ade80;opacity:0.8"></span>
+                          <span style="font:400 14px/1.2 Barlow,sans-serif;color:#9aa0a8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">CRIT DMG</span>
+                        </span>
+                      
+                        <span style="display:flex;align-items:center;gap:6px;padding:4px 8px 4px 4px;white-space:nowrap;flex:0 1 auto;min-width:0;background:transparent;border:1px solid #2e333b">
+                          <span style="display:block;width:3px;height:15px;flex:0 0 3px;background:#4ade80;opacity:0.8"></span>
+                          <span style="font:400 14px/1.2 Barlow,sans-serif;color:#9aa0a8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">ATK%</span>
+                        </span>
+                      
+                    </div>
+                  </div>
+                
+                  <div data-pd="mainrow" style="display:flex;align-items:stretch;background:#0f1114;height:46px">
+                    <div style="flex:0 0 42px;display:flex;align-items:center;justify-content:center;border-right:1px solid #262a31;font:700 15px/1 'Chakra Petch',sans-serif;letter-spacing:.02em;color:#8a9099">05</div>
+                    <div data-pd="mainchips" style="flex:1;min-width:0;display:flex;align-items:center;gap:6px;padding:0 10px;overflow:hidden">
+                      
+                        <span style="display:flex;align-items:center;gap:6px;padding:4px 8px 4px 4px;white-space:nowrap;flex:0 1 auto;min-width:0;background:#6cc6ff14;border:1px solid #6cc6ff55">
+                          <span style="display:block;width:3px;height:15px;flex:0 0 3px;background:#6cc6ff;opacity:1"></span>
+                          <span style="font:600 14px/1.2 Barlow,sans-serif;color:#ecefe6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">PEN Ratio</span>
+                        </span>
+                      
+                        <span style="display:flex;align-items:center;gap:6px;padding:4px 8px 4px 4px;white-space:nowrap;flex:0 1 auto;min-width:0;background:transparent;border:1px solid #2e333b">
+                          <span style="display:block;width:3px;height:15px;flex:0 0 3px;background:#4ade80;opacity:0.8"></span>
+                          <span style="font:400 14px/1.2 Barlow,sans-serif;color:#9aa0a8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">ATK%</span>
+                        </span>
+                      
+                        <span style="display:flex;align-items:center;gap:6px;padding:4px 8px 4px 4px;white-space:nowrap;flex:0 1 auto;min-width:0;background:transparent;border:1px solid #2e333b">
+                          <span style="display:block;width:3px;height:15px;flex:0 0 3px;background:#b4dd5c;opacity:0.8"></span>
+                          <span style="font:400 14px/1.2 Barlow,sans-serif;color:#9aa0a8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">Physical DMG</span>
+                        </span>
+                      
+                    </div>
+                  </div>
+                
+                  <div data-pd="mainrow" style="display:flex;align-items:stretch;background:#0f1114;height:46px">
+                    <div style="flex:0 0 42px;display:flex;align-items:center;justify-content:center;border-right:1px solid #262a31;font:700 15px/1 'Chakra Petch',sans-serif;letter-spacing:.02em;color:#8a9099">06</div>
+                    <div data-pd="mainchips" style="flex:1;min-width:0;display:flex;align-items:center;gap:6px;padding:0 10px;overflow:hidden">
+                      
+                        <span style="display:flex;align-items:center;gap:6px;padding:4px 8px 4px 4px;white-space:nowrap;flex:0 1 auto;min-width:0;background:#6cc6ff14;border:1px solid #6cc6ff55">
+                          <span style="display:block;width:3px;height:15px;flex:0 0 3px;background:#6cc6ff;opacity:1"></span>
+                          <span style="font:600 14px/1.2 Barlow,sans-serif;color:#ecefe6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">ATK%</span>
+                        </span>
+                      
+                    </div>
+                  </div>
+                
+              </div>
+
+              <div style="font:700 14px/1 'JetBrains Mono',monospace;letter-spacing:.1em;color:#8a9099;margin:14px 0 8px">Substat priority</div>
+              <div style="display:flex;gap:9px;flex-wrap:wrap">
+                
+                  <div data-pd="subcol" style="flex:1 1 84px;min-width:78px">
+                    <div style="height:3px;background:#6cc6ff;opacity:1;margin-bottom:6px"></div>
+                    <div style="height:48px;overflow:hidden">
+                      <span style="font:600 14px/1.3 'JetBrains Mono',monospace;color:#ecefe6;letter-spacing:.02em">CRIT Rate<span title="Until 100%." style="color:#ffda58;cursor:help"> *</span></span>
+                    </div>
+                  </div>
+                
+                  <div data-pd="subcol" style="flex:1 1 84px;min-width:78px">
+                    <div style="height:3px;background:#6cc6ff;opacity:1;margin-bottom:6px"></div>
+                    <div style="height:48px;overflow:hidden">
+                      <span style="font:600 14px/1.3 'JetBrains Mono',monospace;color:#ecefe6;letter-spacing:.02em">CRIT DMG</span>
+                    </div>
+                  </div>
+                
+                  <div data-pd="subcol" style="flex:1 1 84px;min-width:78px">
+                    <div style="height:3px;background:#6cc6ff;opacity:1;margin-bottom:6px"></div>
+                    <div style="height:48px;overflow:hidden">
+                      <span style="font:600 14px/1.3 'JetBrains Mono',monospace;color:#ecefe6;letter-spacing:.02em">ATK%</span>
+                    </div>
+                  </div>
+                
+                  <div data-pd="subcol" style="flex:1 1 84px;min-width:78px">
+                    <div style="height:3px;background:#4ade80;opacity:1;margin-bottom:6px"></div>
+                    <div style="height:48px;overflow:hidden">
+                      <span style="font:400 14px/1.3 'JetBrains Mono',monospace;color:#c3c8ce;letter-spacing:.02em">PEN</span>
+                    </div>
+                  </div>
+                
+                  <div data-pd="subcol" style="flex:1 1 84px;min-width:78px">
+                    <div style="height:3px;background:#4ade80;opacity:1;margin-bottom:6px"></div>
+                    <div style="height:48px;overflow:hidden">
+                      <span style="font:400 14px/1.3 'JetBrains Mono',monospace;color:#c3c8ce;letter-spacing:.02em">ATK</span>
+                    </div>
+                  </div>
+                
+              </div>
+              </div>
+              
+            </div>
+          </div></div>
+  <div class="pd-side">
+    <section class="pd-panel"><div class="pd-lbl"><span>Worth knowing</span><i></i></div><ul class="pd-facts"><li><strong>Woodpecker Electro</strong> is also wanted by <a href="ben">Ben</a>, <a href="billy">Billy</a>, <a href="ellen">Ellen</a>, <a href="miyabi">Miyabi</a>, <a href="seed">Seed</a>, <a href="soldier-11">Soldier 11</a> and 1 more, so you may be farming it for more than one agent.</li><li><strong>No fallback main stat in slot 06.</strong> Any other main stat there won't grade well, however good the substats are.</li><li><strong>Substats that do nothing for Nekomata:</strong><div class="pd-dead"><span>HP%</span><span>HP</span><span>DEF%</span><span>DEF</span><span>Anomaly Proficiency</span></div></li></ul></section>
+    <section class="pd-panel pd-cta"><div class="pd-lbl"><span>Got a disc?</span><i></i></div><p>ProxyDisc grades it against this build from S to F in a few seconds. <a href="../guide.html">How grading works</a></p><a class="pd-open" href="../">Rate a disc</a></section>
+    <section class="pd-panel"><div class="pd-lbl"><span>Other Attack agents</span><i></i></div><div class="pd-agents"><a class="pd-agent" href="anton"><img src="../icons/Agent_Anton_Circle_Icon.webp" alt="" width="32" height="32" loading="lazy">Anton</a><a class="pd-agent" href="billy"><img src="../icons/Agent_Billy_Circle_Icon.webp" alt="" width="32" height="32" loading="lazy">Billy</a><a class="pd-agent" href="cissia"><img src="../icons/Agent_Cissia_Circle_Icon.webp" alt="" width="32" height="32" loading="lazy">Cissia</a><a class="pd-agent" href="corin"><img src="../icons/Agent_Corin_Circle_Icon.webp" alt="" width="32" height="32" loading="lazy">Corin</a><a class="pd-agent" href="ellen"><img src="../icons/Agent_Ellen_Circle_Icon.webp" alt="" width="32" height="32" loading="lazy">Ellen</a><a class="pd-agent" href="evelyn"><img src="../icons/Agent_Evelyn_Circle_Icon.webp" alt="" width="32" height="32" loading="lazy">Evelyn</a><a class="pd-agent" href="harumasa"><img src="../icons/Agent_Harumasa_Circle_Icon.webp" alt="" width="32" height="32" loading="lazy">Harumasa</a><a class="pd-agent" href="hugo"><img src="../icons/Agent_Hugo_Circle_Icon.webp" alt="" width="32" height="32" loading="lazy">Hugo</a></div></section>
+  </div>
+</div>
+</main>
+<footer class="pd-foot">
+  <nav aria-label="Site pages"><a href="../">ProxyDisc</a><a href="../agents/">Agent builds</a><a href="../about.html">About</a><a href="../guide.html">How grading works</a><a href="../privacy.html">Privacy policy</a></nav>
+  <div>ProxyDisc is an unofficial fan project, and is not affiliated with or endorsed by HoYoverse. Game names and images belong to their owners.</div>
+  <div style="margin-top:6px">Build data last updated October 2026.</div>
+</footer>
+</div>
+<script>
+document.querySelectorAll('[data-combos]').forEach(function(root){
+  var si=0, ti=0;
+  function show(){ root.querySelectorAll('[data-combo]').forEach(function(c){ c.hidden = c.getAttribute('data-combo') !== si+'-'+ti; }); }
+  root.addEventListener('click', function(e){
+    var s=e.target.closest('[data-settab]'), t=e.target.closest('[data-stattab]');
+    if(s){ si=+s.getAttribute('data-settab'); show(); } else if(t){ ti=+t.getAttribute('data-stattab'); show(); }
+  });
+});
+</script>
+</body>
+</html>
