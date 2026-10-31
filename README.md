@@ -4,6 +4,8 @@ A drive disc rating tool for **Zenless Zone Zero**. Live at **[proxydisc.com](ht
 
 Describe a disc (set, slot, main stat, substats) and ProxyDisc grades it from S to F for every agent who can use it, with a clear keep / maybe / recycle call, so levelling materials only go to discs that are worth it.
 
+**Who it's for:** Zenless Zone Zero players who want a quick, honest answer on whether a disc is worth levelling, and which agent should wear it.
+
 ## Features
 
 - **Scrap or stash**: rates a disc at any level and says when it beats what an agent is wearing. Discs can also be imported from a screenshot.
@@ -14,6 +16,22 @@ Describe a disc (set, slot, main stat, substats) and ProxyDisc grades it from S 
 - **Area patrol**: ranks cleanup missions and disc sets by how much they would improve the agents being geared.
 
 No account needed. Everything a user saves stays in their own browser (`localStorage`).
+
+## Built with
+
+- HTML, CSS and JavaScript, with React for the main app
+- Prototyped in Claude Design, which exports the app as a single bundled `index.html`
+- Hosted on Cloudflare Pages, with no backend: all user data stays in the browser's `localStorage`
+
+## Running it locally
+
+No build step or install is needed. From the project folder, start any static file server, for example:
+
+```
+python -m http.server 8000
+```
+
+Then open http://localhost:8000. The app runs without the game images (they are not in the repo), so portraits and icons show as blank.
 
 ## Repository layout
 
@@ -46,6 +64,12 @@ Game images (agent portraits, disc icons, backgrounds, enemies) are not in this 
 2. Split the agent data and grading rules out of `app.js` into their own modules.
 3. Make the grading engine game-agnostic.
 4. Add **Genshin Impact** (artifacts) and **Honkai: Star Rail** (relics).
+
+## License
+
+The code in this repository is released under the [MIT License](LICENSE).
+
+The bundled `index.html` also contains third-party code that keeps its own license: React (MIT), the Claude Design runtime, and web fonts (SIL Open Font License). Game names, data and images belong to HoYoverse.
 
 ## Disclaimer
 

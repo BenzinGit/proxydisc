@@ -7,12 +7,12 @@
            (unlike a typical logo block) so the bigger wordmark can still wrap onto a second line
            on a narrow phone instead of forcing the whole panel wider than the viewport. -->
       <div data-pd="ident" style="display:flex;align-items:center;gap:22px;flex:1 1 auto;min-width:0">
-        <div data-pd="mark" style="position:relative;width:68px;height:68px;flex:0 0 68px;border-radius:50%;overflow:hidden;background:conic-gradient(from 0deg,#ffda58,#4ade80,#6cc6ff,#1a1d22,#ffda58);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),inset 0 0 12px rgba(0,0,0,.6);animation:discSpin 22s linear infinite">
+        <div data-pd="mark" style="position:relative;width:68px;height:68px;flex:0 0 68px;border-radius:50%;overflow:hidden;background:conic-gradient(from 0deg,#e8ff45,#4ade80,#6cc6ff,#1a1d22,#e8ff45);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),inset 0 0 12px rgba(0,0,0,.6);animation:discSpin 22s linear infinite">
           <div style="position:absolute;inset:13px;border-radius:50%;border:1px solid rgba(0,0,0,.38)"></div>
           <div style="position:absolute;top:50%;left:50%;width:19px;height:19px;border-radius:50%;background:#0b0c0e;box-shadow:0 0 0 6px rgba(11,12,14,.8);transform:translate(-50%,-50%)"></div>
         </div>
         <div style="min-width:0">
-          <h1 data-pd="wordmark" style="font:700 50px/1.1 'Chakra Petch',sans-serif;letter-spacing:.015em;text-transform:uppercase;margin:0">Proxy<wbr><span style="color:#ffda58">Disc</span></h1>
+          <h1 data-pd="wordmark" style="font:700 50px/1.1 'Chakra Petch',sans-serif;letter-spacing:.015em;text-transform:uppercase;margin:0">Proxy<wbr><span style="color:#e8ff45">Disc</span></h1>
           <div data-pd="tagline" style="font:500 16px/1.3 'JetBrains Mono',monospace;letter-spacing:.2em;color:#8a9099;margin-top:10px">DRIVE DISC RATING TOOL</div>
         </div>
       </div>
@@ -30,39 +30,54 @@
           </div>
         </div>
 
-        <a class="support-cta" href="https://buymeacoffee.com/benzin" target="_blank" rel="noopener" title="Chip in if ProxyDisc saved you some time." style="display:flex;align-items:center;align-self:stretch;gap:13px;padding:0 22px;border:1px solid #ffda5855;background:#ffda580f;text-decoration:none;white-space:nowrap;flex:0 1 auto;min-width:0;overflow:hidden;clip-path:polygon(13px 0,100% 0,100% calc(100% - 13px),calc(100% - 13px) 100%,0 100%,0 13px)">
-          <span style="display:block;font:700 16px/1 'JetBrains Mono',monospace;letter-spacing:.14em;color:#ffda58;overflow:hidden;text-overflow:ellipsis;min-width:0">☕ SUPPORT THE TOOL</span>
-          <span style="display:block;font:700 18px/1 'JetBrains Mono',monospace;color:#ffda58;flex:0 0 auto">↗</span>
+        <a class="support-cta" href="https://buymeacoffee.com/benzin" target="_blank" rel="noopener" title="Chip in if ProxyDisc saved you some time." style="display:flex;align-items:center;align-self:stretch;gap:13px;padding:0 22px;border:1px solid #e8ff4555;background:#e8ff450f;text-decoration:none;white-space:nowrap;flex:0 1 auto;min-width:0;overflow:hidden;clip-path:polygon(13px 0,100% 0,100% calc(100% - 13px),calc(100% - 13px) 100%,0 100%,0 13px)">
+          <span style="display:block;font:700 16px/1 'JetBrains Mono',monospace;letter-spacing:.14em;color:#e8ff45;overflow:hidden;text-overflow:ellipsis;min-width:0">☕ SUPPORT THE TOOL</span>
+          <span style="display:block;font:700 18px/1 'JetBrains Mono',monospace;color:#e8ff45;flex:0 0 auto">↗</span>
         </a>
       </div>
     </div>
 
     <div data-pd="hazard" style="position:relative;height:9px;margin-top:16px;background:repeating-linear-gradient(90deg,#3a4049 0 1px,transparent 1px 60px) left bottom/100% 9px no-repeat,repeating-linear-gradient(90deg,#262a31 0 1px,transparent 1px 12px) left bottom/100% 5px no-repeat,linear-gradient(#262a31,#262a31) left bottom/100% 1px no-repeat">
-      <span data-pd="playhead" style="position:absolute;bottom:0;left:0;width:150px;height:2px;background:#ffda58;box-shadow:0 0 8px rgba(255,218,88,.55);transition:left .45s cubic-bezier(.22,.7,.32,1),width .45s cubic-bezier(.22,.7,.32,1)">
-        <span style="position:absolute;right:-1px;bottom:0;width:2px;height:9px;background:#ffda58;box-shadow:0 0 6px rgba(255,218,88,.7)"></span>
+      <span data-pd="playhead" style="position:absolute;bottom:0;left:0;width:150px;height:2px;background:#e8ff45;box-shadow:0 0 8px rgba(232,255,69,.55);transition:left .45s cubic-bezier(.22,.7,.32,1),width .45s cubic-bezier(.22,.7,.32,1)">
+        <span style="position:absolute;right:-1px;bottom:0;width:2px;height:9px;background:#e8ff45;box-shadow:0 0 6px rgba(232,255,69,.7)"></span>
       </span>
     </div>
     
   </header>
 
-  <nav data-pd="nav" style="max-width:1840px;margin:0 auto;padding:14px 24px 0">
+  <nav data-pd="nav" aria-label="ProxyDisc" style="max-width:1840px;margin:0 auto;padding:14px 24px 0">
     <div data-pd="navrow" style="display:flex;align-items:stretch;gap:2px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid #262a31">
       <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5">
-        <button sc-camel-on-click="{{ t.onClick }}" data-tabon="{{ t.onFlag }}" style="{{ t.style }}">
-          <span>{{ t.label }}</span>
+        <button sc-camel-on-click="{{ t.onClick }}" data-tabon="{{ t.onFlag }}" data-tabid="{{ t.id }}" data-tabkind="{{ t.kind }}" aria-current="{{ t.current }}" title="{{ t.desc }}" style="{{ t.style }}">
+          <span data-m="tlabel">{{ t.label }}</span><span data-m="tshort">{{ t.short }}</span>
           <sc-if value="{{ t.soon }}">
             <span style="font:700 10px/1 'JetBrains Mono',monospace;letter-spacing:.12em;padding:3px 5px;border:1px solid #2e333b;color:#5f656e">SOON</span>
           </sc-if>
         </button>
       </sc-for>
+      <button data-pd="moretab" data-tabid="more" data-actutil="{{ moreActUtil }}" data-actmore="{{ moreActMore }}" aria-haspopup="true" aria-expanded="{{ moreExpanded }}" sc-camel-on-click="{{ onToggleMore }}" style="{{ moreTabStyle }}">
+        <span data-m="tlabel">More</span><span data-m="tshort">More</span>
+      </button>
     </div>
+    <sc-if value="{{ moreOpen }}">
+      <div data-pd="moreback" sc-camel-on-click="{{ onCloseMore }}"></div>
+      <div data-pd="moremenu" aria-label="More pages">
+        <sc-for list="{{ moreItems }}" as="m" hint-placeholder-count="4">
+          <button data-tabkind="{{ m.kind }}" data-tabon="{{ m.onFlag }}" aria-current="{{ m.current }}" sc-camel-on-click="{{ m.onClick }}">
+            <span data-m="mnum">{{ m.n }}</span>
+            <span data-m="mtext"><span data-m="mlabel">{{ m.label }}</span><span data-m="mdesc">{{ m.desc }}</span></span>
+          </button>
+        </sc-for>
+      </div>
+    </sc-if>
+    <div data-pd="tabcaption"><b>{{ tabCaption.n }}</b><span data-m="clabel">{{ tabCaption.label }}</span><span>{{ tabCaption.desc }}</span></div>
   </nav>
 
   <main data-pd="main" data-tourstep="{{ tourStepKey }}" style="max-width:1840px;margin:0 auto;padding:22px 24px 0">
     <sc-if value="{{ showSetupBanner }}">
-      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;padding:12px 16px;background:#131519;border:1px solid #262a31;border-left:3px solid #ffda58">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;padding:12px 16px;background:#131519;border:1px solid #262a31;border-left:3px solid #e8ff45">
         <span style="flex:1 1 260px;min-width:0;font:400 16px/1.45 Barlow,sans-serif;color:#9aa0a8"><strong style="color:#ecefe6;font-weight:600">New here?</strong> Choose the agents you use and how grading works for you. It takes under a minute.</span>
-        <button sc-camel-on-click="{{ onOpenSetup }}" style="background:#ffda58;color:#0b0c0e;border:none;padding:10px 16px;font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;min-height:40px">Set up</button>
+        <button sc-camel-on-click="{{ onOpenSetup }}" style="background:#e8ff45;color:#0b0c0e;border:none;padding:10px 16px;font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;min-height:40px">Set up</button>
         <button sc-camel-on-click="{{ onDismissSetup }}" style="background:none;border:none;color:#8a9099;font:600 12px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;padding:6px 2px;text-decoration:underline">Not now</button>
       </div>
     </sc-if>
@@ -71,7 +86,7 @@
       <div data-pd="cols" style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;animation:paneIn .28s cubic-bezier(.22,.7,.32,1) both">
 
         <div data-pd="formcol" style="flex:1 1 350px;max-width:430px;min-width:300px;position:sticky;top:16px">
-          <div style="background:repeating-linear-gradient(115deg,rgba(255,255,255,.016) 0 2px,transparent 2px 10px),#131519;border:1px solid #262a31;padding:18px;clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px)">
+          <div style="background:radial-gradient(rgba(255,255,255,.045) .9px,transparent 1.3px) 0 0/5px 5px,#131519;border:1px solid #262a31;padding:18px;clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px)">
 
             <div style="display:flex;align-items:center;flex-wrap:wrap;gap:15px;padding-bottom:16px;border-bottom:1px solid #262a31;margin-bottom:16px">
               <div style="{{ previewOuterStyle }}">
@@ -105,9 +120,9 @@
               </div>
               <sc-if value="{{ dupOn }}">
                 <div role="alert" style="flex:1 1 100%;margin-top:8px;padding:11px 12px;background:#221a0a;border:1px solid #6b5420;display:grid;gap:9px">
-                  <div style="font:500 15px/1.4 Barlow,sans-serif;color:#ecefe6">You already saved a disc like this: <strong style="color:#ffda58;font-weight:600">{{ dupLabel }}</strong>. Save another copy?</div>
+                  <div style="font:500 15px/1.4 Barlow,sans-serif;color:#ecefe6">You already saved a disc like this: <strong style="color:#e8ff45;font-weight:600">{{ dupLabel }}</strong>. Save another copy?</div>
                   <div style="display:flex;gap:8px;flex-wrap:wrap">
-                    <button sc-camel-on-click="{{ onDupSave }}" style="background:#ffda58;color:#0b0c0e;border:none;padding:8px 13px;font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;min-height:36px">Save anyway</button>
+                    <button sc-camel-on-click="{{ onDupSave }}" style="background:#e8ff45;color:#0b0c0e;border:none;padding:8px 13px;font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;min-height:36px">Save anyway</button>
                     <button sc-camel-on-click="{{ onDupShow }}" style="background:#171a1f;color:#ecefe6;border:1px solid #2e333b;padding:8px 13px;font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;min-height:36px">Show it</button>
                     <button sc-camel-on-click="{{ onDupCancel }}" style="background:none;border:none;color:#9aa0a8;font:600 12px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;text-decoration:underline;padding:4px">Cancel</button>
                   </div>
@@ -118,15 +133,15 @@
             <div sc-camel-on-drop="{{ onOcrDrop }}" sc-camel-on-drag-over="{{ onOcrDragOver }}" style="margin-bottom:16px">
               <input type="file" accept="image/*" data-pd="ocrfile" sc-camel-on-change="{{ onOcrFile }}" style="display:none">
               <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-                <button sc-camel-on-click="{{ onOcrPick }}" disabled="{{ ocrBusy }}" title="Read a disc from a screenshot of its detail panel. It's read on your device; the image isn't uploaded." style="display:flex;align-items:center;gap:8px;background:#171a1f;color:#ecefe6;border:1px dashed #3a4049;padding:9px 13px;font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;min-height:38px">
-                  <span style="display:block;width:14px;height:11px;border:2px solid #ffda58;border-radius:2px;position:relative;box-sizing:border-box"><span style="position:absolute;left:3px;top:2px;width:4px;height:4px;border-radius:50%;background:#ffda58"></span></span>
+                <button data-pd="ocrbtn" sc-camel-on-click="{{ onOcrPick }}" disabled="{{ ocrBusy }}" title="Read a disc from a screenshot of its detail panel. It's read on your device; the image isn't uploaded." style="display:flex;align-items:center;gap:8px;background:#171a1f;color:#ecefe6;border:1px dashed #3a4049;padding:9px 13px;font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;min-height:38px">
+                  <span style="display:block;width:14px;height:11px;border:2px solid #e8ff45;border-radius:2px;position:relative;box-sizing:border-box"><span style="position:absolute;left:3px;top:2px;width:4px;height:4px;border-radius:50%;background:#e8ff45"></span></span>
                   Import from screenshot
-                  <span title="New and still being tuned. Check the filled-in form against the game." style="font:700 10px/1 'JetBrains Mono',monospace;letter-spacing:.12em;padding:3px 5px;background:#ffda58;color:#0b0c0e">BETA</span>
+                  <span title="New and still being tuned. Check the filled-in form against the game." style="font:700 10px/1 'JetBrains Mono',monospace;letter-spacing:.12em;padding:3px 5px;background:#e8ff45;color:#0b0c0e">BETA</span>
                 </button>
                 <span data-m="pastehint" style="font:400 14px/1.3 Barlow,sans-serif;color:#8a9099">or paste one with Ctrl+V</span>
               </div>
               <sc-if value="{{ ocrBusy }}">
-                <div style="margin-top:9px;font:500 14px/1.4 'JetBrains Mono',monospace;color:#ffda58" data-jokeblink="1">{{ ocrMsg }}</div>
+                <div style="margin-top:9px;font:500 14px/1.4 'JetBrains Mono',monospace;color:#e8ff45" data-jokeblink="1">{{ ocrMsg }}</div>
               </sc-if>
               <sc-if value="{{ ocrHasMsg }}">
                 <div style="{{ ocrBoxStyle }}">
@@ -140,17 +155,17 @@
             </div>
             <label style="display:block;font:700 15px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#8a9099;margin-bottom:7px">Disc set</label>
             <div style="margin-bottom:16px">
-              <button data-tour="set" sc-camel-on-click="{{ onToggleSetPick }}" style="{{ setPickBtnStyle }}">
+              <button data-tour="set" sc-camel-on-click="{{ onToggleSetPick }}" aria-haspopup="listbox" aria-expanded="{{ setPickExpanded }}" style="{{ setPickBtnStyle }}">
                 <sc-if value="{{ hasSetName }}">
                   <span style="position:relative;flex:0 0 32px;width:32px;height:32px;border-radius:50%;overflow:hidden;display:block;background:#171a1f">
                     <image-slot id="{{ setPickIconId }}" src="{{ setPickIconSrc }}" placeholder="" shape="circle" fit="cover" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
                   </span>
                 </sc-if>
                 <span style="{{ setPickLabelStyle }}">{{ setPickLabel }}</span>
-                <span style="color:#ffda58;font-size:11px;flex:0 0 auto">{{ setPickChevron }}</span>
+                <span style="color:#e8ff45;font-size:11px;flex:0 0 auto">{{ setPickChevron }}</span>
               </button>
               <sc-if value="{{ setPickOpen }}">
-                <div style="border:1px solid #ffda58;border-top:none;background:#0b0c0e;padding:10px">
+                <div style="border:1px solid #e8ff45;border-top:none;background:#0b0c0e;padding:10px">
                   <input type="search" data-pd="setsearch" value="{{ setQuery }}" sc-camel-on-change="{{ onSetQuery }}" sc-camel-on-key-down="{{ onSetQueryKey }}" placeholder="Search sets — e.g. fang, metal" style="width:100%;box-sizing:border-box;background:#0f1114;color:#ecefe6;border:1px solid #2e333b;padding:9px 11px;font:500 16px/1.2 Barlow,sans-serif;margin-bottom:9px;outline:none">
                   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:5px;max-height:320px;overflow-y:auto;padding-right:2px">
                     <sc-for list="{{ setPickTiles }}" as="t" hint-placeholder-count="8">
@@ -185,7 +200,7 @@
                 <sc-if value="{{ needsSlotFirst }}"><option value="">— Pick a slot first —</option></sc-if>
                 <sc-for list="{{ mainOptions }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
               </sc-raw-select>
-              <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:#ffda58;font-size:11px">▼</span>
+              <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:#e8ff45;font-size:11px">▼</span>
             </div>
             <sc-if value="{{ mainDemand.has }}">
               <div style="{{ mainDemand.style }}"><span style="{{ mainDemand.dotStyle }}"></span><span>{{ mainDemand.label }}</span></div>
@@ -230,9 +245,9 @@
                     <sc-for list="{{ rollRows }}" as="rr" hint-placeholder-count="4">
                       <div style="display:flex;align-items:center;gap:8px;min-height:36px">
                         <span style="flex:1;min-width:0;font:600 15px/1.2 Barlow,sans-serif;color:#ecefe6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ rr.name }} <span style="font:500 12px/1 'JetBrains Mono',monospace;color:#8a9099">{{ rr.note }}</span></span>
-                        <button sc-camel-on-click="{{ rr.onDec }}" disabled="{{ !rr.canDec }}" style="width:32px;height:32px;background:#171a1f;color:#ecefe6;border:1px solid #2e333b;font:700 16px/1 sans-serif;cursor:pointer">−</button>
+                        <button sc-camel-on-click="{{ rr.onDec }}" disabled="{{ !rr.canDec }}" aria-label="One fewer upgrade on {{ rr.name }}" style="width:32px;height:32px;background:#171a1f;color:#ecefe6;border:1px solid #2e333b;font:700 16px/1 sans-serif;cursor:pointer">−</button>
                         <span style="{{ rr.countStyle }}">{{ rr.count }}</span>
-                        <button sc-camel-on-click="{{ rr.onInc }}" disabled="{{ !rr.canInc }}" style="width:32px;height:32px;background:#171a1f;color:#ecefe6;border:1px solid #2e333b;font:700 16px/1 sans-serif;cursor:pointer">+</button>
+                        <button sc-camel-on-click="{{ rr.onInc }}" disabled="{{ !rr.canInc }}" aria-label="One more upgrade on {{ rr.name }}" style="width:32px;height:32px;background:#171a1f;color:#ecefe6;border:1px solid #2e333b;font:700 16px/1 sans-serif;cursor:pointer">+</button>
                       </div>
                     </sc-for>
                   </div>
@@ -264,7 +279,7 @@
         </div>
 
         <div data-pd="rescol" data-tour="result" style="flex:3 1 460px;min-width:300px">
-          <div style="{{ verdictStyle }}">
+          <div style="{{ verdictStyle }}" aria-live="polite">
             <div style="display:flex;gap:18px;align-items:center">
               <sc-if value="{{ verdictGrade.has }}">
                 <div style="flex:0 0 auto;display:flex;flex-direction:column;align-items:center;padding-right:18px;border-right:1px solid #262a31">
@@ -279,9 +294,12 @@
                   <span style="{{ verdictCrumbStyle }}">{{ verdict.crumb }}</span>
                 </div>
                 <p style="margin:9px 0 0;font:400 17px/1.45 Barlow,sans-serif;color:#ecefe6;text-wrap:pretty;max-width:100ch">{{ verdict.body }}</p>
+                <sc-if value="{{ canShareDisc }}">
+                  <button data-pd="sharedisc" sc-camel-on-click="{{ onShareDisc }}" title="A link that opens this exact disc in ProxyDisc, graded for whoever opens it." style="display:inline-flex;align-items:center;gap:8px;margin-top:12px;background:none;border:1px solid #2e333b;color:#ecefe6;padding:9px 13px;min-height:40px;font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer"><span aria-hidden="true" style="color:#e8ff45">↗</span>{{ shareDiscLabel }}</button>
+                </sc-if>
                 <sc-if value="{{ showTryExample }}">
                   <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:13px">
-                    <button sc-camel-on-click="{{ onStartTour }}" style="background:#ffda58;color:#0b0c0e;border:none;padding:10px 15px;font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;min-height:40px">Try an example disc</button>
+                    <button sc-camel-on-click="{{ onStartTour }}" style="background:#e8ff45;color:#0b0c0e;border:none;padding:10px 15px;font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;min-height:40px">Try an example disc</button>
                     <span style="font:400 15px/1.35 Barlow,sans-serif;color:#9aa0a8">A short walkthrough with a disc filled in for you.</span>
                   </div>
                 </sc-if>
@@ -414,7 +432,7 @@
                         <sc-for list="{{ r.ladder }}" as="p" hint-placeholder-count="4">
                           <div style="flex:1 1 112px;min-width:104px">
                             <div style="{{ p.barStyle }}"></div>
-                            <div style="{{ p.textStyle }}">{{ p.label }}<sc-if value="{{ p.hasNote }}"><span title="{{ p.noteTitle }}" style="color:#ffda58;cursor:help"> *</span></sc-if></div>
+                            <div style="{{ p.textStyle }}">{{ p.label }}<sc-if value="{{ p.hasNote }}"><span title="{{ p.noteTitle }}" style="color:#e8ff45;cursor:help"> *</span></sc-if></div>
                           </div>
                         </sc-for>
                       </div>
@@ -518,7 +536,7 @@
                         <sc-for list="{{ r.ladder }}" as="p" hint-placeholder-count="4">
                           <div style="flex:1 1 112px;min-width:104px">
                             <div style="{{ p.barStyle }}"></div>
-                            <div style="{{ p.textStyle }}">{{ p.label }}<sc-if value="{{ p.hasNote }}"><span title="{{ p.noteTitle }}" style="color:#ffda58;cursor:help"> *</span></sc-if></div>
+                            <div style="{{ p.textStyle }}">{{ p.label }}<sc-if value="{{ p.hasNote }}"><span title="{{ p.noteTitle }}" style="color:#e8ff45;cursor:help"> *</span></sc-if></div>
                           </div>
                         </sc-for>
                       </div>
@@ -544,7 +562,7 @@
     <!-- My discs detail drawer -->
     <sc-if value="{{ mineDrawerOpen }}">
               <div sc-camel-on-click="{{ mineDetail.onClose }}" style="position:fixed;inset:0;z-index:150;background:rgba(5,6,8,.55);animation:fadeIn .2s ease both"></div>
-              <div role="dialog" aria-label="Disc details" style="position:fixed;top:0;right:0;bottom:0;z-index:151;width:min(600px,100vw);overflow-y:auto;overflow-x:hidden;background:repeating-linear-gradient(115deg,rgba(255,255,255,.016) 0 2px,transparent 2px 10px),#131519;border-left:1px solid #2e333b;box-shadow:-24px 0 60px rgba(0,0,0,.5);animation:drawerIn .25s cubic-bezier(.22,.7,.32,1) both">
+              <div role="dialog" aria-label="Disc details" style="position:fixed;top:0;right:0;bottom:0;z-index:151;width:min(600px,100vw);overflow-y:auto;overflow-x:hidden;background:radial-gradient(rgba(255,255,255,.045) .9px,transparent 1.3px) 0 0/5px 5px,#131519;border-left:1px solid #2e333b;box-shadow:-24px 0 60px rgba(0,0,0,.5);animation:drawerIn .25s cubic-bezier(.22,.7,.32,1) both">
             <div style="padding:20px 20px 28px">
               <!-- the disc: same treatment as everywhere else, with its grade and actions -->
               <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:16px">
@@ -564,7 +582,7 @@
                 </div>
               </div>
             <sc-if value="{{ mineDetail.thin }}">
-                <p style="margin:0 0 14px;padding:9px 11px;background:#ffda580a;border:1px solid #ffda5833;font:400 15px/1.4 Barlow,sans-serif;color:#d6c27a;text-wrap:pretty">{{ mineDetail.thinLabel }}</p>
+                <p style="margin:0 0 14px;padding:9px 11px;background:#e8ff450a;border:1px solid #e8ff4533;font:400 15px/1.4 Barlow,sans-serif;color:#d6c27a;text-wrap:pretty">{{ mineDetail.thinLabel }}</p>
               </sc-if>
   
               <!-- who can use it: the same row vocabulary as Scrap or stash's roster table -->
@@ -778,7 +796,7 @@
               </sc-if>
   
               <div style="display:flex;gap:6px;margin-top:16px;padding-top:14px;border-top:1px solid #1e2228">
-                <button sc-camel-on-click="{{ mineDetail.onLevel }}" style="background:#171a1f;color:#ffda58;border:1px solid #ffda5855;padding:9px 12px;font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.08em;cursor:pointer">↑ UPGRADE</button>
+                <button sc-camel-on-click="{{ mineDetail.onLevel }}" style="background:#171a1f;color:#e8ff45;border:1px solid #e8ff4555;padding:9px 12px;font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.08em;cursor:pointer">↑ UPGRADE</button>
                 <button sc-camel-on-click="{{ mineDetail.onDelete }}" style="background:#171a1f;color:#ff8a94;border:1px solid #ff4d5e44;padding:9px 12px;font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.08em;cursor:pointer">DELETE</button>
               </div>
             </div>
@@ -786,7 +804,7 @@
             </sc-if>
     <sc-if value="{{ isSettings }}">
       <div style="animation:paneIn .28s cubic-bezier(.22,.7,.32,1) both;max-width:860px">
-        <div style="background:repeating-linear-gradient(115deg,rgba(255,255,255,.016) 0 2px,transparent 2px 10px),#131519;border:1px solid #262a31;padding:20px;display:grid;gap:20px;clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px)">
+        <div style="background:radial-gradient(rgba(255,255,255,.045) .9px,transparent 1.3px) 0 0/5px 5px,#131519;border:1px solid #262a31;padding:20px;display:grid;gap:20px;clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px)">
           <div>
             <div style="font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#8a9099;margin-bottom:7px">Settings</div>
             <p style="margin:0;font:400 17px/1.5 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">Changes save straight away. To choose which agents you track, use the toggles in Agent index or Loadouts.</p>
@@ -848,9 +866,9 @@
     </sc-if>
     <sc-if value="{{ setupOpen }}">
       <div style="position:fixed;inset:0;z-index:200;background:rgba(5,6,8,.78);display:flex;align-items:center;justify-content:center;padding:18px;animation:paneIn .25s ease both">
-        <div role="dialog" aria-label="Welcome to ProxyDisc" style="width:100%;max-width:720px;max-height:calc(100vh - 36px);display:flex;flex-direction:column;background:repeating-linear-gradient(115deg,rgba(255,255,255,.016) 0 2px,transparent 2px 10px),#131519;border:1px solid #2e333b;clip-path:polygon(18px 0,100% 0,100% calc(100% - 18px),calc(100% - 18px) 100%,0 100%,0 18px)">
+        <div role="dialog" aria-label="Welcome to ProxyDisc" style="width:100%;max-width:720px;max-height:calc(100vh - 36px);display:flex;flex-direction:column;background:radial-gradient(rgba(255,255,255,.045) .9px,transparent 1.3px) 0 0/5px 5px,#131519;border:1px solid #2e333b;clip-path:polygon(18px 0,100% 0,100% calc(100% - 18px),calc(100% - 18px) 100%,0 100%,0 18px)">
           <div style="padding:20px 22px 16px;border-bottom:1px solid #262a31;background:rgba(0,0,0,.28)">
-            <div style="font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#ffda58;margin-bottom:8px">Welcome to ProxyDisc</div>
+            <div style="font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#e8ff45;margin-bottom:8px">Welcome to ProxyDisc</div>
             <div style="font:700 26px/1.1 'Chakra Petch',sans-serif;text-transform:uppercase">Set it up your way</div>
             <p style="margin:8px 0 0;font:400 16px/1.45 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">A few quick choices. You can change all of this later in Settings.</p>
           </div>
@@ -914,20 +932,20 @@
           </div>
           <div style="display:flex;align-items:center;gap:12px;padding:14px 22px;border-top:1px solid #262a31;background:rgba(0,0,0,.28)">
             <span style="font:400 14px/1.35 Barlow,sans-serif;color:#8a9099;flex:1;min-width:0">Settings lives in the menu if you want to change these later.</span>
-            <button sc-camel-on-click="{{ onFinishSetup }}" style="background:#ffda58;color:#0b0c0e;border:none;padding:12px 20px;font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;min-height:44px">Done</button>
+            <button sc-camel-on-click="{{ onFinishSetup }}" style="background:#e8ff45;color:#0b0c0e;border:none;padding:12px 20px;font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;min-height:44px">Done</button>
           </div>
         </div>
       </div>
     </sc-if>
     <sc-if value="{{ isContact }}">
       <div style="animation:paneIn .28s cubic-bezier(.22,.7,.32,1) both;max-width:860px">
-        <div id="contact" style="background:repeating-linear-gradient(115deg,rgba(255,255,255,.016) 0 2px,transparent 2px 10px),#131519;border:1px solid #262a31;padding:18px;margin-bottom:14px;clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px)">
+        <div id="contact" style="background:radial-gradient(rgba(255,255,255,.045) .9px,transparent 1.3px) 0 0/5px 5px,#131519;border:1px solid #262a31;padding:18px;margin-bottom:14px;clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px)">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
             <span style="font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.13em;text-transform:uppercase;color:#8a9099;white-space:nowrap">Contact</span>
             <span style="flex:1;height:1px;background:#262a31"></span>
           </div>
           <p style="margin:0 0 16px;font:400 16px/1.5 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">Questions, corrections to a build, bug reports or suggestions are all welcome by email. Messages are read by the person who maintains ProxyDisc.</p>
-          <p style="margin:0;font:500 17px/1.5 Barlow,sans-serif;color:#ecefe6">Email <a href="mailto:contact@proxydisc.com" style="color:#ffda58">contact@proxydisc.com</a></p>
+          <p style="margin:0;font:500 17px/1.5 Barlow,sans-serif;color:#ecefe6">Email <a href="mailto:contact@proxydisc.com" style="color:#e8ff45">contact@proxydisc.com</a></p>
         </div>
       </div>
     </sc-if>
@@ -944,7 +962,7 @@
           <button sc-camel-on-click="{{ onTogglePatrolPick }}" style="display:flex;align-items:center;gap:10px;width:100%;padding:12px 16px;background:none;border:none;cursor:pointer;text-align:left;color:#ecefe6">
             <span style="font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.13em;text-transform:uppercase;color:#8a9099;white-space:nowrap">Farming for</span>
             <span style="flex:1;min-width:0;font:600 16px/1.2 Barlow,sans-serif">{{ patrolFocusLabel }}</span>
-            <span style="font:700 11px/1 'JetBrains Mono',monospace;color:#ffda58">{{ patrolPickChevron }}</span>
+            <span style="font:700 11px/1 'JetBrains Mono',monospace;color:#e8ff45">{{ patrolPickChevron }}</span>
           </button>
           <sc-if value="{{ patrolPickOpen }}">
             <div style="padding:0 16px 14px;display:grid;gap:10px;border-top:1px solid #1e2228">
@@ -977,7 +995,7 @@
                 <div style="{{ m.cardStyle }}">
                   <div style="display:flex;align-items:center;gap:10px;min-width:0">
                     <span style="flex:1;min-width:0;font:700 21px/1.15 'Chakra Petch',sans-serif;text-transform:uppercase;text-wrap:pretty">{{ m.name }}</span>
-                    <sc-if value="{{ m.best }}"><span style="font:700 11px/1 'JetBrains Mono',monospace;letter-spacing:.1em;padding:5px 7px;background:#ffda58;color:#0b0c0e;white-space:nowrap">FARM THIS</span></sc-if>
+                    <sc-if value="{{ m.best }}"><span style="font:700 11px/1 'JetBrains Mono',monospace;letter-spacing:.1em;padding:5px 7px;background:#e8ff45;color:#0b0c0e;white-space:nowrap">FARM THIS</span></sc-if>
                   </div>
                   <div style="display:flex;gap:8px">
                     <sc-for list="{{ m.enemies }}" as="e" hint-placeholder-count="2">
@@ -1021,7 +1039,7 @@
           <div style="display:grid;gap:10px">
             <p style="margin:0;font:400 15px/1.45 Barlow,sans-serif;color:#9aa0a8;max-width:90ch;text-wrap:pretty">Ranked by how much each set would improve the agents above: their weakest or empty slots count most, and a set they use as a 4pc counts more than a 2pc.</p>
             <sc-if value="{{ patrolNoSets }}">
-              <div style="border:1px dashed #262a31;padding:30px 22px;text-align:center;font:400 16px/1.5 Barlow,sans-serif;color:#9aa0a8">Nothing to farm — every slot is already well geared.</div>
+              <div style="border:1px dashed #262a31;padding:30px 22px;text-align:center;font:400 16px/1.5 Barlow,sans-serif;color:#9aa0a8">Nothing to farm — every slot is already well geared. Take the day off, Proxy.</div>
             </sc-if>
             <sc-if value="{{ patrolHasSets }}">
               <div style="display:grid;gap:1px;background:#1e2228;border:1px solid #1e2228">
@@ -1054,9 +1072,9 @@
       </div>
     </sc-if>
     <sc-if value="{{ tourOn }}">
-      <div data-pd="tourcard" role="dialog" aria-label="Quick tour" style="position:fixed;{{ tourSide }};bottom:18px;z-index:180;width:340px;max-width:calc(100vw - 36px);box-sizing:border-box;background:#131519;border:1px solid #ffda58;box-shadow:0 14px 40px rgba(0,0,0,.6);padding:16px 16px 14px;animation:paneIn .25s ease both;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px)">
+      <div data-pd="tourcard" role="dialog" aria-label="Quick tour" style="position:fixed;{{ tourSide }};bottom:18px;z-index:180;width:340px;max-width:calc(100vw - 36px);box-sizing:border-box;background:#131519;border:1px solid #e8ff45;box-shadow:0 14px 40px rgba(0,0,0,.6);padding:16px 16px 14px;animation:paneIn .25s ease both;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px)">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px">
-          <span style="font:700 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#ffda58">{{ tourCount }}</span>
+          <span style="font:700 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#e8ff45">{{ tourCount }}</span>
           <span style="flex:1"></span>
           <button sc-camel-on-click="{{ onTourSkip }}" style="background:none;border:none;color:#9aa0a8;font:600 12px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;padding:4px 0;text-decoration:underline">Skip tour</button>
         </div>
@@ -1066,100 +1084,100 @@
           <div style="display:flex;gap:5px"><sc-for list="{{ tourDots }}" as="d" hint-placeholder-count="5"><span style="{{ d.style }}"></span></sc-for></div>
           <span style="flex:1"></span>
           <sc-if value="{{ tourHasBack }}"><button sc-camel-on-click="{{ onTourBack }}" style="background:#171a1f;color:#ecefe6;border:1px solid #2e333b;padding:9px 13px;font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;min-height:38px">Back</button></sc-if>
-          <button sc-camel-on-click="{{ onTourNext }}" style="background:#ffda58;color:#0b0c0e;border:none;padding:9px 16px;font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;min-height:38px">{{ tourNextLabel }}</button>
+          <button sc-camel-on-click="{{ onTourNext }}" style="background:#e8ff45;color:#0b0c0e;border:none;padding:9px 16px;font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;min-height:38px">{{ tourNextLabel }}</button>
         </div>
       </div>
     </sc-if>
     <sc-if value="{{ undoOn }}">
-      <div role="status" style="position:fixed;left:50%;bottom:{{ undoBottom }};transform:translateX(-50%);z-index:190;display:flex;align-items:center;gap:14px;max-width:calc(100vw - 36px);box-sizing:border-box;padding:11px 12px 11px 16px;background:#1b1e23;border:1px solid #3a4049;box-shadow:0 12px 32px rgba(0,0,0,.55);animation:paneIn .2s ease both">
+      <div data-pd="undotoast" role="status" style="position:fixed;left:50%;bottom:{{ undoBottom }};transform:translateX(-50%);z-index:190;display:flex;align-items:center;gap:14px;max-width:calc(100vw - 36px);box-sizing:border-box;padding:11px 12px 11px 16px;background:#1b1e23;border:1px solid #3a4049;box-shadow:0 12px 32px rgba(0,0,0,.55);animation:paneIn .2s ease both">
         <span style="font:500 15px/1.3 Barlow,sans-serif;color:#ecefe6;min-width:0">{{ undoLabel }}</span>
-        <button sc-camel-on-click="{{ onUndo }}" style="background:none;border:1px solid #ffda58;color:#ffda58;padding:7px 12px;font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;white-space:nowrap">Undo</button>
+        <button sc-camel-on-click="{{ onUndo }}" style="background:none;border:1px solid #e8ff45;color:#e8ff45;padding:7px 12px;font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;white-space:nowrap">Undo</button>
         <button sc-camel-on-click="{{ onUndoClose }}" aria-label="Dismiss" style="background:none;border:none;color:#8a9099;font:700 16px/1 Arial,sans-serif;cursor:pointer;padding:4px 6px">×</button>
       </div>
     </sc-if>
     <sc-if value="{{ isHelp }}">
       <div style="animation:paneIn .28s cubic-bezier(.22,.7,.32,1) both;max-width:860px">
-        <div style="background:repeating-linear-gradient(115deg,rgba(255,255,255,.016) 0 2px,transparent 2px 10px),#131519;border:1px solid #262a31;padding:18px;margin-bottom:14px;clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px)">
+        <div style="background:radial-gradient(rgba(255,255,255,.045) .9px,transparent 1.3px) 0 0/5px 5px,#131519;border:1px solid #262a31;padding:18px;margin-bottom:14px;clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px)">
           <div style="font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#8a9099;margin-bottom:7px">What this is</div>
           <p style="margin:0;font:400 17px/1.5 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">Describe a drive disc and ProxyDisc tells you which of your agents wants it, and how much. Scrap or stash does that on its own; the other tabs help you keep track of what you own and what each agent is wearing.</p>
         </div>
-        <div style="background:repeating-linear-gradient(115deg,rgba(255,255,255,.016) 0 2px,transparent 2px 10px),#131519;border:1px solid #262a31;padding:18px;margin-bottom:14px">
+        <div style="background:radial-gradient(rgba(255,255,255,.045) .9px,transparent 1.3px) 0 0/5px 5px,#131519;border:1px solid #262a31;padding:18px;margin-bottom:14px">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:2px">
             <span style="font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.13em;text-transform:uppercase;color:#8a9099;white-space:nowrap">The tabs</span>
             <span style="flex:1;height:1px;background:#262a31"></span>
           </div>
           <div style="display:flex;gap:14px;padding:15px 0;border-top:1px solid #1e2228">
-            <span style="flex:0 0 auto;font:700 13px/1.4 'JetBrains Mono',monospace;letter-spacing:.1em;color:#ffda58">01</span>
+            <span style="flex:0 0 auto;font:700 13px/1.4 'JetBrains Mono',monospace;letter-spacing:.1em;color:#e8ff45">01</span>
             <div style="flex:1;min-width:0">
               <div style="font:700 19px/1.2 'Chakra Petch',sans-serif;text-transform:uppercase;margin-bottom:5px">Scrap or stash</div>
               <p style="margin:0;font:400 16px/1.5 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">Describe a disc you just picked up: set, slot, main stat and substats. If it is already levelled, pick its level and enter the rolls it got. You get a KEEP, MAYBE or RECYCLE call, plus every tracked agent who can use it, graded. From there you can save it, equip it or send it to Upgrades.</p>
             </div>
           </div>
           <div style="display:flex;gap:14px;padding:15px 0;border-top:1px solid #1e2228">
-            <span style="flex:0 0 auto;font:700 13px/1.4 'JetBrains Mono',monospace;letter-spacing:.1em;color:#ffda58">02</span>
+            <span style="flex:0 0 auto;font:700 13px/1.4 'JetBrains Mono',monospace;letter-spacing:.1em;color:#e8ff45">02</span>
             <div style="flex:1;min-width:0">
               <div style="font:700 19px/1.2 'Chakra Petch',sans-serif;text-transform:uppercase;margin-bottom:5px">Loadouts</div>
               <p style="margin:0;font:400 16px/1.5 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">Every tracked agent as a card with their six slots and a build score out of 100. Click a card to open the editor: pick a slot, then pick a disc from the bay. Clicking a disc without equipping it compares it with what the agent is wearing in that slot. The build guide shows what the agent wants.</p>
             </div>
           </div>
           <div style="display:flex;gap:14px;padding:15px 0;border-top:1px solid #1e2228">
-            <span style="flex:0 0 auto;font:700 13px/1.4 'JetBrains Mono',monospace;letter-spacing:.1em;color:#ffda58">03</span>
+            <span style="flex:0 0 auto;font:700 13px/1.4 'JetBrains Mono',monospace;letter-spacing:.1em;color:#e8ff45">03</span>
             <div style="flex:1;min-width:0">
               <div style="font:700 19px/1.2 'Chakra Petch',sans-serif;text-transform:uppercase;margin-bottom:5px">My discs</div>
               <p style="margin:0;font:400 16px/1.5 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">Every disc you have saved, as a grid. Click one to see its stats, who can use it, and to delete or upgrade it. Switch to By agent to see which saved discs fit each agent.</p>
             </div>
           </div>
           <div style="display:flex;gap:14px;padding:15px 0;border-top:1px solid #1e2228">
-            <span style="flex:0 0 auto;font:700 13px/1.4 'JetBrains Mono',monospace;letter-spacing:.1em;color:#ffda58">04</span>
+            <span style="flex:0 0 auto;font:700 13px/1.4 'JetBrains Mono',monospace;letter-spacing:.1em;color:#e8ff45">04</span>
             <div style="flex:1;min-width:0">
               <div style="font:700 19px/1.2 'Chakra Petch',sans-serif;text-transform:uppercase;margin-bottom:5px">Upgrades</div>
               <p style="margin:0;font:400 16px/1.5 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">Pick a saved disc and record each roll as the game gives it to you. The grade updates as you go, and a floor and ceiling show the best and worst it can still finish at, so you know when to stop spending on it.</p>
             </div>
           </div>
           <div style="display:flex;gap:14px;padding:15px 0;border-top:1px solid #1e2228">
-            <span style="flex:0 0 auto;font:700 13px/1.4 'JetBrains Mono',monospace;letter-spacing:.1em;color:#ffda58">05</span>
+            <span style="flex:0 0 auto;font:700 13px/1.4 'JetBrains Mono',monospace;letter-spacing:.1em;color:#e8ff45">05</span>
             <div style="flex:1;min-width:0">
               <div style="font:700 19px/1.2 'Chakra Petch',sans-serif;text-transform:uppercase;margin-bottom:5px">Agent index</div>
               <p style="margin:0;font:400 16px/1.5 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">Every agent's build: their 4pc set, acceptable 2pc sets, the main stat they want in each slot, and their substat priority. Agents with more than one build have tabs to switch between. This is also where you choose which agents you track.</p>
             </div>
           </div>
           <div style="display:flex;gap:14px;padding:15px 0;border-top:1px solid #1e2228">
-            <span style="flex:0 0 auto;font:700 13px/1.4 'JetBrains Mono',monospace;letter-spacing:.1em;color:#ffda58">06</span>
+            <span style="flex:0 0 auto;font:700 13px/1.4 'JetBrains Mono',monospace;letter-spacing:.1em;color:#e8ff45">06</span>
             <div style="flex:1;min-width:0">
               <div style="font:700 19px/1.2 'Chakra Petch',sans-serif;text-transform:uppercase;margin-bottom:5px">Area patrol</div>
               <p style="margin:0;font:400 16px/1.5 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">Shows where to farm next. Cleanup missions are ranked by how much their two disc sets would improve the agents you pick, and Best sets ranks every set on its own. Weak and empty slots count most.</p>
             </div>
           </div>
           <div style="display:flex;gap:14px;padding:15px 0;border-top:1px solid #1e2228">
-            <span style="flex:0 0 auto;font:700 13px/1.4 'JetBrains Mono',monospace;letter-spacing:.1em;color:#ffda58">07</span>
+            <span style="flex:0 0 auto;font:700 13px/1.4 'JetBrains Mono',monospace;letter-spacing:.1em;color:#e8ff45">07</span>
             <div style="flex:1;min-width:0">
               <div style="font:700 19px/1.2 'Chakra Petch',sans-serif;text-transform:uppercase;margin-bottom:5px">Backup</div>
               <p style="margin:0;font:400 16px/1.5 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">Copy a code or download a file so your data survives a cleared browser and can move to another device.</p>
             </div>
           </div>
           <div style="display:flex;gap:14px;padding:15px 0;border-top:1px solid #1e2228">
-            <span style="flex:0 0 auto;font:700 13px/1.4 'JetBrains Mono',monospace;letter-spacing:.1em;color:#ffda58">08</span>
+            <span style="flex:0 0 auto;font:700 13px/1.4 'JetBrains Mono',monospace;letter-spacing:.1em;color:#e8ff45">08</span>
             <div style="flex:1;min-width:0">
               <div style="font:700 19px/1.2 'Chakra Petch',sans-serif;text-transform:uppercase;margin-bottom:5px">Help</div>
               <p style="margin:0;font:400 16px/1.5 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">This page.</p>
             </div>
           </div>
           <div style="display:flex;gap:14px;padding:15px 0;border-top:1px solid #1e2228">
-            <span style="flex:0 0 auto;font:700 13px/1.4 'JetBrains Mono',monospace;letter-spacing:.1em;color:#ffda58">09</span>
+            <span style="flex:0 0 auto;font:700 13px/1.4 'JetBrains Mono',monospace;letter-spacing:.1em;color:#e8ff45">09</span>
             <div style="flex:1;min-width:0">
               <div style="font:700 19px/1.2 'Chakra Petch',sans-serif;text-transform:uppercase;margin-bottom:5px">Contact</div>
               <p style="margin:0;font:400 16px/1.5 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">Email a question, a build correction, a bug report or a suggestion to contact@proxydisc.com.</p>
             </div>
           </div>
           <div style="display:flex;gap:14px;padding:15px 0;border-top:1px solid #1e2228">
-            <span style="flex:0 0 auto;font:700 13px/1.4 'JetBrains Mono',monospace;letter-spacing:.1em;color:#ffda58">10</span>
+            <span style="flex:0 0 auto;font:700 13px/1.4 'JetBrains Mono',monospace;letter-spacing:.1em;color:#e8ff45">10</span>
             <div style="flex:1;min-width:0">
               <div style="font:700 19px/1.2 'Chakra Petch',sans-serif;text-transform:uppercase;margin-bottom:5px">Settings</div>
               <p style="margin:0;font:400 16px/1.5 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">Agent pictures, how much of the background art to show, and which builds, 2pc sets and main stats count when grading. You can also run the first-time setup again here.</p>
             </div>
           </div>
         </div>
-        <div style="background:repeating-linear-gradient(115deg,rgba(255,255,255,.016) 0 2px,transparent 2px 10px),#131519;border:1px solid #262a31;padding:18px;margin-bottom:14px">
+        <div style="background:radial-gradient(rgba(255,255,255,.045) .9px,transparent 1.3px) 0 0/5px 5px,#131519;border:1px solid #262a31;padding:18px;margin-bottom:14px">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:2px">
             <span style="font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.13em;text-transform:uppercase;color:#8a9099;white-space:nowrap">Worth knowing</span>
             <span style="flex:1;height:1px;background:#262a31"></span>
@@ -1172,7 +1190,7 @@
             <div style="font:700 15px/1.3 'Chakra Petch',sans-serif;text-transform:uppercase;margin-bottom:5px">Grades run S to F</div>
             <p style="margin:0;font:400 16px/1.5 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">A grade is always measured against one agent's build, so the same disc can be an S for one agent and an F for another. It weighs the main stat, how many of the agent's substats it has, and how high each one sits on their list. The number next to a grade is the score behind it, out of 100, so two discs with the same letter can still be told apart.</p>
             <div style="display:grid;gap:1px;margin-top:12px">
-              <div style="display:flex;align-items:center;gap:12px;background:#0f1114;padding:9px 12px"><span style="width:52px;flex:0 0 52px;font:800 18px/1 'Chakra Petch',sans-serif"><span style="color:#ffda58">S</span> <span style="color:#b98cff">A</span></span><span style="font:400 15px/1.4 Barlow,sans-serif;color:#ecefe6">Excellent. Rare, and close to the best a disc can be.</span></div>
+              <div style="display:flex;align-items:center;gap:12px;background:#0f1114;padding:9px 12px"><span style="width:52px;flex:0 0 52px;font:800 18px/1 'Chakra Petch',sans-serif"><span style="color:#e8ff45">S</span> <span style="color:#b98cff">A</span></span><span style="font:400 15px/1.4 Barlow,sans-serif;color:#ecefe6">Excellent. Rare, and close to the best a disc can be.</span></div>
               <div style="display:flex;align-items:center;gap:12px;background:#0f1114;padding:9px 12px"><span style="width:52px;flex:0 0 52px;font:800 18px/1 'Chakra Petch',sans-serif;color:#6cc6ff">B</span><span style="font:400 15px/1.4 Barlow,sans-serif;color:#ecefe6">Good. Worth using and keeping.</span></div>
               <div style="display:flex;align-items:center;gap:12px;background:#0f1114;padding:9px 12px"><span style="width:52px;flex:0 0 52px;font:800 18px/1 'Chakra Petch',sans-serif;color:#4ade80">C</span><span style="font:400 15px/1.4 Barlow,sans-serif;color:#ecefe6">Usable. Fine to wear until you find something better.</span></div>
               <div style="display:flex;align-items:center;gap:12px;background:#0f1114;padding:9px 12px"><span style="width:52px;flex:0 0 52px;font:800 18px/1 'Chakra Petch',sans-serif"><span style="color:#8a9099">D</span> <span style="color:#ff4d5e">F</span></span><span style="font:400 15px/1.4 Barlow,sans-serif;color:#ecefe6">Weak for this agent. Worth replacing, or better on someone else.</span></div>
@@ -1226,6 +1244,26 @@
           </div>
         </div>
 
+        <div data-pd="keepsafe" style="background:#131519;border:1px solid #262a31;padding:18px;margin-bottom:14px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:9px">
+            <span style="font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.13em;text-transform:uppercase;color:#8a9099;white-space:nowrap">Keep it safe</span>
+            <span style="flex:1;height:1px;background:#262a31"></span>
+            <span style="font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:{{ storageColor }};white-space:nowrap">{{ storageLabel }}</span>
+          </div>
+          <p style="margin:0 0 12px;font:400 16px/1.45 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">Browsers can clear a site's saved data when the device runs low on space. ProxyDisc asks to be exempt the first time you save a disc; installing it as an app makes that much more likely to stick.</p>
+          <sc-if value="{{ showSafariNote }}">
+            <p style="margin:0 0 12px;padding:10px 12px;border-left:3px solid #ffa02e;background:#0f1114;font:400 16px/1.45 Barlow,sans-serif;color:#ecefe6;text-wrap:pretty"><strong style="font-weight:600">On Safari, saved data is deleted after 7 days without a visit.</strong> Add ProxyDisc to your Home Screen (Share, then Add to Home Screen) and it stays. Either way, save a backup now and then.</p>
+          </sc-if>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <sc-if value="{{ canInstall }}">
+              <button sc-camel-on-click="{{ onInstallApp }}" style="background:#e8ff45;color:#0b0c0e;border:none;padding:12px 16px;font:700 14px/1 'JetBrains Mono',monospace;letter-spacing:.1em;cursor:pointer;min-height:44px">INSTALL AS APP</button>
+            </sc-if>
+            <sc-if value="{{ storageCanAsk }}">
+              <button sc-camel-on-click="{{ onPersistStorage }}" style="background:#171a1f;color:#ecefe6;border:1px solid #2e333b;padding:12px 16px;font:700 14px/1 'JetBrains Mono',monospace;letter-spacing:.1em;cursor:pointer;min-height:44px">ASK THE BROWSER TO KEEP IT</button>
+            </sc-if>
+          </div>
+        </div>
+
         <div style="background:#131519;border:1px solid #262a31;padding:18px;margin-bottom:14px">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:9px">
             <span style="font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.13em;text-transform:uppercase;color:#8a9099;white-space:nowrap">Save a backup</span>
@@ -1233,7 +1271,7 @@
           </div>
           <p style="margin:0 0 14px;font:400 16px/1.45 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">A <strong style="color:#ecefe6;font-weight:600">code</strong> is one line of text — good for moving between your phone and desktop through any chat or notes app. A <strong style="color:#ecefe6;font-weight:600">file</strong> is plain readable JSON, better for keeping somewhere safe.</p>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button sc-camel-on-click="{{ onCopyBackup }}" style="background:#ffda58;color:#0b0c0e;border:none;padding:12px 16px;font:700 14px/1 'JetBrains Mono',monospace;letter-spacing:.1em;cursor:pointer;min-height:44px">COPY BACKUP CODE</button>
+            <button sc-camel-on-click="{{ onCopyBackup }}" style="background:#e8ff45;color:#0b0c0e;border:none;padding:12px 16px;font:700 14px/1 'JetBrains Mono',monospace;letter-spacing:.1em;cursor:pointer;min-height:44px">COPY BACKUP CODE</button>
             <button sc-camel-on-click="{{ onDownloadBackup }}" style="background:#171a1f;color:#ecefe6;border:1px solid #2e333b;padding:12px 16px;font:700 14px/1 'JetBrains Mono',monospace;letter-spacing:.1em;cursor:pointer;min-height:44px">DOWNLOAD FILE</button>
           </div>
           <sc-if value="{{ hasBkCode }}">
@@ -1272,7 +1310,7 @@
           <sc-if value="{{ wipeArmed }}">
             <p style="margin:0 0 10px;font:400 16px/1.45 Barlow,sans-serif;color:#ecefe6">Type <strong style="color:#ff4d5e;font-weight:700">DELETE</strong> to confirm.</p>
             <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-              <input type="text" value="{{ wipeConfirm }}" sc-camel-on-change="{{ onWipeInput }}" sc-camel-on-input="{{ onWipeInput }}" placeholder="DELETE" style="width:160px;background:#0f1114;color:#ecefe6;border:1px solid #2e333b;padding:11px;font:700 15px/1.2 'JetBrains Mono',monospace;letter-spacing:.1em">
+              <input type="text" value="{{ wipeConfirm }}" sc-camel-on-change="{{ onWipeInput }}" sc-camel-on-input="{{ onWipeInput }}" placeholder="DELETE" style="width:160px;background:#0f1114;color:#ecefe6;border:1px solid #2e333b;padding:11px;font:700 16px/1.2 'JetBrains Mono',monospace;letter-spacing:.1em">
               <button sc-camel-on-click="{{ onWipeAll }}" disabled="{{ !wipeReady }}" style="{{ wipeBtnStyle }}">ERASE IT ALL</button>
               <button sc-camel-on-click="{{ onCancelWipe }}" style="background:none;border:none;color:#8a9099;font:500 14px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;padding:0;text-decoration:underline">Cancel</button>
             </div>
@@ -1285,7 +1323,7 @@
       <div style="animation:paneIn .28s cubic-bezier(.22,.7,.32,1) both">
         <!-- browse toolbar: the same two-row control as the Agent index -->
         <sc-if value="{{ !focusOn }}">
-        <div style="background:repeating-linear-gradient(115deg,rgba(255,255,255,.016) 0 2px,transparent 2px 10px),#131519;border:1px solid #262a31;margin-bottom:18px;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px)">
+        <div style="background:radial-gradient(rgba(255,255,255,.045) .9px,transparent 1.3px) 0 0/5px 5px,#131519;border:1px solid #262a31;margin-bottom:18px;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px)">
           <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 14px">
             <div style="position:relative;flex:1 1 260px;max-width:440px;min-width:200px">
               <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:#5f656e;font:700 15px/1 'JetBrains Mono',monospace">⌕</span>
@@ -1336,7 +1374,7 @@
                   <span style="display:flex;align-items:center;gap:7px;padding:6px 9px;background:#0f1114;border:1px solid #1e2228;font:500 13px/1.2 Barlow,sans-serif;color:#ecefe6"><span>{{ it.label }}</span><span style="{{ it.gradeStyle }}">{{ it.grade }}</span></span>
                 </sc-for>
                 <span style="flex:1"></span>
-                <button sc-camel-on-click="{{ onAutoApply }}" style="background:#ffda58;color:#0b0c0e;border:none;padding:8px 14px;font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.1em;cursor:pointer">APPLY</button>
+                <button sc-camel-on-click="{{ onAutoApply }}" style="background:#e8ff45;color:#0b0c0e;border:none;padding:8px 14px;font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.1em;cursor:pointer">APPLY</button>
                 <button sc-camel-on-click="{{ onAutoCancel }}" style="background:none;border:none;color:#8a9099;font:500 13px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;padding:0;text-decoration:underline">Cancel</button>
               </div>
             </sc-if>
@@ -1349,7 +1387,7 @@
                   <option value="">All sets</option>
                   <sc-for list="{{ discSetOptions }}" as="o" hint-placeholder-count="3"><option value="{{ o }}">{{ o }}</option></sc-for>
                 </sc-raw-select>
-                <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);pointer-events:none;color:#ffda58;font-size:11px">▼</span>
+                <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);pointer-events:none;color:#e8ff45;font-size:11px">▼</span>
               </div>
             </div>
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
@@ -1392,8 +1430,8 @@
 
         <sc-if value="{{ noDiscs }}">
           <div style="border:1px dashed #262a31;padding:44px 24px;text-align:center">
-            <div style="font:700 21px/1.3 'Chakra Petch',sans-serif;text-transform:uppercase;color:#4d535c;margin-bottom:7px">Nothing saved yet</div>
-            <p style="margin:0;font:400 17px/1.5 Barlow,sans-serif;color:#9aa0a8;max-width:52ch;margin-left:auto;margin-right:auto">Describe a disc on <strong style="color:#ffda58;font-weight:600">Scrap or stash</strong> and hit Save to Loadouts. Everything you keep here gets re-sorted by whoever on your roster could actually use it.</p>
+            <div style="font:700 21px/1.3 'Chakra Petch',sans-serif;text-transform:uppercase;color:#4d535c;margin-bottom:7px">Disc bag's empty, Proxy</div>
+            <p style="margin:0;font:400 17px/1.5 Barlow,sans-serif;color:#9aa0a8;max-width:52ch;margin-left:auto;margin-right:auto">Describe a disc on <strong style="color:#e8ff45;font-weight:600">Scrap or stash</strong> and hit Save to Loadouts. Everything you keep here gets re-sorted by whoever on your roster could actually use it.</p>
           </div>
         </sc-if>
 
@@ -1432,7 +1470,7 @@
                         <sc-if value="{{ g.noAffinity }}"><span>· NO AFFINITY</span></sc-if>
                       </div>
                       <div style="display:flex;align-items:center;gap:8px">
-                        <button data-pd="switch" sc-camel-on-click="{{ g.rosterStopClick }}" aria-label="Toggle tracked status" style="position:relative;width:34px;height:18px;border-radius:9px;border:1px solid #2e333b;background:{{ g.rosterToggle.trackColor }};cursor:pointer;padding:0;flex:0 0 34px">
+                        <button data-pd="switch" role="switch" aria-checked="{{ g.rosterToggle.checked }}" sc-camel-on-click="{{ g.rosterStopClick }}" aria-label="Track this agent" style="position:relative;width:34px;height:18px;border-radius:9px;border:1px solid #2e333b;background:{{ g.rosterToggle.trackColor }};cursor:pointer;padding:0;flex:0 0 34px">
                           <span style="position:absolute;top:1px;left:{{ g.rosterToggle.thumbLeft }};width:14px;height:14px;border-radius:50%;background:#0b0c0e;transition:left .15s ease"></span>
                         </button>
                         <span style="{{ g.rosterStyle }}">{{ g.rosterLabel }}</span>
@@ -1623,7 +1661,7 @@
                         <span style="{{ d.thumbPieceStyle }}">{{ d.thumbPiece }}</span>
                       </sc-if>
                       <sc-if value="{{ d.hasThumbOwner }}">
-                        <span style="position:absolute;top:4px;right:4px;width:26px;height:26px;border-radius:50%;overflow:hidden;display:block;border:2px solid #ffda58;background:#0f1114">
+                        <span style="position:absolute;top:4px;right:4px;width:26px;height:26px;border-radius:50%;overflow:hidden;display:block;border:2px solid #e8ff45;background:#0f1114">
                           <image-slot id="{{ d.thumbOwnerId }}" src="{{ d.thumbOwnerSrc }}" placeholder="" shape="circle" fit="cover" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
                         </span>
                       </sc-if>
@@ -1645,8 +1683,8 @@
             <sc-if value="{{ guide.has }}">
               <div style="margin-top:12px;background:#131519;border:1px solid #262a31;padding:14px;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px)">
                 <button sc-camel-on-click="{{ onToggleGuide }}" title="What {{ focusName }} wants: sets, main stats and substats." style="display:flex;align-items:center;gap:9px;width:100%;background:none;border:none;padding:0;cursor:pointer;text-align:left">
-                  <span style="font:700 12px/1 'JetBrains Mono',monospace;color:#ffda58;width:10px">{{ guideChevron }}</span>
-                  <span style="font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.13em;text-transform:uppercase;color:#ffda58;white-space:nowrap">Build guide</span>
+                  <span style="font:700 12px/1 'JetBrains Mono',monospace;color:#e8ff45;width:10px">{{ guideChevron }}</span>
+                  <span style="font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.13em;text-transform:uppercase;color:#e8ff45;white-space:nowrap">Build guide</span>
                   <span style="font:500 12px/1 'JetBrains Mono',monospace;color:#8a9099;white-space:nowrap">· {{ focusName }}</span>
                   <span style="flex:1;height:1px;background:#262a31"></span>
                   <span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#8a9099;text-decoration:underline;white-space:nowrap">{{ guideToggleLabel }}</span>
@@ -1714,7 +1752,7 @@
                   <div data-pd="subcol" style="flex:1 1 84px;min-width:78px">
                     <div style="{{ p.barStyle }}"></div>
                     <div style="height:48px;overflow:hidden">
-                      <span style="{{ p.textStyle }}">{{ p.name }}<sc-if value="{{ p.hasNote }}"><span title="{{ p.noteTitle }}" style="color:#ffda58;cursor:help"> *</span></sc-if></span>
+                      <span style="{{ p.textStyle }}">{{ p.name }}<sc-if value="{{ p.hasNote }}"><span title="{{ p.noteTitle }}" style="color:#e8ff45;cursor:help"> *</span></sc-if></span>
                     </div>
                   </div>
                 </sc-for>
@@ -1732,7 +1770,7 @@
             <sc-if value="{{ bayAddOn }}">
               <div style="display:grid;gap:14px">
                 <div style="display:flex;align-items:center;gap:10px">
-                  <span style="font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.13em;text-transform:uppercase;color:#ffda58;white-space:nowrap">New disc</span>
+                  <span style="font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.13em;text-transform:uppercase;color:#e8ff45;white-space:nowrap">New disc</span>
                   <span style="flex:1;height:1px;background:#262a31"></span>
                   <button sc-camel-on-click="{{ onAddCancel }}" style="background:none;border:none;color:#8a9099;font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;padding:0;text-decoration:underline">Cancel</button>
                 </div>
@@ -1743,7 +1781,7 @@
                       <option value="">— Choose a set —</option>
                       <sc-for list="{{ setOptions }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
                     </sc-raw-select>
-                    <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);pointer-events:none;color:#ffda58;font-size:10px">▼</span>
+                    <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);pointer-events:none;color:#e8ff45;font-size:10px">▼</span>
                   </div>
                 </div>
                 <div>
@@ -1761,7 +1799,7 @@
                       <sc-raw-select value="{{ addMain }}" sc-camel-on-change="{{ onAddMain }}" disabled="{{ addMainFixed }}" style="{{ addMainStyle }}">
                         <sc-for list="{{ addMainOptions }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
                       </sc-raw-select>
-                      <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);pointer-events:none;color:#ffda58;font-size:10px">▼</span>
+                      <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);pointer-events:none;color:#e8ff45;font-size:10px">▼</span>
                     </div>
                   </div>
                   <div>
@@ -1845,7 +1883,7 @@
                           </span>
                           <span style="min-width:0;font:500 12px/1.3 'JetBrains Mono',monospace;color:#8a9099;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Worn: {{ sel.cmpCurName }}</span>
                         </span>
-                        <span style="width:52px;flex:0 0 52px;text-align:center;font:700 10px/1 'JetBrains Mono',monospace;letter-spacing:.12em;color:#ffda58">THIS</span>
+                        <span style="width:52px;flex:0 0 52px;text-align:center;font:700 10px/1 'JetBrains Mono',monospace;letter-spacing:.12em;color:#e8ff45">THIS</span>
                         <span style="width:52px;flex:0 0 52px;text-align:center;font:700 10px/1 'JetBrains Mono',monospace;letter-spacing:.12em;color:#8a9099">WORN</span>
                       </div>
                       <div style="display:grid;gap:1px">
@@ -1943,7 +1981,7 @@
                   <option value="">All sets</option>
                   <sc-for list="{{ discSetOptions }}" as="o" hint-placeholder-count="3"><option value="{{ o }}">{{ o }}</option></sc-for>
                 </sc-raw-select>
-                <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);pointer-events:none;color:#ffda58;font-size:11px">▼</span>
+                <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);pointer-events:none;color:#e8ff45;font-size:11px">▼</span>
               </div>
             </div>
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
@@ -1963,7 +2001,7 @@
                   <option value="level">Highest level</option>
                   <option value="set">Set A–Z</option>
                 </sc-raw-select>
-                <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);pointer-events:none;color:#ffda58;font-size:11px">▼</span>
+                <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);pointer-events:none;color:#e8ff45;font-size:11px">▼</span>
               </div>
             </div>
             <div sc-camel-on-click="{{ onMineUneq }}" title="Only discs that aren't on an agent — what's free to assign." style="display:flex;align-items:center;gap:9px;padding:7px 11px;background:#0f1114;border:1px solid #1e2228;cursor:pointer;user-select:none">
@@ -1991,14 +2029,14 @@
         </div>
         <sc-if value="{{ noDiscs }}">
           <div style="border:1px dashed #262a31;padding:44px 24px;text-align:center">
-            <div style="font:700 21px/1.3 'Chakra Petch',sans-serif;text-transform:uppercase;color:#4d535c;margin-bottom:7px">Nothing saved yet</div>
-            <p style="margin:0 auto;max-width:52ch;font:400 17px/1.5 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">Describe a disc on <strong style="color:#ffda58;font-weight:600">Scrap or stash</strong> and hit Save to Loadouts. Everything you keep shows up here, and gets sorted onto your agents over in <strong style="color:#ffda58;font-weight:600">Loadouts</strong>.</p>
+            <div style="font:700 21px/1.3 'Chakra Petch',sans-serif;text-transform:uppercase;color:#4d535c;margin-bottom:7px">Disc bag's empty, Proxy</div>
+            <p style="margin:0 auto;max-width:52ch;font:400 17px/1.5 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">Describe a disc on <strong style="color:#e8ff45;font-weight:600">Scrap or stash</strong> and hit Save to Loadouts. Everything you keep shows up here, and gets sorted onto your agents over in <strong style="color:#e8ff45;font-weight:600">Loadouts</strong>.</p>
           </div>
         </sc-if>
         <sc-if value="{{ mineShowNoMatch }}">
           <div style="padding:22px 24px;border:1px dashed #262a31;text-align:center">
             <p style="margin:0 0 11px;font:400 17px/1.5 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">{{ mineEmptyLabel }}</p>
-            <button sc-camel-on-click="{{ onClearDiscFilters }}" style="background:none;border:none;color:#ffda58;font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;padding:0;text-decoration:underline">Clear filters</button>
+            <button sc-camel-on-click="{{ onClearDiscFilters }}" style="background:none;border:none;color:#e8ff45;font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;padding:0;text-decoration:underline">Clear filters</button>
           </div>
         </sc-if>
         <sc-if value="{{ byDisc }}">
@@ -2017,12 +2055,12 @@
                       <span style="{{ d.tileHole }}"></span>
                     </span>
                     <sc-if value="{{ d.rowOwned }}">
-                      <span title="{{ d.rowOwnerTitle }}" style="position:absolute;bottom:-2px;right:-2px;width:30px;height:30px;border-radius:50%;overflow:hidden;display:block;border:2px solid #ffda58;background:#0f1114;z-index:2">
+                      <span title="{{ d.rowOwnerTitle }}" style="position:absolute;bottom:-2px;right:-2px;width:30px;height:30px;border-radius:50%;overflow:hidden;display:block;border:2px solid #e8ff45;background:#0f1114;z-index:2">
                         <image-slot id="{{ d.thumbOwnerId }}" src="{{ d.thumbOwnerSrc }}" placeholder="" shape="circle" fit="cover" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
                       </span>
                     </sc-if>
                     <sc-if value="{{ d.isFav }}">
-                      <span title="Favourite" style="position:absolute;top:-4px;left:-4px;font:400 17px/1 Barlow,sans-serif;color:#ffda58;z-index:2">★</span>
+                      <span title="Favourite" style="position:absolute;top:-4px;left:-4px;font:400 17px/1 Barlow,sans-serif;color:#e8ff45;z-index:2">★</span>
                     </sc-if>
                   </span>
                   <span style="display:block;width:100%;min-width:0">
@@ -2086,7 +2124,7 @@
                       <span style="flex:1;min-width:0;display:block">
                         <span style="display:flex;align-items:center;gap:6px;min-width:0">
                           <span style="font:700 14px/1.15 'Chakra Petch',sans-serif;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.setName }}</span>
-                          <sc-if value="{{ r.fav }}"><span style="font:400 12px/1 Barlow,sans-serif;color:#ffda58;flex:0 0 auto">★</span></sc-if>
+                          <sc-if value="{{ r.fav }}"><span style="font:400 12px/1 Barlow,sans-serif;color:#e8ff45;flex:0 0 auto">★</span></sc-if>
                         </span>
                         <span style="{{ r.buildStyle }}">{{ r.slotLabel }} · {{ r.buildLabel }}</span>
                       </span>
@@ -2109,7 +2147,7 @@
 
     <sc-if value="{{ isAgents }}">
       <div style="animation:paneIn .28s cubic-bezier(.22,.7,.32,1) both">
-        <div style="background:repeating-linear-gradient(115deg,rgba(255,255,255,.016) 0 2px,transparent 2px 10px),#131519;border:1px solid #262a31;margin-bottom:18px;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px)">
+        <div style="background:radial-gradient(rgba(255,255,255,.045) .9px,transparent 1.3px) 0 0/5px 5px,#131519;border:1px solid #262a31;margin-bottom:18px;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px)">
           <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 14px">
             <div style="position:relative;flex:1 1 260px;max-width:440px;min-width:200px">
               <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:#5f656e;font:700 15px/1 'JetBrains Mono',monospace">⌕</span>
@@ -2134,7 +2172,7 @@
 
         <div data-pd="agentgrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(500px,1fr));gap:20px">
           <sc-for list="{{ agentCards }}" as="a" hint-placeholder-count="6">
-            <div data-agent-card="1" style="position:relative;background:radial-gradient(120% 78% at 50% 64%,rgba(255,255,255,.05),rgba(255,255,255,0) 62%),repeating-linear-gradient(115deg,rgba(255,255,255,.016) 0 2px,transparent 2px 10px),#131519;border:1px solid #262a31;padding:16px;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px)">
+            <div data-agent-card="1" style="position:relative;background:radial-gradient(120% 78% at 50% 64%,rgba(255,255,255,.05),rgba(255,255,255,0) 62%),radial-gradient(rgba(255,255,255,.045) .9px,transparent 1.3px) 0 0/5px 5px,#131519;border:1px solid #262a31;padding:16px;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px)">
               <div data-cardcontent="1" data-cardignored="{{ a.cardIgnoredFlag }}">
               <div data-heroband="1" data-artname="{{ a.artName }}" style="position:relative;overflow:hidden;margin:-16px -16px 14px;padding:16px;min-height:152px;box-sizing:border-box;display:flex;align-items:center;border-bottom:1px solid #262a31">
                 <div data-heroart="base" data-hashover="{{ a.heroHasHover }}" style="{{ a.heroArtStyle }}"></div>
@@ -2153,7 +2191,7 @@
                     <span style="font:700 23px/1.1 'Chakra Petch',sans-serif;text-transform:uppercase">{{ a.name }}</span>
                     <span style="{{ a.rankIconStyle }}"></span>
                     <sc-if value="{{ a.isNew }}">
-                      <span title="Newest agent" style="font:700 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;color:#0b0c0e;background:#ffda58;padding:4px 6px 3px;clip-path:polygon(4px 0,100% 0,100% calc(100% - 4px),calc(100% - 4px) 100%,0 100%,0 4px)">NEW</span>
+                      <span title="Newest agent" style="font:700 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;color:#0b0c0e;background:#e8ff45;padding:4px 6px 3px;clip-path:polygon(4px 0,100% 0,100% calc(100% - 4px),calc(100% - 4px) 100%,0 100%,0 4px)">NEW</span>
                     </sc-if>
                   </div>
                   <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;font:400 15px/1.4 'JetBrains Mono',monospace;letter-spacing:.08em;color:#8a9099">
@@ -2164,7 +2202,7 @@
                     <sc-if value="{{ a.noAffinity }}"><span>· NO AFFINITY</span></sc-if>
                   </div>
                   <div style="display:flex;align-items:center;gap:8px">
-                    <button data-pd="switch" sc-camel-on-click="{{ a.rosterToggle.onClick }}" aria-label="Toggle tracked status" style="position:relative;width:34px;height:18px;border-radius:9px;border:1px solid #2e333b;background:{{ a.rosterToggle.trackColor }};cursor:pointer;padding:0;flex:0 0 34px">
+                    <button data-pd="switch" role="switch" aria-checked="{{ a.rosterToggle.checked }}" sc-camel-on-click="{{ a.rosterToggle.onClick }}" aria-label="Track this agent" style="position:relative;width:34px;height:18px;border-radius:9px;border:1px solid #2e333b;background:{{ a.rosterToggle.trackColor }};cursor:pointer;padding:0;flex:0 0 34px">
                       <span style="position:absolute;top:1px;left:{{ a.rosterToggle.thumbLeft }};width:14px;height:14px;border-radius:50%;background:#0b0c0e;transition:left .15s ease"></span>
                     </button>
                     <span style="{{ a.rosterStyle }}">{{ a.rosterLabel }}</span>
@@ -2265,7 +2303,7 @@
                 <sc-if value="{{ a.activeSetDisabled }}">
                   <div style="position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(11,12,14,.82)">
                     <span style="font:800 14px/1 'JetBrains Mono',monospace;letter-spacing:.12em;color:#ff5a5a;text-transform:uppercase">Disabled</span>
-                    <button title="Turn tracking back on for this disc set." sc-camel-on-click="{{ a.activateSet }}" style="font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.06em;padding:7px 16px;cursor:pointer;text-transform:uppercase;background:#ffda58;color:#0b0c0e;border:1px solid #ffda58">Activate</button>
+                    <button title="Turn tracking back on for this disc set." sc-camel-on-click="{{ a.activateSet }}" style="font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.06em;padding:7px 16px;cursor:pointer;text-transform:uppercase;background:#e8ff45;color:#0b0c0e;border:1px solid #e8ff45">Activate</button>
                   </div>
                 </sc-if>
               </div>
@@ -2310,7 +2348,7 @@
                   <div data-pd="subcol" style="flex:1 1 84px;min-width:78px">
                     <div style="{{ p.barStyle }}"></div>
                     <div style="height:48px;overflow:hidden">
-                      <span style="{{ p.textStyle }}">{{ p.name }}<sc-if value="{{ p.hasNote }}"><span title="{{ p.noteTitle }}" style="color:#ffda58;cursor:help"> *</span></sc-if></span>
+                      <span style="{{ p.textStyle }}">{{ p.name }}<sc-if value="{{ p.hasNote }}"><span title="{{ p.noteTitle }}" style="color:#e8ff45;cursor:help"> *</span></sc-if></span>
                     </div>
                   </div>
                 </sc-for>
@@ -2319,7 +2357,7 @@
               <sc-if value="{{ a.isIgnored }}">
                 <div style="position:absolute;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(11,12,14,.85)">
                   <span style="font:800 18px/1 'JetBrains Mono',monospace;letter-spacing:.14em;color:#ff5a5a;text-transform:uppercase">Ignored</span>
-                  <button sc-camel-on-click="{{ a.rosterToggle.onClick }}" title="Track this agent again." style="font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.06em;padding:9px 18px;cursor:pointer;text-transform:uppercase;background:#ffda58;color:#0b0c0e;border:1px solid #ffda58">Track Again</button>
+                  <button sc-camel-on-click="{{ a.rosterToggle.onClick }}" title="Track this agent again." style="font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.06em;padding:9px 18px;cursor:pointer;text-transform:uppercase;background:#e8ff45;color:#0b0c0e;border:1px solid #e8ff45">Track Again</button>
                 </div>
               </sc-if>
             </div>
@@ -2337,7 +2375,7 @@
         <div data-pd="formcol" style="flex:1 1 350px;max-width:430px;min-width:300px">
           <div style="background:#131519;border:1px solid #262a31;padding:18px;clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px)">
             <div style="font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#8a9099;margin-bottom:6px">Pick a disc</div>
-            <p style="margin:0 0 14px;font:400 16px/1.45 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">Anything you've saved can be tracked here. Send one over from <strong style="color:#ffda58;font-weight:600">Scrap or stash</strong> or <strong style="color:#ffda58;font-weight:600">Loadouts</strong> to add it.</p>
+            <p style="margin:0 0 14px;font:400 16px/1.45 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">Anything you've saved can be tracked here. Send one over from <strong style="color:#e8ff45;font-weight:600">Scrap or stash</strong> or <strong style="color:#e8ff45;font-weight:600">Loadouts</strong> to add it.</p>
             <sc-if value="{{ hasSaved }}">
               <div style="display:grid;gap:7px;margin-bottom:12px;min-width:0">
                 <div style="position:relative;display:flex">
@@ -2345,7 +2383,7 @@
                     <option value="">All disc sets</option>
                     <sc-for list="{{ upSetOptions }}" as="o" hint-placeholder-count="3"><option value="{{ o }}">{{ o }}</option></sc-for>
                   </sc-raw-select>
-                  <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);pointer-events:none;color:#ffda58;font-size:11px">▼</span>
+                  <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);pointer-events:none;color:#e8ff45;font-size:11px">▼</span>
                 </div>
                 <div data-pd="slotrow" style="display:flex;gap:4px;min-width:0">
                   <sc-for list="{{ upSlotButtons }}" as="b" hint-placeholder-count="6">
@@ -2374,7 +2412,7 @@
                       <image-slot id="{{ u.iconId }}" src="{{ u.iconSrc }}" placeholder="" shape="circle" fit="cover" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
                     </span>
                     <sc-if value="{{ u.hasOwner }}">
-                      <span title="{{ u.ownerTitle }}" style="position:absolute;bottom:-2px;right:-3px;width:17px;height:17px;border-radius:50%;overflow:hidden;display:block;border:2px solid #ffda58;background:#0f1114;z-index:2">
+                      <span title="{{ u.ownerTitle }}" style="position:absolute;bottom:-2px;right:-3px;width:17px;height:17px;border-radius:50%;overflow:hidden;display:block;border:2px solid #e8ff45;background:#0f1114;z-index:2">
                         <image-slot id="{{ u.ownerId }}" src="{{ u.ownerSrc }}" placeholder="" shape="circle" fit="cover" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
                       </span>
                     </sc-if>
@@ -2390,12 +2428,12 @@
               </div>
             </sc-if>
             <sc-if value="{{ upShowEmpty }}">
-              <p style="margin:0;padding:18px;border:1px dashed #262a31;font:400 16px/1.45 Barlow,sans-serif;color:#8a9099;text-wrap:pretty">No saved discs yet. Describe one on Scrap or stash and hit Save to Loadouts.</p>
+              <p style="margin:0;padding:18px;border:1px dashed #262a31;font:400 16px/1.45 Barlow,sans-serif;color:#8a9099;text-wrap:pretty">Your disc bag is empty, Proxy. Describe one on Scrap or stash and hit Save to Loadouts.</p>
             </sc-if>
             <sc-if value="{{ upShowNoMatch }}">
               <div style="padding:18px;border:1px dashed #262a31">
                 <p style="margin:0 0 10px;font:400 16px/1.45 Barlow,sans-serif;color:#8a9099;text-wrap:pretty">{{ upEmptyLabel }}</p>
-                <button sc-camel-on-click="{{ onUpClearFilters }}" style="background:none;border:none;color:#ffda58;font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;padding:0;text-decoration:underline">Clear filters</button>
+                <button sc-camel-on-click="{{ onUpClearFilters }}" style="background:none;border:none;color:#e8ff45;font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;padding:0;text-decoration:underline">Clear filters</button>
               </div>
             </sc-if>
           </div>
@@ -2423,7 +2461,7 @@
           </sc-if>
 
           <sc-if value="{{ hasUp }}">
-            <div data-mfocus="up" style="background:repeating-linear-gradient(115deg,rgba(255,255,255,.016) 0 2px,transparent 2px 10px),#131519;border:1px solid #262a31;clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px)">
+            <div data-mfocus="up" style="background:radial-gradient(rgba(255,255,255,.045) .9px,transparent 1.3px) 0 0/5px 5px,#131519;border:1px solid #262a31;clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px)">
 
               <!-- hero: the disc, who it's graded for, and its grade -->
               <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding:20px;background:radial-gradient(120% 140% at 0% 50%,rgba(255,255,255,.04),rgba(255,255,255,0) 60%),rgba(0,0,0,.26);border-bottom:1px solid #262a31">
@@ -2450,7 +2488,7 @@
                           <sc-raw-select value="{{ up.agentValue }}" sc-camel-on-change="{{ up.onAgentChange }}" title="Every tracked agent who can use this disc, with the grade it earns for each." style="{{ up.agentSelectStyle }}">
                             <sc-for list="{{ up.agentOptions }}" as="o" hint-placeholder-count="2"><option value="{{ o.v }}">{{ o.t }}</option></sc-for>
                           </sc-raw-select>
-                          <span style="position:absolute;right:9px;top:50%;transform:translateY(-50%);pointer-events:none;color:#ffda58;font-size:9px">▼</span>
+                          <span style="position:absolute;right:9px;top:50%;transform:translateY(-50%);pointer-events:none;color:#e8ff45;font-size:9px">▼</span>
                         </span>
                       </sc-if>
                       <sc-if value="{{ !up.hasAgentChoice }}">
@@ -2479,7 +2517,7 @@
                 <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:10px;min-width:0">
                   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-width:0">
                     <span style="font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#8a9099;white-space:nowrap">Level</span>
-                    <span style="font:700 16px/1 'Chakra Petch',sans-serif;color:#ffda58;white-space:nowrap">{{ up.lvl }}</span>
+                    <span style="font:700 16px/1 'Chakra Petch',sans-serif;color:#e8ff45;white-space:nowrap">{{ up.lvl }}</span>
                     <span style="flex:1;height:1px;background:#262a31"></span>
                     <span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:.05em;color:#8a9099;white-space:nowrap">{{ up.leftLabel }}</span>
                   </div>
@@ -2512,7 +2550,7 @@
                   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-width:0">
                     <span style="font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#8a9099;white-space:nowrap">Substats</span>
                     <span style="flex:1;height:1px;background:#262a31"></span>
-                    <span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:.05em;color:#ffda58;white-space:nowrap">{{ up.stepHint }}</span>
+                    <span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:.05em;color:#e8ff45;white-space:nowrap">{{ up.stepHint }}</span>
                   </div>
                   <div style="display:grid;gap:1px;background:#1e2228;border:1px solid #1e2228">
                     <sc-for list="{{ up.lineSteppers }}" as="l" hint-placeholder-count="4">
@@ -2528,7 +2566,7 @@
                                 <option value="">— Clear fourth substat —</option>
                                 <sc-for list="{{ up.fourthOptions }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for>
                               </sc-raw-select>
-                              <span style="position:absolute;right:9px;top:50%;transform:translateY(-50%);pointer-events:none;color:#ffda58;font-size:10px">▼</span>
+                              <span style="position:absolute;right:9px;top:50%;transform:translateY(-50%);pointer-events:none;color:#e8ff45;font-size:10px">▼</span>
                             </div>
                             <span style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.05em;color:#8a9099;white-space:nowrap">{{ l.fourthTag }}</span>
                           </div>
@@ -2544,11 +2582,11 @@
                       <div style="display:flex;align-items:center;gap:12px;background:#0f1114;padding:8px 10px 8px 12px;min-height:48px;box-sizing:border-box">
                         <div style="width:4px;flex:0 0 4px;height:28px;background:#3f454e;opacity:.5"></div>
                         <div style="position:relative;display:flex;flex:1;min-width:0">
-                          <sc-raw-select value="" sc-camel-on-change="{{ up.onFourth }}" style="appearance:none;width:100%;background:#131519;color:#9aa0a8;border:1px dashed #ffda5866;padding:8px 28px 8px 10px;font:600 15px/1.2 Barlow,sans-serif;cursor:pointer">
+                          <sc-raw-select value="" sc-camel-on-change="{{ up.onFourth }}" style="appearance:none;width:100%;background:#131519;color:#9aa0a8;border:1px dashed #e8ff4566;padding:8px 28px 8px 10px;font:600 15px/1.2 Barlow,sans-serif;cursor:pointer">
                             <option value="">Fourth substat (added at +3)…</option>
                             <sc-for list="{{ up.fourthOptions }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for>
                           </sc-raw-select>
-                          <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:#ffda58;font-size:10px">▼</span>
+                          <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:#e8ff45;font-size:10px">▼</span>
                         </div>
                       </div>
                     </sc-if>
@@ -2587,10 +2625,10 @@
 
 
   <footer data-pd="footer" style="max-width:1840px;margin:36px auto 0;padding:20px 24px 24px;text-align:center">
-    <div style="height:3px;margin:0 auto 22px;max-width:220px;background:repeating-linear-gradient(115deg,#ffda58 0 8px,transparent 8px 16px);opacity:.5"></div>
+    <div style="height:3px;margin:0 auto 22px;max-width:220px;background:repeating-linear-gradient(115deg,#e8ff45 0 8px,transparent 8px 16px);opacity:.5"></div>
     <nav aria-label="Footer" style="display:flex;justify-content:center;flex-wrap:wrap;gap:6px 22px;margin:0 auto 18px">
       <sc-for list="{{ footLinks }}" as="l" hint-placeholder-count="4">
-        <a href="#" sc-camel-on-click="{{ l.onClick }}" style="font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#9aa0a8;text-decoration:none;padding:6px 2px" style-hover="color:#ffda58">{{ l.label }}</a>
+        <a href="#" sc-camel-on-click="{{ l.onClick }}" style="font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#9aa0a8;text-decoration:none;padding:6px 2px" style-hover="color:#e8ff45">{{ l.label }}</a>
       </sc-for>
     </nav>
     <p style="margin:0 auto 12px;font:400 15px/1.55 Barlow,sans-serif;color:#9aa0a8;max-width:78ch;text-wrap:pretty">ProxyDisc is a free drive disc rating tool for Zenless Zone Zero. Describe a disc and it grades it against every agent's recommended build, so you know whether to keep it, level it or recycle it. It also tracks what each of your agents is wearing and how their rolls turned out.</p>
@@ -2613,8 +2651,8 @@
        viewport. -->
   <sc-if value="{{ movePending }}">
     <div sc-camel-on-click="{{ onCancelMove }}" style="position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(6,7,9,.72)">
-      <div sc-camel-on-click="{{ onModalStop }}" style="width:100%;max-width:460px;background:#131519;border:1px solid #ffda5855;border-left:5px solid #ffda58;padding:22px;animation:paneIn .2s ease both">
-        <span style="font:700 30px/1 'Chakra Petch',sans-serif;text-transform:uppercase;color:#ffda58">{{ moveQuestion }}</span>
+      <div role="dialog" aria-modal="true" sc-camel-on-click="{{ onModalStop }}" style="width:100%;max-width:460px;background:#131519;border:1px solid #e8ff4555;border-left:5px solid #e8ff45;padding:22px;animation:paneIn .2s ease both">
+        <span style="font:700 30px/1 'Chakra Petch',sans-serif;text-transform:uppercase;color:#e8ff45">{{ moveQuestion }}</span>
         <div style="display:flex;align-items:center;gap:11px;margin:14px 0 12px;padding:11px 13px;background:#0f1114;border:1px solid #1e2228">
           <span style="{{ moveGradeStyle }}">{{ moveGrade }}</span>
           <span style="font:600 16px/1.35 Barlow,sans-serif;color:#ecefe6;min-width:0">{{ moveLabel }}</span>
@@ -2622,7 +2660,7 @@
         <p style="margin:0 0 18px;font:400 17px/1.5 Barlow,sans-serif;color:#9aa0a8;text-wrap:pretty">{{ moveBody }}</p>
         <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap">
           <button sc-camel-on-click="{{ onCancelMove }}" style="background:#171a1f;color:#ecefe6;border:1px solid #2e333b;padding:11px 15px;font:700 14px/1 'JetBrains Mono',monospace;letter-spacing:.1em;cursor:pointer;min-height:42px">KEEP IT THERE</button>
-          <button sc-camel-on-click="{{ onConfirmMove }}" style="background:#ffda58;color:#0b0c0e;border:1px solid #ffda58;padding:11px 15px;font:700 14px/1 'JetBrains Mono',monospace;letter-spacing:.1em;cursor:pointer;min-height:42px">{{ moveConfirmLabel }}</button>
+          <button sc-camel-on-click="{{ onConfirmMove }}" style="background:#e8ff45;color:#0b0c0e;border:1px solid #e8ff45;padding:11px 15px;font:700 14px/1 'JetBrains Mono',monospace;letter-spacing:.1em;cursor:pointer;min-height:42px">{{ moveConfirmLabel }}</button>
         </div>
       </div>
     </div>
@@ -2631,7 +2669,7 @@
 
   <sc-if value="{{ deletePending }}">
     <div sc-camel-on-click="{{ onCancelDelete }}" style="position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(6,7,9,.78)">
-      <div sc-camel-on-click="{{ onModalStop }}" style="width:100%;max-width:460px;background:#131519;border:1px solid #ff4d5e55;border-left:5px solid #ff4d5e;padding:22px 24px;clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px);animation:paneIn .18s cubic-bezier(.22,.7,.32,1) both">
+      <div role="dialog" aria-modal="true" sc-camel-on-click="{{ onModalStop }}" style="width:100%;max-width:460px;background:#131519;border:1px solid #ff4d5e55;border-left:5px solid #ff4d5e;padding:22px 24px;clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px);animation:paneIn .18s cubic-bezier(.22,.7,.32,1) both">
         <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:4px">
           <span style="font:700 30px/1 'Chakra Petch',sans-serif;text-transform:uppercase;color:#ff4d5e">Delete this disc?</span>
         </div>

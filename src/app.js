@@ -1137,6 +1137,9 @@ class Component extends DCLogic {
       sSubs: [{t:"",r:"1"},{t:"",r:"1"},{t:"",r:"1"},{t:"",r:"1"}],
       sResult: null
     };
+    // A #fragment link lands straight on its tab (and on its disc, for a shared-disc link) rather
+    // than flashing the default tab first.
+    Object.assign(this.state, this.hashState());
     this.visualRef = React.createRef();
     // Callback ref, not createRef: each tab lives behind an sc-if, so the check tab's subtree
     // unmounts on tab switch. Re-arming here means the disc replays its entrance every time it
@@ -1161,13 +1164,154 @@ class Component extends DCLogic {
   syncPlayhead(){
     const head = document.querySelector('[data-pd="playhead"]');
     const track = document.querySelector('[data-pd="hazard"]');
-    const tab = document.querySelector('[data-pd="nav"] button[data-tabon="1"]');
+    // a tab folded into More has no box of its own, so the playhead points at More instead
+    const tab = Array.from(document.querySelectorAll('[data-pd="navrow"] > button[data-tabon="1"]')).find(b => b.offsetWidth)
+      || document.querySelector('[data-pd="moretab"]');
     if(!head || !track) return;
     if(!tab){ head.style.width = "0px"; return; }
     const tr = track.getBoundingClientRect(), br = tab.getBoundingClientRect();
     const left = Math.max(0, br.left - tr.left), w = Math.max(24, br.width);
     head.style.left = left + "px";
     head.style.width = Math.min(w, tr.width - left) + "px";
+  }
+  // ---------- address bar ----------
+  // #<tab-slug> names the open tab. A shared disc rides along as a query after it
+  // (#scrap-or-stash?set=…&slot=4&main=…&lv=6&sub=CRIT+Rate*2…), and a screenshot shared to the
+  // installed app arrives as #scrap-or-stash?shared=1. Both are one-shot: once read, the address
+  // bar settles back on the plain tab slug.
+  tabSlug(id){ const t = this.constructor.TABS.find(x => x.id === id); return t ? t.slug : id; }
+  readHash(){
+    const raw = (location.hash || "").slice(1), q = raw.indexOf("?");
+    const slug = (q < 0 ? raw : raw.slice(0, q)).toLowerCase();
+    const t = this.constructor.TABS.find(x => x.slug === slug || x.id === slug);
+    return {tab: t ? t.id : null, params: new URLSearchParams(q < 0 ? "" : raw.slice(q + 1))};
+  }
+  hashState(){
+    const h = this.readHash(), n = {};
+    if(h.tab) n.tab = h.tab;
+    const disc = h.params.has("set") ? this.discFromParams(h.params) : null;
+    if(disc) Object.assign(n, disc, {tab: "check"});
+    return n;
+  }
+  applyHash(fromEvent){
+    const h = this.readHash();
+    const n = this.hashState();
+    // back to the bare address (the first entry, before any tab was picked) means the first tab
+    if(fromEvent && !h.tab && !n.tab) n.tab = "check";
+    if(n.tab === this.state.tab) delete n.tab;
+    if(n.tab) this._hashTab = n.tab;
+    if(Object.keys(n).length) this.setState(Object.assign(n, {moreOpen: false}));
+    if(h.params.has("shared")) this.takeSharedScreenshot();
+    if(h.params.has("set") && !n.setName) this.flash("That disc link didn't make sense to us, so nothing was filled in.");
+    if([...h.params.keys()].length){
+      try { history.replaceState(history.state, "", "#" + this.tabSlug(n.tab || this.state.tab)); } catch(e){}
+    }
+  }
+  // Rebuilds a disc from a link, checking every part against the game data so a mangled or
+  // hand-edited link fills in nothing rather than something wrong.
+  discFromParams(p){
+    const A = this.constructor;
+    const set = p.get("set"), slot = "s" + (p.get("slot") || "");
+    if(!A.SETS[set] || !A.SLOT_LABEL[slot]) return null;
+    const fixed = A.FIXED_MAIN[slot];
+    const main = fixed || p.get("main");
+    if(!fixed && (A.MAIN_POOL[slot] || []).indexOf(main) < 0) return null;
+    const names = [], rolls = [];
+    p.getAll("sub").slice(0, 4).forEach(s => {
+      const m = /^(.*?)(?:\*(\d))?$/.exec(s);
+      if(!m || A.SUBSTAT_ORDER.indexOf(m[1]) < 0 || m[1] === main || names.indexOf(m[1]) >= 0) return;
+      names.push(m[1]); rolls.push(Math.min(5, +(m[2] || 0)));
+    });
+    while(names.length < 4){ names.push(""); rolls.push(0); }
+    const lv = Math.max(0, Math.min(15, parseInt(p.get("lv"), 10) || 0));
+    return {setName: set, slot: slot, mainStat: main,
+      subsBySlot: Object.assign({}, this.state.subsBySlot, {[slot]: names}),
+      rollsBySlot: Object.assign({}, this.state.rollsBySlot, {[slot]: rolls}),
+      levelBySlot: Object.assign({}, this.state.levelBySlot, {[slot]: lv})};
+  }
+  discLink(){
+    const st = this.state;
+    if(!st.setName || !st.slot) return "";
+    const p = new URLSearchParams();
+    p.set("set", st.setName); p.set("slot", st.slot.slice(1));
+    if(!this.constructor.FIXED_MAIN[st.slot] && st.mainStat) p.set("main", st.mainStat);
+    const lv = (st.levelBySlot || {})[st.slot] || 0;
+    if(lv) p.set("lv", String(lv));
+    const subs = (st.subsBySlot || {})[st.slot] || [], rolls = (st.rollsBySlot || {})[st.slot] || [];
+    subs.forEach((s, i) => { if(s) p.append("sub", s + (rolls[i] ? "*" + rolls[i] : "")); });
+    return location.origin + location.pathname + "#scrap-or-stash?" + p.toString();
+  }
+  shareDisc(){
+    const url = this.discLink();
+    if(!url) return;
+    const st = this.state, A = this.constructor;
+    const title = st.setName + " · " + A.SLOT_LABEL[st.slot] + (st.mainStat ? " · " + st.mainStat : "");
+    // The share sheet on phones (straight into Discord or a chat); the clipboard everywhere else.
+    if(navigator.share && window.matchMedia && window.matchMedia("(pointer:coarse)").matches){
+      navigator.share({title: title, text: title + ", rated on ProxyDisc", url: url}).catch(() => {});
+      return;
+    }
+    const done = () => this.flash("Link copied. Whoever opens it sees this disc, graded for their own roster.");
+    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, () => window.prompt("Copy this link:", url));
+    else window.prompt("Copy this link:", url);
+  }
+  // A screenshot shared to the installed app from the phone's gallery. sw.js receives the share
+  // and parks the image in the "pd-share" cache; this picks it up and runs the normal import.
+  takeSharedScreenshot(){
+    if(!window.caches) return;
+    caches.open("pd-share").then(c => c.match("/__shared-screenshot").then(r => {
+      if(!r) return;
+      return r.blob().then(b => {
+        c.delete("/__shared-screenshot");
+        this.setState({tab: "check"});
+        this.importScreenshot(new File([b], "shared-screenshot", {type: b.type || "image/png"}));
+      });
+    })).catch(() => {});
+  }
+  // A short burst of TV static over the page when the tab changes, like flipping channels on one
+  // of the Hollow TVs. Pure CSS (see [data-static] in styles.css); reduced motion switches it off.
+  tvStatic(){
+    const el = document.querySelector('[data-pd="main"]');
+    if(!el) return;
+    el.removeAttribute("data-static");
+    void el.offsetWidth;
+    el.setAttribute("data-static", "1");
+    clearTimeout(this._staticT);
+    this._staticT = setTimeout(() => el.removeAttribute("data-static"), 450);
+  }
+  // The parody ads' display faces (Pacifico, Bangers, VT323…) are ~130 KB nobody else needs, so
+  // they load after the page has settled, and only while the ads are switched on.
+  loadJokeFonts(){
+    if(this._jokeFonts || !window.PD_JOKE_FONTS) return;
+    this._jokeFonts = true;
+    const go = () => {
+      const l = document.createElement("link");
+      l.rel = "stylesheet"; l.href = window.PD_JOKE_FONTS;
+      document.head.appendChild(l);
+    };
+    if(window.requestIdleCallback) requestIdleCallback(go, {timeout: 2500}); else setTimeout(go, 1200);
+  }
+  // Hover art for an agent is wanted once a pointer has been over their card, or while their rig
+  // is the one in focus (it shows the hover art permanently).
+  hoverWanted(name){ return !!(this._hoverSeen && this._hoverSeen.has(name)) || this.state.focusAgent === name; }
+  // Asks the browser not to evict saved data under storage pressure. Chrome and Safari decide
+  // silently; Firefox asks the user, so this only runs from a button press or a save.
+  persistStorage(fromButton){
+    if(!navigator.storage || !navigator.storage.persist) return;
+    if(!fromButton && /firefox/i.test(navigator.userAgent)) return;
+    navigator.storage.persist().then(p => {
+      this.setState({storagePersisted: !!p});
+      if(fromButton) this.flash(p ? "Done. This browser will keep your discs unless you clear site data yourself."
+        : "This browser said no for now. Installing ProxyDisc as an app usually changes its mind.");
+    }, () => {});
+  }
+  // beforeinstallprompt is caught in boot.js (it can fire before React has mounted).
+  installApp(){
+    const e = window.__pdInstallPrompt;
+    if(!e) return;
+    window.__pdInstallPrompt = null;
+    e.prompt();
+    (e.userChoice || Promise.resolve()).then(() => this.forceUpdate());
   }
   componentDidMount(){
     if(super.componentDidMount) super.componentDidMount();
@@ -1180,6 +1324,30 @@ class Component extends DCLogic {
       this.importScreenshot(it.getAsFile());
     };
     window.addEventListener("paste", this._onPaste);
+    // Back/forward between tabs, or a #fragment typed or clicked while the app is open.
+    this._onHash = () => this.applyHash(true);
+    window.addEventListener("popstate", this._onHash);
+    window.addEventListener("hashchange", this._onHash);
+    this.applyHash();
+    this._onKey = e => { if(e.key === "Escape" && this.state.moreOpen) this.setState({moreOpen: false}); };
+    window.addEventListener("keydown", this._onKey);
+    // Hover art is only fetched once a pointer actually reaches that agent's card (see hoverWanted).
+    this._onArtHover = e => {
+      const card = e.target && e.target.closest && e.target.closest("[data-agent-card],[data-disccard]");
+      const el = card && card.querySelector("[data-artname]");
+      const n = el && el.getAttribute("data-artname");
+      if(!n || (this._hoverSeen && this._hoverSeen.has(n))) return;
+      (this._hoverSeen = this._hoverSeen || new Set()).add(n);
+      clearTimeout(this._hoverT); this._hoverT = setTimeout(() => this.forceUpdate(), 30);
+    };
+    document.addEventListener("pointerover", this._onArtHover, {passive: true});
+    this._onInstallable = () => this.forceUpdate();
+    window.addEventListener("pd-installable", this._onInstallable);
+    if(navigator.storage && navigator.storage.persisted){
+      navigator.storage.persisted().then(p => this.setState({storagePersisted: !!p}), () => {});
+    }
+    if(this.state.adsOn) this.loadJokeFonts();
+    this._lastTab = this.state.tab;
     setTimeout(() => this.observeArt(), 0);
     this._onPlayhead = () => this.syncPlayhead();
     window.addEventListener("resize", this._onPlayhead);
@@ -1191,6 +1359,22 @@ class Component extends DCLogic {
   componentDidUpdate(pp, ps){
     if(super.componentDidUpdate) super.componentDidUpdate(pp, ps);
     if(!ps || ps.tab !== this.state.tab) requestAnimationFrame(() => this.syncPlayhead());
+    // (prevState isn't reliably passed in by the runtime, so the last tab is tracked here)
+    if(this._lastTab !== this.state.tab){
+      const was = this._lastTab;
+      this._lastTab = this.state.tab;
+      if(was !== undefined){
+        // Each tab switch is a history entry, so the back button steps back through tabs instead
+        // of leaving the site. A switch that came from the address bar is already in history.
+        if(this._hashTab === this.state.tab) this._hashTab = null;
+        else {
+          const h = "#" + this.tabSlug(this.state.tab);
+          if(location.hash !== h) try { history.pushState(null, "", h); } catch(e){}
+        }
+        this.tvStatic();
+      }
+    }
+    if(this.state.adsOn) this.loadJokeFonts();
     this.observeArt();
     if(this._lastTourStep !== this.state.tourStep){
       this._lastTourStep = this.state.tourStep;
@@ -1223,6 +1407,10 @@ class Component extends DCLogic {
   }
   componentWillUnmount(){
     if(this._onPaste) window.removeEventListener("paste", this._onPaste);
+    if(this._onHash){ window.removeEventListener("popstate", this._onHash); window.removeEventListener("hashchange", this._onHash); }
+    if(this._onKey) window.removeEventListener("keydown", this._onKey);
+    if(this._onArtHover) document.removeEventListener("pointerover", this._onArtHover);
+    if(this._onInstallable) window.removeEventListener("pd-installable", this._onInstallable);
     if(this._artIO) this._artIO.disconnect();
     if(this._onPlayhead) window.removeEventListener("resize", this._onPlayhead);
     clearTimeout(this._spinTimer);
@@ -1331,7 +1519,7 @@ class Component extends DCLogic {
   // ---------- styling helpers ----------
   // Two scales, deliberately separate: verdicts run green / amber / red, while FIT runs
   // blue (perfect) → green → yellow (marginal). Blue never means "keep", it means "ideal".
-  tone(t){ return {keep:"#4ade80", maybe:"#ffa02e", recycle:"#ff4d5e", best:"#6cc6ff", warm:"#e5d64a", rare:"#b98cff", info:"#7fd8ff", dim:"#8a9099", srank:"#ffda58"}[t] || "#8a9099"; }
+  tone(t){ return {keep:"#4ade80", maybe:"#ffa02e", recycle:"#ff4d5e", best:"#6cc6ff", warm:"#e5d64a", rare:"#b98cff", info:"#7fd8ff", dim:"#8a9099", srank:"#f5a623"}[t] || "#8a9099"; }
   // Matches the exact filenames under discs/ (Drive_Disc_<Set Name, spaces to underscores>_Icon.webp).
   // Per-agent art framing. Each picture is cropped differently, so any agent can override the
   // default. zoom: % of the box height the picture is drawn at. x / y: where it sits, 0-100%.
@@ -1451,6 +1639,22 @@ class Component extends DCLogic {
   // asset; a few agents (NO_CIRCLE_ICON) don't have one yet, so those fall back to the square
   // Icon file rather than showing a broken/placeholder portrait until art is added.
   static NO_CIRCLE_ICON = new Set([]);
+  // The nav. slug is the tab's #fragment in the address bar; short is its bottom-bar label on a
+  // phone; desc is the one-line "what is this" shown under the nav and in the More menu.
+  // kind: "main" always has its own tab, "more" moves into More on a phone, "util" moves into
+  // More below 1100px.
+  static TABS = [
+    {id:"check", n:"01", slug:"scrap-or-stash", label:"Scrap or stash", short:"Scrap/stash", kind:"main", desc:"Grade a disc you just got: keep it, level it or recycle it."},
+    {id:"discs", n:"02", slug:"loadouts", label:"Loadouts", short:"Loadouts", kind:"main", desc:"What each agent is wearing, with a build score out of 100."},
+    {id:"mine", n:"03", slug:"my-discs", label:"My discs", short:"My discs", kind:"main", desc:"Every disc you've saved, and who each one suits."},
+    {id:"score", n:"04", slug:"upgrades", label:"Upgrades", short:"Upgrades", kind:"main", desc:"Track each roll while you level a disc."},
+    {id:"agents", n:"05", slug:"agent-index", label:"Agent index", short:"Agents", kind:"more", desc:"Best sets, main stats and substats for every agent."},
+    {id:"farming", n:"06", slug:"area-patrol", label:"Area patrol", short:"Patrol", kind:"more", desc:"Which cleanup missions and sets to farm next."},
+    {id:"backup", n:"07", slug:"backup", label:"Backup", short:"Backup", kind:"util", desc:"Export, restore or protect what you've saved."},
+    {id:"help", n:"08", slug:"help", label:"Help", short:"Help", kind:"util", desc:"How grading works and how to use each tab."},
+    {id:"contact", n:"09", slug:"contact", label:"Contact", short:"Contact", kind:"util", desc:"Report a wrong build or get in touch."},
+    {id:"settings", n:"10", slug:"settings", label:"Settings", short:"Settings", kind:"util", desc:"Grading rules and display options."}
+  ];
   // Parody ads in the spots real ones would sit. They don't link anywhere; clicking just
   // owns up to the joke.
   // Parody ads where real ones would sit. Each has its own look. Art comes from misc/Name.webp
@@ -1570,6 +1774,7 @@ class Component extends DCLogic {
     return {
       trackColor: on ? "#4ade80" : "#171a1f",
       thumbLeft: on ? "17px" : "1px",
+      checked: on ? "true" : "false",
       onClick: e => this.cycleRoster(name, e)
     };
   }
@@ -1600,7 +1805,7 @@ class Component extends DCLogic {
       names.forEach(name => {
         const isHit = !!(hitSet && hitSet.has(name));
         const textStyle = isHit
-          ? {font:"700 14px/1.3 'JetBrains Mono',monospace", color:"#ffda58", letterSpacing:".02em"}
+          ? {font:"700 14px/1.3 'JetBrains Mono',monospace", color:"#e8ff45", letterSpacing:".02em"}
           : {font: (rank === 0 ? "600" : "400") + " 14px/1.3 'JetBrains Mono',monospace",
               color: rank === 0 ? "#ecefe6" : rank === 1 ? "#c3c8ce" : "#9aa0a8", letterSpacing:".02em"};
         out.push({name: name, barStyle: barStyle, textStyle: textStyle,
@@ -1908,7 +2113,7 @@ class Component extends DCLogic {
   }
   gradeBand(score){
     const bands = [
-      {min: .90, grade:"S", color:"#ffda58"}, {min: .72, grade:"A", color:"#b98cff"},
+      {min: .90, grade:"S", color:"#f5a623"}, {min: .72, grade:"A", color:"#b98cff"},
       {min: .60, grade:"B", color:"#6cc6ff"}, {min: .40, grade:"C", color:"#4ade80"},
       {min: .22, grade:"D", color:"#8a9099"}, {min: 0, grade:"F", color:"#ff4d5e"}
     ];
@@ -2136,7 +2341,7 @@ class Component extends DCLogic {
     const mainWeight = this.mainWeightOf(m.isFixed, m.mainRank, m.mainOf);
     const score = subScore * mainWeight;
     const bands = [
-      {min: .90, grade:"S", color:"#ffda58"}, {min: .72, grade:"A", color:"#b98cff"},
+      {min: .90, grade:"S", color:"#f5a623"}, {min: .72, grade:"A", color:"#b98cff"},
       {min: .60, grade:"B", color:"#6cc6ff"}, {min: .40, grade:"C", color:"#4ade80"},
       {min: .22, grade:"D", color:"#8a9099"}, {min: 0, grade:"F", color:"#ff4d5e"}
     ];
@@ -2350,7 +2555,7 @@ class Component extends DCLogic {
   }
   chip(on){
     return on
-      ? {font:"500 15px/1 'JetBrains Mono',monospace", letterSpacing:".05em", padding:"7px 11px", cursor:"pointer", background:"#ffda58", color:"#0b0c0e", border:"1px solid #ffda58"}
+      ? {font:"500 15px/1 'JetBrains Mono',monospace", letterSpacing:".05em", padding:"7px 11px", cursor:"pointer", background:"#e8ff45", color:"#0b0c0e", border:"1px solid #e8ff45"}
       : {font:"500 15px/1 'JetBrains Mono',monospace", letterSpacing:".05em", padding:"7px 11px", cursor:"pointer", background:"#0f1114", color:"#8a9099", border:"1px solid #2e333b"};
   }
   // Smaller sibling of chip() — sized to sit inline with the results table's own 8-9px type
@@ -2362,13 +2567,13 @@ class Component extends DCLogic {
   filterSwitch(on){
     return {
       btnStyle: {display:"flex", alignItems:"center", gap:"9px", padding:"6px 12px 6px 6px", cursor:"pointer",
-        background:"#0f1114", border:"1px solid " + (on ? "#ffda5855" : "#2e333b")},
+        background:"#0f1114", border:"1px solid " + (on ? "#e8ff4555" : "#2e333b")},
       trackStyle: {position:"relative", width:"34px", height:"18px", flex:"0 0 34px", borderRadius:"9px",
-        background: on ? "#ffda58" : "#2e333b", transition:"background .12s ease"},
+        background: on ? "#e8ff45" : "#2e333b", transition:"background .12s ease"},
       thumbStyle: {position:"absolute", top:"2px", left: on ? "18px" : "2px",
         width:"14px", height:"14px", borderRadius:"50%", background:"#0b0c0e", transition:"left .12s ease"},
       labelStyle: {font:"700 13px/1 'JetBrains Mono',monospace", letterSpacing:".08em",
-        color: on ? "#ffda58" : "#8a9099"}
+        color: on ? "#e8ff45" : "#8a9099"}
     };
   }
 
@@ -2410,7 +2615,7 @@ class Component extends DCLogic {
       hasImg: !!o.img, initial: o.initial || "",
       imgStyle: !o.img ? {} : o.wide
         ? {position:"relative", flex:"0 0 104px", width:"104px", height:"58px", overflow:"hidden",
-            background:"repeating-linear-gradient(115deg,rgba(255,255,255,.02) 0 2px,transparent 2px 10px),#0f1114",
+            background:"radial-gradient(rgba(255,255,255,.045) .9px,transparent 1.3px) 0 0/5px 5px,#0f1114",
             border:"1px solid #2e333b", display:"flex", alignItems:"center", justifyContent:"center"}
         : {position:"relative", flex:"0 0 56px", width:"56px", height:"56px", borderRadius:"50%",
             overflow:"hidden", background:"#0f1114", border:"2px solid " + (o.ring || "#3a4049"),
@@ -2420,11 +2625,11 @@ class Component extends DCLogic {
         backgroundPosition: o.wide ? "62% center" : "center"},
       style: {flex:"1 1 0", minWidth:0, padding:"12px 14px", textAlign:"left", cursor:"pointer",
         display:"flex", alignItems:"center", gap:"12px",
-        background: value === o.v ? "#ffda580f" : "#0f1114",
-        border:"1px solid " + (value === o.v ? "#ffda58" : "#2e333b"),
+        background: value === o.v ? "#e8ff450f" : "#0f1114",
+        border:"1px solid " + (value === o.v ? "#e8ff45" : "#2e333b"),
         color: value === o.v ? "#ecefe6" : "#9aa0a8"},
       labelStyle: {display:"block", font:"700 15px/1.15 'Chakra Petch',sans-serif", letterSpacing:".04em",
-        textTransform:"uppercase", color: value === o.v ? "#ffda58" : "#ecefe6"},
+        textTransform:"uppercase", color: value === o.v ? "#e8ff45" : "#ecefe6"},
       subStyle: {display:"block", marginTop:"5px", font:"400 14px/1.35 Barlow,sans-serif", color:"#9aa0a8"},
       onClick: () => onPick(o.v)}));
   }
@@ -2433,7 +2638,7 @@ class Component extends DCLogic {
     return {display:"flex", alignItems:"center", gap:"6px", height:"32px", padding:"0 12px",
       border:"none", cursor:"pointer", whiteSpace:"nowrap",
       font:"600 13px/1 'JetBrains Mono',monospace", letterSpacing:".04em",
-      background: on ? "#ffda58" : "#0f1114", color: on ? "#0b0c0e" : "#9aa0a8"};
+      background: on ? "#e8ff45" : "#0f1114", color: on ? "#0b0c0e" : "#9aa0a8"};
   }
   // True when the disc fits the agent through a build allowed by the current Settings. The
   // bay, empty-slot glow and auto-fill all use this, so none of them offer a disc that only fits
@@ -2654,7 +2859,11 @@ class Component extends DCLogic {
     r.readAsText(f);
   }
   // ---------- saved discs ----------
-  persistDiscs(discs){ try { localStorage.setItem("discTriage_discs", JSON.stringify(discs)); } catch(e){} }
+  persistDiscs(discs){
+    try { localStorage.setItem("discTriage_discs", JSON.stringify(discs)); } catch(e){}
+    // first time there's something worth keeping, ask the browser not to evict it
+    if(discs && discs.length && !this._askedPersist){ this._askedPersist = true; this.persistStorage(false); }
+  }
   persistHidden(h){ try { localStorage.setItem("discTriage_discHidden", JSON.stringify(h)); } catch(e){} }
   hideKey(id, agentName){ return id + "|" + agentName; }
   // Favouriting is per DISC, not per agent — it marks the physical thing as one you've decided to
@@ -3085,12 +3294,12 @@ class Component extends DCLogic {
         hasState: owner || hidden,
         stateStyle: {font:"700 10px/1 'JetBrains Mono',monospace", letterSpacing:".07em",
           padding:"4px 6px", whiteSpace:"nowrap",
-          color: owner ? "#ffda58" : "#8a9099",
-          border:"1px solid " + (owner ? "#ffda5855" : "#2e333b")},
+          color: owner ? "#e8ff45" : "#8a9099",
+          border:"1px solid " + (owner ? "#e8ff4555" : "#2e333b")},
         rowStyle: {display:"flex", alignItems:"center", gap:"10px", width:"100%",
           padding:"9px 11px", textAlign:"left", cursor:"pointer",
-          background: owner ? "#ffda580a" : "#0f1114",
-          border:"1px solid " + (owner ? "#ffda5844" : "#1e2228"),
+          background: owner ? "#e8ff450a" : "#0f1114",
+          border:"1px solid " + (owner ? "#e8ff4544" : "#1e2228"),
           opacity: hidden ? .6 : 1},
         glyph: open ? "–" : "+",
         onToggle: () => this.setState(s2 => {
@@ -3131,7 +3340,7 @@ class Component extends DCLogic {
       gr.addColorStop(0, "rgba(11,12,14,1)"); gr.addColorStop(.45, "rgba(11,12,14,.92)"); gr.addColorStop(1, "rgba(11,12,14,.25)");
       x.fillStyle = gr; x.fillRect(0, 0, W, H);
     }
-    x.fillStyle = "#ffda58"; x.fillRect(0, 0, W, 6);
+    x.fillStyle = "#e8ff45"; x.fillRect(0, 0, W, 6);
     const ic = await load(this.agentIconPath(name));
     if(ic){ x.save(); x.beginPath(); x.arc(110, 120, 58, 0, Math.PI * 2); x.clip(); x.drawImage(ic, 52, 62, 116, 116); x.restore(); }
     x.strokeStyle = "#3a4049"; x.lineWidth = 3; x.beginPath(); x.arc(110, 120, 58, 0, Math.PI * 2); x.stroke();
@@ -3169,7 +3378,7 @@ class Component extends DCLogic {
       }
       x.textAlign = "left";
     }
-    x.fillStyle = "#ffda58"; x.font = "700 30px 'Chakra Petch', sans-serif"; x.fillText("PROXYDISC", 60, H - 46);
+    x.fillStyle = "#e8ff45"; x.font = "700 30px 'Chakra Petch', sans-serif"; x.fillText("PROXYDISC", 60, H - 46);
     x.fillStyle = "#8a9099"; x.font = "400 22px Barlow, sans-serif"; x.fillText("Free drive disc grader for Zenless Zone Zero", 238, H - 47);
     const blob = await new Promise(res => c.toBlob(res, "image/png"));
     if(!blob){ this.flash("Couldn't make the image."); return; }
@@ -3681,14 +3890,14 @@ class Component extends DCLogic {
     // Nothing to score yet — the red "insert disc" state on the left has no set or slot chosen,
     // so skip straight to a clean placeholder instead of feeding empty strings through scoring.
     if(!setName || !slot){
-      const body = !setName ? "Pick a disc set and a slot on the left to see who wants it."
-        : "Now pick a slot on the left to see who wants it.";
+      const body = !setName ? "Pick a disc set and a slot to see who wants it."
+        : "Now pick a slot to see who wants it.";
       return {
         verdict: {tone:"dim", tag:"NO DISC", crumb:"", body: body},
-        mineCount: "", mineRows: [], mineEmpty: true, mineEmptyText: "Insert a disc to see matches.",
+        mineCount: "", mineRows: [], mineEmpty: true, mineEmptyText: "Insert a disc, Proxy. Whoever on your roster wants it shows up here.",
         othersOpen: st.othersOpen, onToggleOthers: () => this.toggleOthersOpen(),
         othersChevron: st.othersOpen ? "▾" : "▸", othersCount: "", hasOthers: false, othersRows: [],
-        othersEmptyText: "Insert a disc to see matches.",
+        othersEmptyText: "Insert a disc to see who else could use it.",
         primaryToggle: Object.assign({label:"SHOW ALTERNATIVE BUILDS", onClick: () => {}}, this.filterSwitch(false)),
         pieceToggle: Object.assign({label:"SHOW ALTERNATIVE 2-PC", onClick: () => {}}, this.filterSwitch(false)),
         mainStatToggle: Object.assign({label:"SHOW SECONDARY MAIN STATS", onClick: () => {}}, this.filterSwitch(false)),
@@ -3961,7 +4170,7 @@ class Component extends DCLogic {
           id: "tmp", set: st.setName, slot: st.slot, main: st.mainStat,
           subs: (st.subsBySlot[st.slot] || ["","","",""]).slice()
         }, a.n),
-        upgradeBtnStyle: {background:"#171a1f", color:"#ffda58", border:"1px solid #ffda5855",
+        upgradeBtnStyle: {background:"#171a1f", color:"#e8ff45", border:"1px solid #e8ff4555",
           padding:"9px 13px", font:"700 13px/1 'JetBrains Mono',monospace", letterSpacing:".08em",
           textTransform:"uppercase", cursor:"pointer"},
         onShowBuild: () => this.setState(s => ({
@@ -3978,13 +4187,13 @@ class Component extends DCLogic {
         // Equipping, not tracking: from here the useful action is committing this disc to the
         // agent you're looking at. Tracking still lives on the Agent index.
         rosterBtnStyle: {display:"flex", alignItems:"center", gap:"9px", padding:"5px 10px 5px 5px", cursor:"pointer",
-          background:"transparent", border:"1px solid " + (equippedHere ? "#ffda5855" : "#2e333b")},
+          background:"transparent", border:"1px solid " + (equippedHere ? "#e8ff4555" : "#2e333b")},
         rosterTrackStyle: {position:"relative", width:"34px", height:"18px", flex:"0 0 34px", borderRadius:"9px",
-          background: equippedHere ? "#ffda58" : "#2e333b", transition:"background .12s ease"},
+          background: equippedHere ? "#e8ff45" : "#2e333b", transition:"background .12s ease"},
         rosterThumbStyle: {position:"absolute", top:"2px", left: equippedHere ? "18px" : "2px",
           width:"14px", height:"14px", borderRadius:"50%", background:"#0b0c0e", transition:"left .12s ease"},
         rosterLabelStyle: {font:"700 13px/1 'JetBrains Mono',monospace", letterSpacing:".08em",
-          minWidth:"78px", color: equippedHere ? "#ffda58" : "#8a9099"},
+          minWidth:"78px", color: equippedHere ? "#e8ff45" : "#8a9099"},
         rosterStateLabel: equippedHere ? "EQUIPPED" : "EQUIP",
         rosterHint: equippedHere
           ? "Saved to Loadouts and worn by " + a.n + "."
@@ -4023,7 +4232,7 @@ class Component extends DCLogic {
       return {
         label: label + arrow,
         style: Object.assign({font:"700 14px/1 'JetBrains Mono',monospace", letterSpacing:".11em",
-          color: isActive ? "#ffda58" : "#5f656e", cursor:"pointer", userSelect:"none"}, extra || {}),
+          color: isActive ? "#e8ff45" : "#5f656e", cursor:"pointer", userSelect:"none"}, extra || {}),
         onClick: () => this.setState(s => ({
           sortBy: key,
           sortDir: (s.sortBy || "rating") === key ? ((s.sortDir || "desc") === "asc" ? "desc" : "asc")
@@ -4199,9 +4408,9 @@ class Component extends DCLogic {
       font: util ? "700 13px/1 'JetBrains Mono',monospace" : "700 17px/1 'Chakra Petch',sans-serif",
       letterSpacing: util ? ".12em" : ".05em", textTransform:"uppercase",
       padding: util ? "15px 12px 14px" : "15px 16px 14px",
-      background: on ? "linear-gradient(180deg,rgba(255,218,88,0) 40%,rgba(255,218,88,.08))" : "transparent",
+      background: on ? "linear-gradient(180deg,rgba(232,255,69,0) 40%,rgba(232,255,69,.08))" : "transparent",
       border:"none", color: on ? "#ecefe6" : "#8a9099",
-      boxShadow: on ? "inset 0 -3px 0 #ffda58" : "none",
+      boxShadow: on ? "inset 0 -3px 0 #e8ff45" : "none",
       transition:"color .15s ease, box-shadow .15s ease"
     });
 
@@ -4212,8 +4421,8 @@ class Component extends DCLogic {
         sub: A.FIXED_MAIN[k] ? A.FIXED_MAIN[k] + " fixed" : "your pick",
         active: on,
         style: {padding:"11px 10px", textAlign:"left", cursor:"pointer",
-          border:"1px solid " + (on ? "#ffda58" : "#2e333b"),
-          background: on ? "#ffda58" : "#0f1114", color: on ? "#0b0c0e" : "#8a9099"},
+          border:"1px solid " + (on ? "#e8ff45" : "#2e333b"),
+          background: on ? "#e8ff45" : "#0f1114", color: on ? "#0b0c0e" : "#8a9099"},
         subStyle: {display:"block", font:"400 13px/1.3 'JetBrains Mono',monospace", letterSpacing:".06em",
           marginTop:"3px", color: on ? "#0b0c0e" : "#5f656e", opacity: on ? .75 : 1},
         onClick: () => this.setSlot(k)
@@ -4230,7 +4439,7 @@ class Component extends DCLogic {
       const options = substatOptions.filter(o => o.v === "" || o.v === v || (!usedElsewhere.has(o.v) && o.v !== st.mainStat));
       return {
         num: "0" + (i + 1), value: v, options: options,
-        numStyle: {font:"500 15px/1 'JetBrains Mono',monospace", color: v ? "#ffda58" : "#4d535c", width:"20px", flex:"0 0 20px"},
+        numStyle: {font:"500 15px/1 'JetBrains Mono',monospace", color: v ? "#e8ff45" : "#4d535c", width:"20px", flex:"0 0 20px"},
         onChange: e => { const val = e.target.value; this.setState(s => { const slotSubs = (s.subsBySlot[s.slot] || ["","","",""]).slice(); slotSubs[i] = val; return {subsBySlot: Object.assign({}, s.subsBySlot, {[s.slot]: slotSubs})}; }); }
       };
     });
@@ -4367,7 +4576,7 @@ class Component extends DCLogic {
     // Disabled overrides on/off entirely — greyed, sunk below the line instead of bleeding onto
     // it, no accent color regardless of kind or selection state.
     const buildTabStyle = (on, kind, disabled) => {
-      const c = kind === "axis" ? "#6cc6ff" : "#ffda58";
+      const c = kind === "axis" ? "#6cc6ff" : "#e8ff45";
       if(disabled) return {font:"700 12px/1 'JetBrains Mono',monospace", letterSpacing:".06em", padding:"6px 11px 7px", cursor:"pointer",
         whiteSpace:"nowrap", flex:"0 0 auto", marginBottom:"0", transform:"translateY(2px)", textTransform:"uppercase",
         clipPath:"polygon(5px 0,100% 0,100% 100%,0 100%)", background:"#0f1114", color:"#4d535c", border:"1px solid #1e2228", opacity:.55};
@@ -4427,9 +4636,9 @@ class Component extends DCLogic {
         heroArtStyle: {position:"absolute", inset:0, zIndex:0, pointerEvents:"none",
           backgroundImage: seen ? 'url("backgrounds/' + baseFile + '.webp")' : "none", backgroundRepeat:"no-repeat",
           backgroundSize: this.artFrame(bgName).size, backgroundPosition: this.artFrame(bgName).pos, transform: this.artFrame(bgName).transform, maskImage: this.artFrame(bgName).mask, WebkitMaskImage: this.artFrame(bgName).mask, transition:"opacity .35s ease"},
-        heroHasHover: seen && !ignored && st.showMindscape && this.hoverArtOk(bgName) ? "1" : "0",
+        heroHasHover: seen && !ignored && st.showMindscape && this.hoverWanted(a.n) && this.hoverArtOk(bgName) ? "1" : "0",
         heroArtHoverStyle: {position:"absolute", inset:0, zIndex:0, pointerEvents:"none",
-          backgroundImage: seen && !ignored && st.showMindscape ? 'url("backgrounds/' + bgName + '-hover.webp")' : "none",
+          backgroundImage: seen && !ignored && st.showMindscape && this.hoverWanted(a.n) ? 'url("backgrounds/' + bgName + '-hover.webp")' : "none",
           backgroundRepeat:"no-repeat", backgroundSize: this.artFrame(bgName).size, backgroundPosition: this.artFrame(bgName).pos, transform: this.artFrame(bgName).transform, maskImage: this.artFrame(bgName).mask, WebkitMaskImage: this.artFrame(bgName).mask,
           opacity:0, transition:"opacity .35s ease"}
       };
@@ -4563,7 +4772,7 @@ class Component extends DCLogic {
     ];
     const scoreSubLines = st.sSubs.map((l, i) => ({
       num: "0" + (i + 1), value: l.t, rolls: l.r, disabled: !l.t,
-      numStyle: {font:"500 13px/1 'JetBrains Mono',monospace", color: l.t ? "#ffda58" : "#4d535c", width:"16px", flex:"0 0 16px"},
+      numStyle: {font:"500 13px/1 'JetBrains Mono',monospace", color: l.t ? "#e8ff45" : "#4d535c", width:"16px", flex:"0 0 16px"},
       rollStyle: {appearance:"none", width:"100%", background:"#0f1114", color: l.t ? "#ecefe6" : "#4d535c",
         border:"1px solid #2e333b", padding:"9px 8px", font:"500 17px/1.2 'JetBrains Mono',monospace",
         textAlign:"center", cursor: l.t ? "pointer" : "not-allowed", opacity: l.t ? 1 : .45},
@@ -4740,7 +4949,7 @@ class Component extends DCLogic {
           ? "Matches " + ctx.a.n + "'s " + ctx.buildLabel + " build, not their primary one."
           : "",
         buildTagStyle: {font:"700 11px/1 'JetBrains Mono',monospace", letterSpacing:".1em",
-          textTransform:"uppercase", color:"#ffda58", border:"1px solid #ffda5855",
+          textTransform:"uppercase", color:"#e8ff45", border:"1px solid #e8ff4555",
           padding:"3px 6px", whiteSpace:"nowrap", cursor:"help"},
         slotLabel: this.constructor.SLOT_LABEL[d.slot],
         mainStat: d.main || "—",
@@ -4800,7 +5009,7 @@ class Component extends DCLogic {
           : "Favourite this disc — it can't be deleted while starred.",
         favStyle: {background:"none", border:"none", padding:"2px 4px", lineHeight:1,
           font:"400 19px/1 Barlow,sans-serif", cursor:"pointer",
-          color: st.discFav[d.id] ? "#ffda58" : "#4d535c", flex:"0 0 auto"},
+          color: st.discFav[d.id] ? "#e8ff45" : "#4d535c", flex:"0 0 auto"},
         onFav: e => this.toggleFavDisc(d.id, e),
         isLevelled: !!grade.vertical,
         // Level reads as its own column rather than a badge on the grade — beside a letter that
@@ -4833,27 +5042,27 @@ class Component extends DCLogic {
         equipLabel: mineHere ? "EQUIPPED" : "EQUIP",
         equipTitle: ctx ? (mineHere ? "Click to free this disc up again." : "Mark this disc as equipped to " + ctx.a.n + ".") : "",
         equipPillStyle: {display:"flex", alignItems:"center", gap:"8px", padding:"7px 11px",
-          background: mineHere ? "#ffda580a" : "#0f1114",
-          border:"1px solid " + (mineHere ? "#ffda5840" : "#1e2228"),
+          background: mineHere ? "#e8ff450a" : "#0f1114",
+          border:"1px solid " + (mineHere ? "#e8ff4540" : "#1e2228"),
           cursor: (!!ctx && !elsewhere) ? "pointer" : "default", userSelect:"none"},
         equipSwitchStyle: {position:"relative", display:"block", width:"34px", height:"18px",
-          borderRadius:"9px", border:"1px solid " + (mineHere ? "#ffda58" : "#2e333b"),
-          background: mineHere ? "#ffda58" : "#171a1f", flex:"0 0 34px", pointerEvents:"none"},
-        equipTrackColor: mineHere ? "#ffda58" : "#171a1f",
+          borderRadius:"9px", border:"1px solid " + (mineHere ? "#e8ff45" : "#2e333b"),
+          background: mineHere ? "#e8ff45" : "#171a1f", flex:"0 0 34px", pointerEvents:"none"},
+        equipTrackColor: mineHere ? "#e8ff45" : "#171a1f",
         equipThumbLeft: mineHere ? "17px" : "1px",
         equipLabelStyle: {font:"700 13px/1 'JetBrains Mono',monospace", letterSpacing:".08em",
-          whiteSpace:"nowrap", minWidth:"74px", color: mineHere ? "#ffda58" : "#8a9099"},
+          whiteSpace:"nowrap", minWidth:"74px", color: mineHere ? "#e8ff45" : "#8a9099"},
         onEquip: e => { if(e) e.stopPropagation(); if(ctx) this.equipDisc(d.id, ctx.a.n); },
         // Compact form for the slot picker: the whole row equips, star and hide stay reachable.
         pickRowStyle: {display:"flex", alignItems:"center", gap:"9px", padding:"8px 10px",
-          background: mineHere ? "#ffda580f" : "#0f1114",
-          border:"1px solid " + (mineHere ? "#ffda5855" : "#1e2228"),
+          background: mineHere ? "#e8ff450f" : "#0f1114",
+          border:"1px solid " + (mineHere ? "#e8ff4555" : "#1e2228"),
           cursor: elsewhere ? "not-allowed" : "pointer", width:"100%", textAlign:"left",
           opacity: elsewhere ? .6 : 1},
         pickAction: mineHere ? "EQUIPPED" : elsewhere ? "ON " + owner.toUpperCase() : "EQUIP",
         pickActionStyle: {font:"700 11px/1 'JetBrains Mono',monospace", letterSpacing:".08em",
           whiteSpace:"nowrap", flex:"0 0 auto", marginLeft:"auto",
-          color: mineHere ? "#ffda58" : elsewhere ? "#8a9099" : "#5f656e"},
+          color: mineHere ? "#e8ff45" : elsewhere ? "#8a9099" : "#5f656e"},
         onPickRow: () => { if(ctx && !elsewhere) this.equipDisc(d.id, ctx.a.n); },
         thumbTitle: d.set + " · " + this.constructor.SLOT_LABEL[d.slot]
           + (d.main ? " · " + d.main : "") + " — grade " + grade.grade
@@ -4864,8 +5073,8 @@ class Component extends DCLogic {
               : "")
           + " Click to see its lines.",
         thumbStyle: {position:"relative", display:"block", width:"100%", padding:"9px 4px 10px",
-          background: st.discSel === d.id ? "#ffda5814" : "#0f1114",
-          border:"1px solid " + (st.discSel === d.id ? "#ffda58" : "#1e2228"),
+          background: st.discSel === d.id ? "#e8ff4514" : "#0f1114",
+          border:"1px solid " + (st.discSel === d.id ? "#e8ff45" : "#1e2228"),
           cursor:"pointer", textAlign:"center", opacity: bayHiddenHere ? .4 : bayLocked ? .7 : 1},
         // A bay click places the disc when a slot is waiting for one; otherwise it just selects
         // it so its lines can be read.
@@ -4884,7 +5093,7 @@ class Component extends DCLogic {
         hasThumbPiece: !!gCtx,
         thumbPieceStyle: {position:"absolute", bottom:"8px", left:"7px",
           font:"700 11px/1 'JetBrains Mono',monospace", letterSpacing:".06em",
-          color: gCtx && gCtx.piece === "4pc" ? "#ffda58" : "#5f656e"},
+          color: gCtx && gCtx.piece === "4pc" ? "#e8ff45" : "#5f656e"},
         thumbSlot: this.constructor.SLOT_LABEL[d.slot].replace(/[^0-9]/g, ""),
         thumbSlotStyle: {display:"block", font:"700 12px/1 'JetBrains Mono',monospace",
           letterSpacing:".1em", color:"#8a9099", marginBottom:"8px"},
@@ -4892,14 +5101,14 @@ class Component extends DCLogic {
           font:"800 17px/1 'Chakra Petch',sans-serif", color: offBuild ? "#ff4d5e" : grade.color},
         thumbLvlStyle: {display:"block", marginTop:"9px",
           font:"700 15px/1 'JetBrains Mono',monospace", letterSpacing:".04em",
-          color: mineHere ? "#ffda58" : "#9aa0a8"},
+          color: mineHere ? "#e8ff45" : "#9aa0a8"},
         thumbFavStyle: {position:"absolute", top:"5px", left:"6px",
-          font:"400 15px/1 Barlow,sans-serif", color:"#ffda58",
+          font:"400 15px/1 Barlow,sans-serif", color:"#e8ff45",
           display: st.discFav[d.id] ? "block" : "none"},
         hideBtnLabel: isHiddenHere ? "SHOWN" : "HIDE",
         hideBtnStyle: {background:"none", flex:"0 0 auto",
-          border:"1px solid " + (isHiddenHere ? "#ffda5840" : "#2e333b"),
-          color: isHiddenHere ? "#ffda58" : "#5f656e",
+          border:"1px solid " + (isHiddenHere ? "#e8ff4540" : "#2e333b"),
+          color: isHiddenHere ? "#e8ff45" : "#5f656e",
           padding:"4px 6px", font:"700 10px/1 'JetBrains Mono',monospace", letterSpacing:".08em",
           cursor: (mineHere || isResvHere) ? "not-allowed" : "pointer",
           opacity: (mineHere || isResvHere) ? .5 : 1},
@@ -4924,20 +5133,20 @@ class Component extends DCLogic {
           : st.discHidden[this.hideKey(d.id, ctx.a.n)]
           ? "Show this disc under " + ctx.a.n + " again."
           : "Hide this disc under " + ctx.a.n + " only — it stays saved and still shows for every other agent.",
-        hideTrackColor: isHiddenHere ? "#ffda58" : "#171a1f",
+        hideTrackColor: isHiddenHere ? "#e8ff45" : "#171a1f",
         hideThumbLeft: isHiddenHere ? "17px" : "1px",
         hidePillStyle: {display:"flex", alignItems:"center", gap:"8px", padding:"7px 11px",
-          background: isHiddenHere ? "#ffda580a" : "#0f1114",
-          border:"1px solid " + (isHiddenHere ? "#ffda5840" : "#1e2228"),
+          background: isHiddenHere ? "#e8ff450a" : "#0f1114",
+          border:"1px solid " + (isHiddenHere ? "#e8ff4540" : "#1e2228"),
           cursor: (mineHere || isResvHere) ? "not-allowed" : "pointer", userSelect:"none",
           opacity: (mineHere || isResvHere) ? .55 : 1},
         hideSwitchStyle: {position:"relative", display:"block", width:"34px", height:"18px",
-          borderRadius:"9px", border:"1px solid " + (isHiddenHere ? "#ffda58" : "#2e333b"),
-          background: isHiddenHere ? "#ffda58" : "#171a1f", padding:0, flex:"0 0 34px",
+          borderRadius:"9px", border:"1px solid " + (isHiddenHere ? "#e8ff45" : "#2e333b"),
+          background: isHiddenHere ? "#e8ff45" : "#171a1f", padding:0, flex:"0 0 34px",
           pointerEvents:"none"},
         hideLabelStyle: {font:"700 13px/1 'JetBrains Mono',monospace", letterSpacing:".08em",
           whiteSpace:"nowrap", minWidth: ctx ? (10 + ctx.a.n.length * 9) + "px" : "62px",
-          color: mineHere ? "#4d535c" : isHiddenHere ? "#ffda58" : "#8a9099"},
+          color: mineHere ? "#4d535c" : isHiddenHere ? "#e8ff45" : "#8a9099"},
         onHide: e => { if(e) e.stopPropagation(); if(ctx && !mineHere && !isResvHere) this.toggleHideDisc(d.id, ctx.a.n); },
         onHidePill: e => { if(e) e.stopPropagation(); if(ctx && !mineHere && !isResvHere) this.toggleHideDisc(d.id, ctx.a.n); },
         // Reserve: the inverse of hide. Mutually exclusive with hiding it here, since reserving a
@@ -5033,8 +5242,8 @@ class Component extends DCLogic {
         // it's on someone — everything you'd scan a rack for, at 40px
         mineRowStyle: {display:"flex", alignItems:"center", gap:"10px", width:"100%",
           padding:"10px 12px", textAlign:"left", cursor:"pointer",
-          background: st.mineSel === d.id ? "#ffda580f" : "#0f1114",
-          border:"1px solid " + (st.mineSel === d.id ? "#ffda5855" : "#1e2228")},
+          background: st.mineSel === d.id ? "#e8ff450f" : "#0f1114",
+          border:"1px solid " + (st.mineSel === d.id ? "#e8ff4555" : "#1e2228")},
         rowIconId: this.discIconId(d.set) + "-minerow",
         // grid tile: big disc, grade-coloured ring, everything else in a corner
         tileStyle: {position:"relative", display:"flex", flexDirection:"column", alignItems:"center",
@@ -5052,7 +5261,7 @@ class Component extends DCLogic {
         tileIconId: this.discIconId(d.set) + "-minetile",
         tileGradeStyle: {position:"absolute", top:"9px", right:"10px", display:"flex", alignItems:"baseline", font:"800 22px/1 'Chakra Petch',sans-serif", color: grade.color},
         tileLvlStyle: {position:"absolute", top:"12px", left:"10px", font:"700 13px/1 'JetBrains Mono',monospace",
-          letterSpacing:".04em", color: upTicks.length >= 5 ? "#4ade80" : upTicks.length ? "#ffda58" : "#8a9099"},
+          letterSpacing:".04em", color: upTicks.length >= 5 ? "#4ade80" : upTicks.length ? "#e8ff45" : "#8a9099"},
         rowHub: this.hubPair(d.set, 34).ring,
         rowHole: this.hubPair(d.set, 34).hole,
         isFav: !!st.discFav[d.id],
@@ -5060,7 +5269,7 @@ class Component extends DCLogic {
         rowGradeStyle: {font:"800 19px/1 'Chakra Petch',sans-serif", color: grade.color},
         rowLvl: "+" + (upTicks.length * 3),
         rowLvlStyle: {font:"700 13px/1 'JetBrains Mono',monospace", letterSpacing:".06em",
-          color: upTicks.length >= 5 ? "#4ade80" : upTicks.length ? "#ffda58" : "#8a9099"},
+          color: upTicks.length >= 5 ? "#4ade80" : upTicks.length ? "#e8ff45" : "#8a9099"},
         rowOwned: !!owner,
         rowOwnerTitle: owner ? "Equipped to " + owner + "." : "",
         // the list-level answer: where this disc belongs, and whether that's where it is
@@ -5073,7 +5282,7 @@ class Component extends DCLogic {
         hintStyle: {display:"block", marginTop:"5px",
           font:"500 12px/1.3 'JetBrains Mono',monospace", letterSpacing:".04em",
           whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis",
-          color: betterElsewhere ? "#ffda58" : (costsBonus || freeCostsBonus) ? "#8a9099" : "#6cc6ff"},
+          color: betterElsewhere ? "#e8ff45" : (costsBonus || freeCostsBonus) ? "#8a9099" : "#6cc6ff"},
         hintTitle: !bestHome ? ""
           : costsBonus
             ? bestHome.c.a.n + " grades " + bestHome.g.grade + " for this disc, but moving it "
@@ -5090,8 +5299,8 @@ class Component extends DCLogic {
         betterElsewhere: betterElsewhere,
         onEquipBest: e => { if(e) e.stopPropagation(); if(bestHome) this.equipDisc(d.id, bestHome.c.a.n); },
         mineCardStyle: {minWidth:0, cursor:"pointer",
-          background: st.mineSel === d.id ? "#ffda580a" : "#131519",
-          border:"1px solid " + (st.mineSel === d.id ? "#ffda5866" : "#262a31"),
+          background: st.mineSel === d.id ? "#e8ff450a" : "#131519",
+          border:"1px solid " + (st.mineSel === d.id ? "#e8ff4566" : "#262a31"),
           padding:"16px",
           clipPath:"polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px)"},
         onRemove: e => { if(e) e.stopPropagation(); this.removeDisc(d.id); }
@@ -5160,8 +5369,8 @@ class Component extends DCLogic {
           ownerSrc: e.d.to ? this.agentIconPath(e.d.to) : "",
           ownerTitle: e.d.to ? "Equipped to " + e.d.to + "." : "",
           rowStyle: {display:"flex", alignItems:"center", gap:"10px", padding:"10px 12px",
-            background: on ? "#ffda580f" : "#0f1114",
-            border:"1px solid " + (on ? "#ffda5855" : "#1e2228"),
+            background: on ? "#e8ff450f" : "#0f1114",
+            border:"1px solid " + (on ? "#e8ff4555" : "#1e2228"),
             cursor:"pointer", textAlign:"left", width:"100%"},
           lvlStyle: {font:"700 13px/1 'JetBrains Mono',monospace", letterSpacing:".06em",
             color: ticks.length >= A.UP_TICKS ? "#4ade80" : "#8a9099", flex:"0 0 auto"},
@@ -5240,7 +5449,7 @@ class Component extends DCLogic {
             body: hitTicks + " of " + ticks.length + (ticks.length === 1 ? " has" : " have")
               + " landed well. Worth continuing while the good lines keep coming."};
         })();
-        const adviceTone = {stop:"#ff4d5e", warn:"#ffda58", go:"#4ade80", info:"#8a9099"}[advice.tone];
+        const adviceTone = {stop:"#ff4d5e", warn:"#e8ff45", go:"#4ade80", info:"#8a9099"}[advice.tone];
         // Lines the next tick could land on: the four it already has, plus — while a slot is still
         // empty — every substat the disc could still roll (never its own main stat).
         const openSlot = r.subs.indexOf("") >= 0;
@@ -5277,22 +5486,22 @@ class Component extends DCLogic {
               : "Equip this disc on " + cand.a.n + ". Anything already in their "
                 + A.SLOT_LABEL[disc.slot] + " comes off.",
           equipPillStyle: {display:"flex", alignItems:"center", gap:"7px", padding:"4px 9px",
-            background: (!!cand && disc.to === cand.a.n) ? "#ffda580a" : "#0f1114",
-            border:"1px solid " + ((!!cand && disc.to === cand.a.n) ? "#ffda5840" : "#2e333b"),
+            background: (!!cand && disc.to === cand.a.n) ? "#e8ff450a" : "#0f1114",
+            border:"1px solid " + ((!!cand && disc.to === cand.a.n) ? "#e8ff4540" : "#2e333b"),
             cursor:"pointer", userSelect:"none"},
           equipSwitchStyle: {position:"relative", display:"block", width:"28px", height:"15px",
             borderRadius:"8px", flex:"0 0 28px", pointerEvents:"none",
-            border:"1px solid " + ((!!cand && disc.to === cand.a.n) ? "#ffda58" : "#2e333b"),
-            background: (!!cand && disc.to === cand.a.n) ? "#ffda58" : "#171a1f"},
+            border:"1px solid " + ((!!cand && disc.to === cand.a.n) ? "#e8ff45" : "#2e333b"),
+            background: (!!cand && disc.to === cand.a.n) ? "#e8ff45" : "#171a1f"},
           equipThumbLeft: (!!cand && disc.to === cand.a.n) ? "14px" : "1px",
           equipLabelStyle: {font:"700 12px/1 'JetBrains Mono',monospace", letterSpacing:".07em",
             whiteSpace:"nowrap", minWidth:"66px",
-            color: (!!cand && disc.to === cand.a.n) ? "#ffda58" : "#8a9099"},
+            color: (!!cand && disc.to === cand.a.n) ? "#e8ff45" : "#8a9099"},
           onEquip: () => cand && this.equipDisc(disc.id, cand.a.n),
           onAgentChange: e => this.setState({upAgent: e.target.value}),
           agentSelectStyle: {appearance:"none", background:"#0f1114",
-            color: now.isPicked ? "#ffda58" : "#8a9099",
-            border:"1px solid " + (now.isPicked ? "#ffda5855" : "#2e333b"),
+            color: now.isPicked ? "#e8ff45" : "#8a9099",
+            border:"1px solid " + (now.isPicked ? "#e8ff4555" : "#2e333b"),
             padding:"5px 24px 5px 8px", font:"500 14px/1.2 'JetBrains Mono',monospace",
             letterSpacing:".04em", cursor:"pointer", maxWidth:"220px", minWidth:0},
           agentWhy: !cand ? "" : now.isPicked
@@ -5634,9 +5843,9 @@ class Component extends DCLogic {
         selEquipStyle: (mine => ({width:"100%", marginTop:"14px", minHeight:"40px",
           padding:"11px 14px", cursor:"pointer",
           font:"700 13px/1 'JetBrains Mono',monospace", letterSpacing:".1em",
-          background: mine ? "#171a1f" : "#ffda58",
-          border:"1px solid #ffda58" + (mine ? "55" : ""),
-          color: mine ? "#ffda58" : "#0b0c0e"}))(d.to === st.focusAgent),
+          background: mine ? "#171a1f" : "#e8ff45",
+          border:"1px solid #e8ff45" + (mine ? "55" : ""),
+          color: mine ? "#e8ff45" : "#0b0c0e"}))(d.to === st.focusAgent),
         selEquipDisabled: !st.focusAgent,
         onSelEquip: () => {
           if(!st.focusAgent) return;
@@ -5681,8 +5890,8 @@ class Component extends DCLogic {
             grade: x.g.grade,
             gradeStyle: {font:"800 17px/1 'Chakra Petch',sans-serif", color: x.g.color, flex:"0 0 auto"},
             rowStyle: {display:"flex", alignItems:"center", gap:"8px", padding:"7px 9px",
-              background: isOwner ? "#ffda580f" : "#0f1114",
-              border:"1px solid " + (isOwner ? "#ffda5855" : "#1e2228"),
+              background: isOwner ? "#e8ff450f" : "#0f1114",
+              border:"1px solid " + (isOwner ? "#e8ff4555" : "#1e2228"),
               opacity: isHid ? .55 : 1},
             nameStyle: {font:"600 14px/1.2 Barlow,sans-serif", flex:"1", minWidth:0,
               overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
@@ -5690,9 +5899,9 @@ class Component extends DCLogic {
             equipLabel: isOwner ? "UNEQUIP" : (d.to ? "MOVE" : "EQUIP"),
             equipStyle: {font:"700 10px/1 'JetBrains Mono',monospace", letterSpacing:".07em",
               padding:"5px 7px", whiteSpace:"nowrap", flex:"0 0 auto", cursor:"pointer",
-              background: isOwner ? "#ffda5814" : "none",
-              border:"1px solid " + (isOwner ? "#ffda5855" : "#2e333b"),
-              color: isOwner ? "#ffda58" : "#8a9099"},
+              background: isOwner ? "#e8ff4514" : "none",
+              border:"1px solid " + (isOwner ? "#e8ff4555" : "#2e333b"),
+              color: isOwner ? "#e8ff45" : "#8a9099"},
             equipLocked: false,
             equipTitle: isOwner ? "Take this disc off " + n2 + "."
               : d.to ? "Take it off " + d.to + " and give it to " + n2 + ". You'll be asked to confirm."
@@ -5710,8 +5919,8 @@ class Component extends DCLogic {
             hideLocked: isOwner || isResv,
             hideStyle: {font:"700 10px/1 'JetBrains Mono',monospace", letterSpacing:".07em",
               padding:"5px 7px", whiteSpace:"nowrap", flex:"0 0 auto", background:"none",
-              border:"1px solid " + (isHid ? "#ffda5840" : "#2e333b"),
-              color: isHid ? "#ffda58" : "#5f656e",
+              border:"1px solid " + (isHid ? "#e8ff4540" : "#2e333b"),
+              color: isHid ? "#e8ff45" : "#5f656e",
               cursor: (isOwner || isResv) ? "not-allowed" : "pointer",
               opacity: (isOwner || isResv) ? .5 : 1},
             hideTitle: isOwner ? n2 + " is wearing it — take it off first."
@@ -5866,7 +6075,7 @@ class Component extends DCLogic {
             borderRadius:"50%", overflow:"hidden", flex:"0 0 auto",
             background: eq ? "#000" : "#15181c",
             boxShadow: eq ? (g ? "0 0 0 2px " + g.color + "55" : "0 0 0 2px #ff4d5e")
-              : (opts > 0 ? "inset 0 0 0 1px #3a4049, 0 0 0 2px #ffda5833, 0 0 12px 1px rgba(255,218,88,.22)"
+              : (opts > 0 ? "inset 0 0 0 1px #3a4049, 0 0 0 2px #e8ff4533, 0 0 12px 1px rgba(232,255,69,.22)"
                 : "inset 0 0 0 1px #262a31")},
           stripGrade: eq ? (g ? g.grade : "F") : "—",
           hexGradeStyle: {font:"800 15px/1 'Chakra Petch',sans-serif",
@@ -5874,7 +6083,7 @@ class Component extends DCLogic {
           stripGradeStyle: {display:"block", height:"20px", font:"800 19px/1 'Chakra Petch',sans-serif",
             color: eq ? (g ? g.color : "#ff4d5e") : "#3a4049"},
           pips: [1,2,3,4,5].map(n => ({style: {flex:"1 1 0", height:"4px",
-            background: eq && lvl >= n * 3 ? (lvl >= 15 ? "#4ade80" : "#ffda58") : "#23272e"}})),
+            background: eq && lvl >= n * 3 ? (lvl >= 15 ? "#4ade80" : "#e8ff45") : "#23272e"}})),
           lvlLabel: eq ? "+" + lvl : "",
           title: open
             ? A.SLOT_LABEL[k] + " is selected — pick a disc from the bay to put in it."
@@ -5894,7 +6103,7 @@ class Component extends DCLogic {
             boxShadow: (eq && !g && !open)
               ? "inset 0 0 14px rgba(0,0,0,.85), 0 0 0 2px #ff4d5e, 0 0 12px 2px rgba(255,77,94,.35)"
               : open
-              ? "inset 0 0 14px rgba(0,0,0,.85), 0 0 0 3px #ffda58, 0 0 16px 3px rgba(255,218,88,.45)"
+              ? "inset 0 0 14px rgba(0,0,0,.85), 0 0 0 3px #e8ff45, 0 0 16px 3px rgba(232,255,69,.45)"
               : "inset 0 0 14px rgba(0,0,0,.85)"},
           // the lit platter under the disc: shades of this slot's colour, spinning with the face
           faceStyle: (() => {
@@ -5917,7 +6126,7 @@ class Component extends DCLogic {
             // an off-build F gets the same type as every other grade, just red
             font: (g || eq) ? "800 17px/1 'Chakra Petch',sans-serif" : "700 12px/1.6 'JetBrains Mono',monospace",
             letterSpacing: (g || eq) ? "0" : ".05em",
-            color: g ? col : eq ? "#ff4d5e" : (open ? "#ffda58" : opts ? "#9aa0a8" : "#ff4d5e")},
+            color: g ? col : eq ? "#ff4d5e" : (open ? "#e8ff45" : opts ? "#9aa0a8" : "#ff4d5e")},
             (eq && gradeReal && !maxed) ? {borderBottom:"2px dotted " + col, paddingBottom:"2px"} : {}),
           gradeTitle: !eq ? "" : !g ? "F — " + a.n + " has no build that uses this set, so none of this disc's lines count for them."
             : !gradeReal
@@ -5928,9 +6137,9 @@ class Component extends DCLogic {
               + " left. The dotted line means the grade can still move.",
           lvlStyle: {display:"block", marginTop:"4px", height:"14px", whiteSpace:"nowrap", overflow:"hidden",
             font:"700 14px/1 'JetBrains Mono',monospace", letterSpacing:".05em",
-            color: maxed ? "#4ade80" : "#ffda58"},
+            color: maxed ? "#4ade80" : "#e8ff45"},
           capStyle: {display:"block", font:"700 12px/1 'JetBrains Mono',monospace",
-            letterSpacing:".12em", color: open ? "#ffda58" : "#8a9099", marginBottom:"7px"},
+            letterSpacing:".12em", color: open ? "#e8ff45" : "#8a9099", marginBottom:"7px"},
           onClick: e => {
             if(e) e.stopPropagation();
             if(st.focusAgent !== a.n){ this.enterFocus(a.n, k, eq ? eq.entry.d.id : ""); return; }
@@ -5990,9 +6199,9 @@ class Component extends DCLogic {
           backgroundImage: this.artSeen(a.n) ? 'url("backgrounds/' + bgName + '.webp")' : "none", backgroundRepeat:"no-repeat",
           backgroundSize: this.artFrame(bgName).size, backgroundPosition: this.artFrame(bgName).pos, transform: this.artFrame(bgName).transform, maskImage: this.artFrame(bgName).mask, WebkitMaskImage: this.artFrame(bgName).mask,
           transition:"opacity .35s ease"},
-        heroHasHover: this.artSeen(a.n) && st.showMindscape && this.hoverArtOk(bgName) ? "1" : "0",
+        heroHasHover: this.artSeen(a.n) && st.showMindscape && this.hoverWanted(a.n) && this.hoverArtOk(bgName) ? "1" : "0",
         heroArtHoverStyle: {position:"absolute", inset:0, zIndex:0, pointerEvents:"none",
-          backgroundImage: this.artSeen(a.n) && st.showMindscape ? 'url("backgrounds/' + bgName + '-hover.webp")' : "none", backgroundRepeat:"no-repeat",
+          backgroundImage: this.artSeen(a.n) && st.showMindscape && this.hoverWanted(a.n) ? 'url("backgrounds/' + bgName + '-hover.webp")' : "none", backgroundRepeat:"no-repeat",
           backgroundSize: this.artFrame(bgName).size, backgroundPosition: this.artFrame(bgName).pos, transform: this.artFrame(bgName).transform, maskImage: this.artFrame(bgName).mask, WebkitMaskImage: this.artFrame(bgName).mask,
           opacity:0, transition:"opacity .35s ease"},
         heroTintStyle: {position:"absolute", inset:0, zIndex:1, pointerEvents:"none",
@@ -6029,12 +6238,12 @@ class Component extends DCLogic {
           background: (() => {
             const eqp = pairs.filter(x => x.entry.d.to === a.n);
             if(!eqp.length) return "radial-gradient(120% 78% at 50% 64%,rgba(255,255,255,.05),rgba(255,255,255,0) 62%),"
-              + "repeating-linear-gradient(115deg,rgba(255,255,255,.016) 0 2px,transparent 2px 10px),#131519";
+              + "radial-gradient(rgba(255,255,255,.045) .9px,transparent 1.3px) 0 0/5px 5px,#131519";
             const ranks = eqp.map(x => this.gradeRank(gradeFor(x.entry, x.c).grade)).filter(r => r >= 0);
             if(!ranks.length) return "radial-gradient(120% 78% at 50% 64%,rgba(255,255,255,.05),rgba(255,255,255,0) 62%),"
-              + "repeating-linear-gradient(115deg,rgba(255,255,255,.016) 0 2px,transparent 2px 10px),#131519";
+              + "radial-gradient(rgba(255,255,255,.045) .9px,transparent 1.3px) 0 0/5px 5px,#131519";
             const avg = ranks.reduce((x, y) => x + y, 0) / ranks.length;
-            const scale = ["#ff4d5e","#8a9099","#4ade80","#6cc6ff","#b98cff","#ffda58"];
+            const scale = ["#ff4d5e","#8a9099","#4ade80","#6cc6ff","#b98cff","#e8ff45"];
             const lo = Math.floor(avg), hi = Math.min(5, lo + 1);
             const tint = this.shadeMix(scale[lo], scale[hi], avg - lo);
             // a part-built rack tints proportionally to how much of it is filled
@@ -6042,7 +6251,7 @@ class Component extends DCLogic {
             return "radial-gradient(118% 82% at 50% 58%," + tint + Math.round(str * 255).toString(16).padStart(2, "0")
               + "," + tint + "00 68%),"
               + "radial-gradient(120% 78% at 50% 64%,rgba(255,255,255,.05),rgba(255,255,255,0) 62%),"
-              + "repeating-linear-gradient(115deg,rgba(255,255,255,.016) 0 2px,transparent 2px 10px),#131519";
+              + "radial-gradient(rgba(255,255,255,.045) .9px,transparent 1.3px) 0 0/5px 5px,#131519";
           })(),
           border:"1px solid #262a31", padding:"14px",
           cursor: st.focusAgent === a.n ? "default" : "pointer",
@@ -6103,7 +6312,7 @@ class Component extends DCLogic {
             lvlLabel: rigLvl + "/90 lvl",
             lvlStyle: {font:"500 12px/1 'JetBrains Mono',monospace", letterSpacing:".05em",
               whiteSpace:"nowrap",
-              color: rigMaxed === 6 ? "#4ade80" : rigLvl === 0 ? "#8a9099" : "#ffda58"},
+              color: rigMaxed === 6 ? "#4ade80" : rigLvl === 0 ? "#8a9099" : "#e8ff45"},
             hasMains: rigMainOf > 0,
             hasNotice: rigUnlevelled > 0,
             noticeLabel: rigUnlevelled + (rigUnlevelled === 1 ? " disc" : " discs") + " not fully levelled",
@@ -6155,7 +6364,7 @@ class Component extends DCLogic {
         hiddenTitleText: hidden.length
           ? "Bring the " + hidden.length + (hidden.length === 1 ? " disc" : " discs") + " hidden or reserved away from " + a.n + " back into the bay."
           : "Nothing is hidden for " + a.n + " right now. Hide a disc and this brings it back.",
-        hiddenTrackColor: hiddenOpen[a.n] ? "#ffda58" : "#171a1f",
+        hiddenTrackColor: hiddenOpen[a.n] ? "#e8ff45" : "#171a1f",
         hiddenThumbLeft: hiddenOpen[a.n] ? "17px" : "1px",
         hiddenRowStyle: {display:"flex", alignItems:"center", gap:"10px",
           border:"1px dashed #262a31", padding:"10px 14px"},
@@ -6239,7 +6448,7 @@ class Component extends DCLogic {
             grade: r.grade, gradeStyle: r.gradeStyle,
             lvl: "+" + r.lvlNum,
             lvlStyle: {font:"700 13px/1 'JetBrains Mono',monospace", letterSpacing:".06em",
-              color: r.lvlNum >= 15 ? "#4ade80" : r.lvlNum ? "#ffda58" : "#8a9099", flex:"0 0 auto"},
+              color: r.lvlNum >= 15 ? "#4ade80" : r.lvlNum ? "#e8ff45" : "#8a9099", flex:"0 0 auto"},
             buildLabel: r.buildLabel,
             buildStyle: {display:"block", marginTop:"3px",
               font:"700 11px/1 'JetBrains Mono',monospace", letterSpacing:".11em",
@@ -6303,7 +6512,7 @@ class Component extends DCLogic {
       onMineSort: e => this.setState({mineSort: e.target.value}),
       mineSortStyle: {appearance:"none", minWidth:"150px", background:"#0f1114",
         color: st.mineSort === "saved" ? "#8a9099" : "#ecefe6",
-        border:"1px solid " + (st.mineSort === "saved" ? "#2e333b" : "#ffda58"),
+        border:"1px solid " + (st.mineSort === "saved" ? "#2e333b" : "#e8ff45"),
         padding:"9px 30px 9px 11px", font:"500 15px/1.2 Barlow,sans-serif", cursor:"pointer"},
       // Two state toggles: what isn't on anyone, and what still has rolls left. Both are the
       // questions you open this tab with — "what can I still use" and "what needs work".
@@ -6311,21 +6520,21 @@ class Component extends DCLogic {
       mineUneqCount: savedDiscs.filter(e => !e.d.to).length,
       mineUneqSwitch: {position:"relative", display:"block", width:"34px", height:"18px",
         borderRadius:"9px", flex:"0 0 34px", pointerEvents:"none",
-        border:"1px solid " + (st.mineUneq ? "#ffda58" : "#2e333b"),
-        background: st.mineUneq ? "#ffda58" : "#171a1f"},
+        border:"1px solid " + (st.mineUneq ? "#e8ff45" : "#2e333b"),
+        background: st.mineUneq ? "#e8ff45" : "#171a1f"},
       mineUneqThumb: st.mineUneq ? "17px" : "1px",
       mineUneqTextStyle: {font:"500 13px/1 'JetBrains Mono',monospace", letterSpacing:".05em",
-        whiteSpace:"nowrap", color: st.mineUneq ? "#ffda58" : "#8a9099"},
+        whiteSpace:"nowrap", color: st.mineUneq ? "#e8ff45" : "#8a9099"},
       onMineUneq: () => this.setState(s2 => ({mineUneq: !s2.mineUneq})),
       mineUnlev: st.mineUnlev,
       mineUnlevCount: savedDiscs.filter(e => ((st.upgrades[e.d.id] || {ticks: []}).ticks.length) < A.UP_TICKS).length,
       mineUnlevSwitch: {position:"relative", display:"block", width:"34px", height:"18px",
         borderRadius:"9px", flex:"0 0 34px", pointerEvents:"none",
-        border:"1px solid " + (st.mineUnlev ? "#ffda58" : "#2e333b"),
-        background: st.mineUnlev ? "#ffda58" : "#171a1f"},
+        border:"1px solid " + (st.mineUnlev ? "#e8ff45" : "#2e333b"),
+        background: st.mineUnlev ? "#e8ff45" : "#171a1f"},
       mineUnlevThumb: st.mineUnlev ? "17px" : "1px",
       mineUnlevTextStyle: {font:"500 13px/1 'JetBrains Mono',monospace", letterSpacing:".05em",
-        whiteSpace:"nowrap", color: st.mineUnlev ? "#ffda58" : "#8a9099"},
+        whiteSpace:"nowrap", color: st.mineUnlev ? "#e8ff45" : "#8a9099"},
       onMineUnlev: () => this.setState(s2 => ({mineUnlev: !s2.mineUnlev})),
       mineDetail: (() => {
         const sel = savedDiscs.find(e => e.d.id === st.mineSel);
@@ -6359,8 +6568,8 @@ class Component extends DCLogic {
           onEquipBest: row.onEquipBest,
           hintBoxStyle: {display:"flex", alignItems:"center", gap:"11px", flexWrap:"wrap",
             margin:"0 0 14px", padding:"10px 12px",
-            background: row.betterElsewhere ? "#ffda580a" : "#6cc6ff0a",
-            border:"1px solid " + (row.betterElsewhere ? "#ffda5844" : "#6cc6ff33")},
+            background: row.betterElsewhere ? "#e8ff450a" : "#6cc6ff0a",
+            border:"1px solid " + (row.betterElsewhere ? "#e8ff4544" : "#6cc6ff33")},
           hintTextStyle: {font:"400 15px/1.4 Barlow,sans-serif", flex:"1 1 200px", minWidth:0,
             color: row.betterElsewhere ? "#d6c27a" : "#9fc9e8"},
           mineRows: rost.mine, hasMine: rost.mine.length > 0,
@@ -6402,15 +6611,15 @@ class Component extends DCLogic {
     return {label: it.l, title: it.t,
           style: {font:"700 16px/1 'Chakra Petch',sans-serif", letterSpacing:".05em",
             textTransform:"uppercase", padding:"11px 17px", cursor:"pointer", minHeight:"42px",
-            border:"1px solid " + (on ? "#ffda58" : "#2e333b"),
-            background: on ? "#ffda58" : "#131519", color: on ? "#0b0c0e" : "#8a9099",
+            border:"1px solid " + (on ? "#e8ff45" : "#2e333b"),
+            background: on ? "#e8ff45" : "#131519", color: on ? "#0b0c0e" : "#8a9099",
             clipPath:"polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px)"},
           onClick: () => this.setState({mineView: it.v})};
       }),
       mineAgentQ: st.mineAgentQ,
       onMineAgentQ: e => this.setState({mineAgentQ: e.target.value}),
       mineAgentSearchStyle: {appearance:"none", width:"100%", minWidth:0, background:"#0f1114",
-        color:"#ecefe6", border:"1px solid " + (st.mineAgentQ ? "#ffda58" : "#2e333b"),
+        color:"#ecefe6", border:"1px solid " + (st.mineAgentQ ? "#e8ff45" : "#2e333b"),
         padding:"10px 12px", font:"500 16px/1.2 Barlow,sans-serif"},
       mineAgents: mineAgentsList,
       byDisc: st.mineView === "disc" && savedDiscs.length > 0 && filteredDiscs.length > 0,
@@ -6449,7 +6658,7 @@ class Component extends DCLogic {
       discAgentQuery: st.discAgentQuery,
       onDiscAgentQuery: e => this.setState({discAgentQuery: e.target.value}),
       discSearchStyle: {width:"190px", background:"#0f1114", color:"#ecefe6",
-        border:"1px solid " + (st.discAgentQuery ? "#ffda58" : "#2e333b"),
+        border:"1px solid " + (st.discAgentQuery ? "#e8ff45" : "#2e333b"),
         padding:"9px 11px", font:"500 16px/1.2 Barlow,sans-serif"},
       hasAgentQuery: !!st.discAgentQuery,
       onClearAgentQuery: () => this.setState({discAgentQuery: ""}),
@@ -6459,7 +6668,7 @@ class Component extends DCLogic {
       discSetOptions: [...new Set(savedDiscs.map(e => e.d.set))].sort(),
       onDiscSetFilter: e => this.setState({discSetFilter: e.target.value}),
       discFilterSelectStyle: {appearance:"none", minWidth:"200px", background:"#0f1114",
-        color: st.discSetFilter ? "#ecefe6" : "#8a9099", border:"1px solid " + (st.discSetFilter ? "#ffda58" : "#2e333b"),
+        color: st.discSetFilter ? "#ecefe6" : "#8a9099", border:"1px solid " + (st.discSetFilter ? "#e8ff45" : "#2e333b"),
         padding:"9px 30px 9px 11px", font:"500 16px/1.2 Barlow,sans-serif", cursor:"pointer"},
       discSlotButtons: ["s1","s2","s3","s4","s5","s6"].map(k => {
         const on = st.discSlotFilter === k;
@@ -6469,8 +6678,8 @@ class Component extends DCLogic {
           title: n ? A.SLOT_LABEL[k] + " — " + n + (n === 1 ? " disc" : " discs") : A.SLOT_LABEL[k] + " — nothing saved",
           style: {padding:"8px 0", width:"40px", flex:"0 0 40px", textAlign:"center",
             font:"700 15px/1 'Chakra Petch',sans-serif", cursor: n ? "pointer" : "not-allowed",
-            border:"1px solid " + (on ? "#ffda58" : "#2e333b"),
-            background: on ? "#ffda58" : "#0f1114",
+            border:"1px solid " + (on ? "#e8ff45" : "#2e333b"),
+            background: on ? "#e8ff45" : "#0f1114",
             color: on ? "#0b0c0e" : n ? "#ecefe6" : "#4d535c", opacity: n ? 1 : .5},
           onClick: () => n && this.setState({discSlotFilter: on ? "" : k})
         };
@@ -6489,9 +6698,9 @@ class Component extends DCLogic {
       saveDiscDisabled: !discReady,
       saveDiscTitle: discReady ? "Save this disc to Loadouts." : "Pick a disc set and slot first.",
       saveDiscBtnStyle: {flex:"1 1 200px", minWidth:0, whiteSpace:"nowrap",
-        background: discReady ? "#ffda58" : "#171a1f",
+        background: discReady ? "#e8ff45" : "#171a1f",
         color: discReady ? "#0b0c0e" : "#4d535c",
-        border: discReady ? "1px solid #ffda58" : "1px solid #2e333b",
+        border: discReady ? "1px solid #e8ff45" : "1px solid #2e333b",
         padding:"11px 15px", font:"700 15px/1 'JetBrains Mono',monospace",
         letterSpacing:".08em", textTransform:"uppercase",
         cursor: discReady ? "pointer" : "not-allowed",
@@ -6550,10 +6759,24 @@ class Component extends DCLogic {
         border:"1px solid " + (ready ? "#ff4d5e" : "#23272e"), opacity: ready ? 1 : .55}))(
         String(st.wipeConfirm || "").trim().toUpperCase() === "DELETE"),
       onConfirmMove: () => this.confirmMove(),
+      // Backup tab: whether the browser has promised not to evict the data, the install button
+      // (only once the browser has offered it), and the Safari warning. Safari deletes a site's
+      // storage after 7 days without a visit unless it was added to the Home Screen.
+      storageLabel: st.storagePersisted ? "Protected" : st.storagePersisted === false ? "Not protected yet" : "Unknown",
+      storageColor: st.storagePersisted ? "#4ade80" : "#ffa02e",
+      storageCanAsk: st.storagePersisted === false && !!(navigator.storage && navigator.storage.persist),
+      onPersistStorage: () => this.persistStorage(true),
+      canInstall: !!window.__pdInstallPrompt, onInstallApp: () => this.installApp(),
+      showSafariNote: (() => {
+        const ua = navigator.userAgent || "";
+        const webkitOnly = /safari/i.test(ua) && !/chrome|chromium|crios|fxios|edg|android/i.test(ua);
+        const homeScreen = navigator.standalone || (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
+        return webkitOnly && !homeScreen;
+      })(),
 
       portraitToggle: {
         onClick: () => this.setPortraitMode(st.portraitMode === "avatar" ? "icon" : "avatar"),
-        trackColor: st.portraitMode === "avatar" ? "#ffda58" : "#171a1f",
+        trackColor: st.portraitMode === "avatar" ? "#e8ff45" : "#171a1f",
         thumbLeft: st.portraitMode === "avatar" ? "17px" : "1px",
         iconLabelColor: st.portraitMode === "icon" ? "#ecefe6" : "#5f656e",
         avatarLabelColor: st.portraitMode === "avatar" ? "#ecefe6" : "#5f656e"
@@ -6564,26 +6787,39 @@ class Component extends DCLogic {
       trackedCount: st.shown.length + "/" + A.AGENTS.length,
       savedDiscsCount: String(st.discs.length),
 
-      tabs: [{id:"check", n:"01", label:"Scrap or stash"}, {id:"discs", n:"02", label:"Loadouts"}, {id:"mine", n:"03", label:"My discs"}, {id:"score", n:"04", label:"Upgrades"}, {id:"agents", n:"05", label:"Agent index"}, {id:"farming", n:"06", label:"Area patrol"}, {id:"backup", n:"07", label:"Backup"}, {id:"help", n:"08", label:"Help"}, {id:"contact", n:"09", label:"Contact"}, {id:"settings", n:"10", label:"Settings"}]
-        .map(t => {
+      tabs: A.TABS.map(t => {
           // Loadouts is live. The farming planner is still a coming-soon placeholder, and Deep
           // scan unlocks on readiness as before.
           const soon = false;
-          const util = t.id === "backup" || t.id === "help" || t.id === "contact" || t.id === "settings";
-          return {n: t.n, label: t.label, soon: soon, util: util, onFlag: st.tab === t.id ? "1" : "0",
+          const util = t.kind === "util";
+          return {id: t.id, n: t.n, label: t.label, short: t.short, desc: t.desc, kind: t.kind, soon: soon, util: util,
+            onFlag: st.tab === t.id ? "1" : "0", current: st.tab === t.id ? "page" : "false",
             style: Object.assign(soon
               ? Object.assign(tabStyle(false, true), {cursor:"not-allowed", color:"#5f656e"})
               : tabStyle(st.tab === t.id, util), t.id === "backup" ? {marginLeft:"auto"} : {}),
 
-            onClick: soon ? (e => { if(e) e.preventDefault(); }) : (() => this.setState({tab: t.id}))};
+            onClick: soon ? (e => { if(e) e.preventDefault(); }) : (() => this.setState({tab: t.id, moreOpen: false}))};
         }),
+      // "More" collects whichever tabs don't fit the nav at the current width: the four utility
+      // tabs below 1100px, plus Agent index and Area patrol in the phone's bottom bar. The CSS
+      // decides which items show; the flags say whether the active tab is hiding in here.
+      moreOpen: !!st.moreOpen, moreExpanded: st.moreOpen ? "true" : "false",
+      moreActUtil: (A.TABS.find(t => t.id === st.tab) || {}).kind === "util" ? "1" : "0",
+      moreActMore: (A.TABS.find(t => t.id === st.tab) || {}).kind === "more" ? "1" : "0",
+      moreTabStyle: Object.assign(tabStyle(false, true), {marginLeft:"auto"}),
+      onToggleMore: () => this.setState(s => ({moreOpen: !s.moreOpen})),
+      onCloseMore: () => this.setState({moreOpen: false}),
+      moreItems: A.TABS.filter(t => t.kind !== "main").map(t => ({id: t.id, n: t.n, label: t.label, desc: t.desc, kind: t.kind,
+        onFlag: st.tab === t.id ? "1" : "0", current: st.tab === t.id ? "page" : "false",
+        onClick: () => this.setState({tab: t.id, moreOpen: false})})),
+      tabCaption: (t => ({n: t.n, label: t.label, desc: t.desc}))(A.TABS.find(t => t.id === st.tab) || A.TABS[0]),
       upList: upList, hasUpList: upList.length > 0,
       upSetOptions: [...new Set(savedDiscs.map(e => e.d.set))].sort(),
       upSetFilter: st.upSetFilter,
       onUpSetFilter: e => this.setState({upSetFilter: e.target.value}),
       upSetSelectStyle: {appearance:"none", width:"100%", background:"#0f1114",
         color: st.upSetFilter ? "#ecefe6" : "#8a9099",
-        border:"1px solid " + (st.upSetFilter ? "#ffda58" : "#2e333b"),
+        border:"1px solid " + (st.upSetFilter ? "#e8ff45" : "#2e333b"),
         padding:"9px 30px 9px 11px", font:"500 15px/1.2 Barlow,sans-serif", cursor:"pointer"},
       upSlotButtons: ["s1","s2","s3","s4","s5","s6"].map(k => {
         const on = st.upSlotFilter === k;
@@ -6594,8 +6830,8 @@ class Component extends DCLogic {
             : A.SLOT_LABEL[k] + " — nothing saved",
           style: {padding:"8px 0", flex:"1 1 0", minWidth:0, textAlign:"center",
             font:"700 15px/1 'Chakra Petch',sans-serif", cursor: n ? "pointer" : "not-allowed",
-            border:"1px solid " + (on ? "#ffda58" : "#2e333b"),
-            background: on ? "#ffda58" : "#0f1114",
+            border:"1px solid " + (on ? "#e8ff45" : "#2e333b"),
+            background: on ? "#e8ff45" : "#0f1114",
             color: on ? "#0b0c0e" : n ? "#ecefe6" : "#4d535c", opacity: n ? 1 : .5},
           onClick: () => n && this.setState({upSlotFilter: on ? "" : k})
         };
@@ -6607,11 +6843,11 @@ class Component extends DCLogic {
         + " fully levelled with nothing left to roll. Hide them to see only what still has decisions in it.",
       upMaxedSwitchStyle: {position:"relative", display:"block", width:"34px", height:"18px",
         borderRadius:"9px", flex:"0 0 34px", pointerEvents:"none",
-        border:"1px solid " + (st.upHideMaxed ? "#ffda58" : "#2e333b"),
-        background: st.upHideMaxed ? "#ffda58" : "#171a1f"},
+        border:"1px solid " + (st.upHideMaxed ? "#e8ff45" : "#2e333b"),
+        background: st.upHideMaxed ? "#e8ff45" : "#171a1f"},
       upMaxedThumb: st.upHideMaxed ? "17px" : "1px",
       upMaxedTextStyle: {font:"500 13px/1 'JetBrains Mono',monospace", letterSpacing:".05em",
-        whiteSpace:"nowrap", color: st.upHideMaxed ? "#ffda58" : "#8a9099"},
+        whiteSpace:"nowrap", color: st.upHideMaxed ? "#e8ff45" : "#8a9099"},
       onUpHideMaxed: () => this.setState(s2 => ({upHideMaxed: !s2.upHideMaxed})),
       hasSaved: savedDiscs.length > 0,
       upShowEmpty: savedDiscs.length === 0,
@@ -6665,7 +6901,7 @@ class Component extends DCLogic {
         const set = b.sets[0], stat = b.stats[0];
         const worn = savedDiscs.filter(e => e.d.to === ag.n).map(e => e.d);
         const cnt = n => worn.filter(d => d.set === n).length;
-        const ok = "#4ade80", mid = "#ffda58", off = "#8a9099";
+        const ok = "#4ade80", mid = "#e8ff45", off = "#8a9099";
         const status = (have, need) => have >= need
           ? {label: "✓ " + have + "/" + need, color: ok}
           : {label: have + "/" + need, color: have ? mid : off};
@@ -6690,8 +6926,8 @@ class Component extends DCLogic {
             statusStyle: {font:"500 12px/1.2 'JetBrains Mono',monospace", color: st2.color, whiteSpace:"nowrap",
               overflow:"hidden", textOverflow:"ellipsis", minWidth:0, maxWidth:"45%", textAlign:"right"},
             rowStyle: {display:"flex", alignItems:"center", gap:"10px", padding:"8px 10px",
-              background: on ? "#ffda580d" : "#0f1114", border:"1px solid " + (on ? "#ffda5866" : "#1e2228")},
-            numStyle: {font:"700 13px/1 'JetBrains Mono',monospace", color: on ? "#ffda58" : "#8a9099", flex:"0 0 22px"}};
+              background: on ? "#e8ff450d" : "#0f1114", border:"1px solid " + (on ? "#e8ff4566" : "#1e2228")},
+            numStyle: {font:"700 13px/1 'JetBrains Mono',monospace", color: on ? "#e8ff45" : "#8a9099", flex:"0 0 22px"}};
         };
         // substat ladder: tied entries share a rank and a colour
         let rank = 0;
@@ -6821,9 +7057,9 @@ class Component extends DCLogic {
           hasWornToggle: !!st.focusAgent && n > 0,
           wornLabel: "Show worn by others (" + n + ")",
           wornTitle: on ? "Hide discs other agents are wearing." : "Also show discs other agents are already wearing.",
-          wornTrack: on ? "#ffda58" : "#171a1f",
+          wornTrack: on ? "#e8ff45" : "#171a1f",
           wornThumb: on ? "17px" : "1px",
-          wornLabelColor: on ? "#ffda58" : "#8a9099",
+          wornLabelColor: on ? "#e8ff45" : "#8a9099",
           onToggleWorn: () => this.setState(x => ({bayShowWorn: !x.bayShowWorn}))
         };
       })(),
@@ -6831,7 +7067,7 @@ class Component extends DCLogic {
       bayHead: st.selSlot ? "Fitting " + A.SLOT_LABEL[st.selSlot] : "Disc bay",
       bayHeadStyle: {font:"700 12px/1 'JetBrains Mono',monospace", letterSpacing:".13em",
         textTransform:"uppercase", whiteSpace:"nowrap",
-        color: st.selSlot ? "#ffda58" : "#8a9099"},
+        color: st.selSlot ? "#e8ff45" : "#8a9099"},
       bayFloorChips: [{l:"ALL", v:"all"}, {l:"D+", v:"D"}, {l:"C+", v:"C"}, {l:"B+", v:"B"}, {l:"A+", v:"A"}, {l:"S", v:"S"}].map(it => ({
         label: it.l, style: this.chip(st.bayFloor === it.v),
         title: it.v === "all" ? "Every disc that fits, whatever it grades."
@@ -6853,7 +7089,7 @@ class Component extends DCLogic {
         ? "Nothing here grades " + st.bayFloor + " or better" + (st.selSlot ? " for " + A.SLOT_LABEL[st.selSlot] : "") + ". Lower the floor to see the rest."
         : st.selSlot
         ? "Nothing saved for " + A.SLOT_LABEL[st.selSlot] + " yet."
-        : "No saved discs yet. Describe one on Scrap or stash and hit Save to Loadouts.",
+        : "Your disc bag is empty, Proxy. Describe one on Scrap or stash and hit Save to Loadouts.",
       bayEmpty: !bayList.length,
       bayAllTitle: st.bayAll
         ? "Showing every saved disc, including ones this agent has no build for. Switch off to see only the discs that suit them."
@@ -6899,8 +7135,8 @@ class Component extends DCLogic {
           bayAddOn: on,
           bayAddTileStyle: {display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"space-between",
             gap:"8px", padding:"12px 6px 14px", minWidth:0, cursor:"pointer",
-            background: on ? "#ffda580a" : "transparent",
-            border:"1px dashed " + (on ? "#ffda58" : "#2e333b")},
+            background: on ? "#e8ff450a" : "transparent",
+            border:"1px dashed " + (on ? "#e8ff45" : "#2e333b")},
           onBayAdd: () => this.setState({discSel: "", bayAdd: {set: "", slot: st.selSlot || "",
             main: st.selSlot ? this.defaultMain("", st.selSlot) : "", subs: []}}),
           onAddCancel: () => this.setState({bayAdd: null}),
@@ -6911,8 +7147,8 @@ class Component extends DCLogic {
             return {label: k.slice(1), title: A.SLOT_LABEL[k] + (A.FIXED_MAIN[k] ? " · " + A.FIXED_MAIN[k] + " fixed" : ""),
               style: {padding:"8px 0", flex:"1 1 0", minWidth:0, textAlign:"center",
                 font:"700 15px/1 'Chakra Petch',sans-serif", cursor:"pointer",
-                border:"1px solid " + (act ? "#ffda58" : "#2e333b"),
-                background: act ? "#ffda58" : "#0f1114", color: act ? "#0b0c0e" : "#ecefe6"},
+                border:"1px solid " + (act ? "#e8ff45" : "#2e333b"),
+                background: act ? "#e8ff45" : "#0f1114", color: act ? "#0b0c0e" : "#ecefe6"},
               onClick: () => upd({slot: k, main: this.defaultMain(nd.set, k),
                 subs: subs.filter(x => x !== (A.FIXED_MAIN[k] || this.defaultMain(nd.set, k)))})};
           }),
@@ -6931,14 +7167,14 @@ class Component extends DCLogic {
               style: {display:"flex", alignItems:"center", justifyContent:"center", gap:"6px",
                 padding:"8px 6px", minWidth:0, font:"600 14px/1.2 Barlow,sans-serif",
                 cursor: dead ? "not-allowed" : "pointer",
-                background: picked ? "#ffda58" : "#0f1114",
-                border:"1px solid " + (picked ? "#ffda58" : "#2e333b"),
+                background: picked ? "#e8ff45" : "#0f1114",
+                border:"1px solid " + (picked ? "#e8ff45" : "#2e333b"),
                 color: picked ? "#0b0c0e" : dead ? "#4d535c" : "#ecefe6",
                 opacity: isMain ? .45 : (!picked && full) ? .6 : 1,
                 textDecoration: isMain ? "line-through" : "none"},
               numStyle: {font:"700 10px/1 'JetBrains Mono',monospace", width:"15px", height:"15px",
                 borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center",
-                background:"#0b0c0e", color:"#ffda58", flex:"0 0 15px"},
+                background:"#0b0c0e", color:"#e8ff45", flex:"0 0 15px"},
               onClick: () => {
                 if(isMain && !picked) return;
                 if(picked) upd({subs: subs.filter(x => x !== name)});
@@ -6952,8 +7188,8 @@ class Component extends DCLogic {
             border:"1px solid " + (ready ? "#2e333b" : "#23272e"), padding:"10px 12px",
             font:"700 12px/1 'JetBrains Mono',monospace", letterSpacing:".09em", textTransform:"uppercase",
             cursor: ready ? "pointer" : "not-allowed", opacity: ready ? 1 : .6},
-          addEquipStyle: {flex:"1 1 auto", background: ready ? "#ffda58" : "#131519", color: ready ? "#0b0c0e" : "#4d535c",
-            border:"1px solid " + (ready ? "#ffda58" : "#23272e"), padding:"10px 12px",
+          addEquipStyle: {flex:"1 1 auto", background: ready ? "#e8ff45" : "#131519", color: ready ? "#0b0c0e" : "#4d535c",
+            border:"1px solid " + (ready ? "#e8ff45" : "#23272e"), padding:"10px 12px",
             font:"700 12px/1 'JetBrains Mono',monospace", letterSpacing:".09em", textTransform:"uppercase",
             cursor: ready ? "pointer" : "not-allowed", opacity: ready ? 1 : .6},
           onAddSave: () => save(false),
@@ -6993,7 +7229,7 @@ class Component extends DCLogic {
           tourCount: step ? "Step " + i + " of " + T.length : "",
           tourHasBack: i > 1, tourNextLabel: i === T.length ? "Got it" : "Next",
           tourDots: T.map((x, k) => ({style: {width:"7px", height:"7px", borderRadius:"50%",
-            background: k + 1 === i ? "#ffda58" : k + 1 < i ? "#8a7a3c" : "#2e333b"}})),
+            background: k + 1 === i ? "#e8ff45" : k + 1 < i ? "#8a7a3c" : "#2e333b"}})),
           onTourNext: () => { if(i >= T.length) this.endTour(); else this.setState({tourStep: i + 1}); },
           onTourBack: () => { if(i > 1) this.setState({tourStep: i - 1}); },
           onTourSkip: () => this.endTour(),
@@ -7015,7 +7251,7 @@ class Component extends DCLogic {
       ...(() => {
         if(st.tab !== "farming") return {};
         const A = this.constructor;
-        const G = {S:"#ffda58", A:"#b98cff", B:"#6cc6ff", C:"#4ade80", D:"#8a9099", F:"#ff4d5e"};
+        const G = {S:"#f5a623", A:"#b98cff", B:"#6cc6ff", C:"#4ade80", D:"#8a9099", F:"#ff4d5e"};
         const tracked = A.AGENTS.filter(a => this.rosterOf(a.n) !== "off").sort((x, y) => x.n.localeCompare(y.n));
         const skip = st.patrolSkip || [];
         const focus = tracked.filter(a => skip.indexOf(a.n) < 0);
@@ -7030,7 +7266,7 @@ class Component extends DCLogic {
         const hole = px => ({position:"absolute", top:"50%", left:"50%", width: Math.round(px * .14) + "px", height: Math.round(px * .14) + "px",
           borderRadius:"50%", transform:"translate(-50%,-50%)", background:"#0b0c0e"});
         const whoChips = (who, max) => who.slice(0, max).map(w => {
-          const c = w.piece === "4pc" ? "#ffda58" : "#6cc6ff";
+          const c = w.piece === "4pc" ? "#e8ff45" : "#6cc6ff";
           return {label: w.agent.n, tag: w.piece.toUpperCase(), faceStyle: this.faceStyle(w.agent.n, 20),
             title: w.agent.n + " — " + w.piece + " · " + w.weak + (w.weak === 1 ? " slot" : " slots") + " that could use it",
             style: {display:"inline-flex", alignItems:"center", gap:"6px", padding:"4px 8px 4px 4px", background:"#0f1114",
@@ -7042,8 +7278,8 @@ class Component extends DCLogic {
           discStyle: disc(x.set, 50), holeStyle: hole(50),
           value: (Math.round(x.total * 10) / 10).toFixed(1),
           barStyle: {position:"absolute", inset:"0 auto 0 0", width: Math.max(3, Math.round(x.total / maxSet * 100)) + "%",
-            background: i === 0 ? "#ffda58" : i < 3 ? "#e5d64a" : "#6cc6ff"},
-          rankStyle: {font:"700 15px/1 'JetBrains Mono',monospace", color: i === 0 ? "#ffda58" : "#8a9099", width:"26px", flex:"0 0 26px"},
+            background: i === 0 ? "#e8ff45" : i < 3 ? "#e5d64a" : "#6cc6ff"},
+          rankStyle: {font:"700 15px/1 'JetBrains Mono',monospace", color: i === 0 ? "#e8ff45" : "#8a9099", width:"26px", flex:"0 0 26px"},
           who: whoChips(x.who, 5), more: x.who.length > 5 ? "+" + (x.who.length - 5) : "",
           title: x.who.length + (x.who.length === 1 ? " agent" : " agents") + " would gain from this set."
         }));
@@ -7072,10 +7308,10 @@ class Component extends DCLogic {
             sets: sets,
             value: x.known ? (Math.round(x.total * 10) / 10).toFixed(1) : "—",
             barStyle: {position:"absolute", inset:"0 auto 0 0", width: x.known ? Math.max(3, Math.round(x.total / maxMission * 100)) + "%" : "0%",
-              background: best ? "#ffda58" : "#6cc6ff"},
+              background: best ? "#e8ff45" : "#6cc6ff"},
             who: whoChips(whoList, 6), more: whoList.length > 6 ? "+" + (whoList.length - 6) : "",
-            cardStyle: {background:"repeating-linear-gradient(115deg,rgba(255,255,255,.016) 0 2px,transparent 2px 10px),#131519",
-              border:"1px solid " + (best ? "#ffda58" : "#262a31"), boxShadow: best ? "0 0 0 1px #ffda5833" : "none",
+            cardStyle: {background:"radial-gradient(rgba(255,255,255,.045) .9px,transparent 1.3px) 0 0/5px 5px,#131519",
+              border:"1px solid " + (best ? "#e8ff45" : "#262a31"), boxShadow: best ? "0 0 0 1px #e8ff4533" : "none",
               padding:"14px", display:"grid", gap:"12px", minWidth:0,
               clipPath:"polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px)"}
           };
@@ -7085,8 +7321,8 @@ class Component extends DCLogic {
           patrolViewChips: [["missions","Cleanup missions"],["sets","Best sets"]].map(([v, l]) => ({
             label: l, style: {font:"700 15px/1 'Chakra Petch',sans-serif", letterSpacing:".05em", textTransform:"uppercase",
               padding:"10px 15px", cursor:"pointer", minHeight:"40px", whiteSpace:"nowrap",
-              border:"1px solid " + (view === v ? "#ffda58" : "#2e333b"),
-              background: view === v ? "#ffda58" : "#131519", color: view === v ? "#0b0c0e" : "#8a9099",
+              border:"1px solid " + (view === v ? "#e8ff45" : "#2e333b"),
+              background: view === v ? "#e8ff45" : "#131519", color: view === v ? "#0b0c0e" : "#8a9099",
               clipPath:"polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px)"},
             onClick: () => this.setState({patrolView: v})})),
           patrolFocusLabel: focus.length === tracked.length ? "All " + tracked.length + " tracked agents"
@@ -7244,8 +7480,8 @@ class Component extends DCLogic {
       nowLabel: !st.setName ? "Please insert disc" : (st.nowPlaying ? "Now playing" : "Loading..."),
       nowLabelColor: !st.setName ? "#ff4d5e" : "#8a9099",
       nowDotStyle: {width:"8px", height:"8px", borderRadius:"50%",
-        background: !st.setName ? "#ff4d5e" : (st.nowPlaying ? "#4ade80" : "#ffda58"),
-        boxShadow: "0 0 7px " + (!st.setName ? "#ff4d5e" : (st.nowPlaying ? "#4ade80" : "#ffda58")),
+        background: !st.setName ? "#ff4d5e" : (st.nowPlaying ? "#4ade80" : "#e8ff45"),
+        boxShadow: "0 0 7px " + (!st.setName ? "#ff4d5e" : (st.nowPlaying ? "#4ade80" : "#e8ff45")),
         animation:"pulseDot 1.6s ease-in-out infinite"},
       discReady: discReady,
       hasDesire: hasDesire, hasDesireMains: hasDesireMains,
@@ -7280,9 +7516,9 @@ class Component extends DCLogic {
             name: n, iconSrc: this.discIconPath(n), iconId: this.discIconId(n) + "-pick",
             style: {display:"flex", flexDirection:"column", alignItems:"center", gap:"6px",
               padding:"9px 4px 8px", cursor:"pointer", textAlign:"center", minWidth:0,
-              background: on ? "#ffda580f" : "#0f1114",
-              border:"1px solid " + (on ? "#ffda58" : "#1e2228")},
-            labelStyle: {font:"500 12px/1.2 Barlow,sans-serif", color: on ? "#ffda58" : "#9aa0a8",
+              background: on ? "#e8ff450f" : "#0f1114",
+              border:"1px solid " + (on ? "#e8ff45" : "#1e2228")},
+            labelStyle: {font:"500 12px/1.2 Barlow,sans-serif", color: on ? "#e8ff45" : "#9aa0a8",
               overflow:"hidden", display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical",
               minHeight:"29px"},
             onClick: () => { this.setState({setName: n, setPickOpen: false, setQuery: ""}); this.playDisc(); }
@@ -7296,9 +7532,10 @@ class Component extends DCLogic {
       setPickLabelStyle: {flex:1, minWidth:0, textAlign:"left", font:"500 18px/1.2 Barlow,sans-serif",
         color: st.setName ? "#ecefe6" : "#8a9099", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap"},
       setPickBtnStyle: {display:"flex", alignItems:"center", gap:"10px", width:"100%", cursor:"pointer",
-        background:"#0f1114", border:"1px solid " + (st.setPickOpen ? "#ffda58" : "#2e333b"),
+        background:"#0f1114", border:"1px solid " + (st.setPickOpen ? "#e8ff45" : "#2e333b"),
         padding: st.setName ? "7px 12px 7px 8px" : "11px 12px"},
       setPickChevron: st.setPickOpen ? "▲" : "▼",
+      setPickExpanded: st.setPickOpen ? "true" : "false",
       subChips: A.SUBSTAT_ORDER.map(name => {
         const idx = curSlotSubs.indexOf(name);
         const on = idx >= 0;
@@ -7321,15 +7558,15 @@ class Component extends DCLogic {
 
             gap:"7px", padding:"10px 8px", minWidth:0, textAlign:"center",
             font:"600 15px/1.2 Barlow,sans-serif", cursor: dead ? "not-allowed" : "pointer",
-            background: on ? "#ffda58" : "#0f1114",
-            border: on ? "1px solid #ffda58"
+            background: on ? "#e8ff45" : "#0f1114",
+            border: on ? "1px solid #e8ff45"
               : (dColor && !isMain ? "1px solid " + dColor + "b3" : "1px solid #2e333b"),
             color: on ? "#0b0c0e" : dead ? "#4d535c" : "#ecefe6",
             opacity: isMain ? .45 : (!on && full) ? .6 : 1,
             textDecoration: isMain ? "line-through" : "none"},
           numStyle: {font:"700 11px/1 'JetBrains Mono',monospace", width:"17px", height:"17px",
             borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center",
-            background:"#0b0c0e", color:"#ffda58", flex:"0 0 17px"},
+            background:"#0b0c0e", color:"#e8ff45", flex:"0 0 17px"},
           onClick: () => {
             if(isMain && !on) return;
             this.setState(s2 => {
@@ -7361,21 +7598,21 @@ class Component extends DCLogic {
           rl[i] = Math.max(0, Math.min(5, (rl[i] || 0) + d));
           return {rollsBySlot: Object.assign({}, s2.rollsBySlot, {[s2.slot]: rl})};
         });
-        const toneColor = {ok:"#4ade80", warn:"#ffda58", info:"#8a9099"}[lv.tone] || "#8a9099";
+        const toneColor = {ok:"#4ade80", warn:"#e8ff45", info:"#8a9099"}[lv.tone] || "#8a9099";
         return {
           levelChips: [0,3,6,9,12,15].map(v => ({label: "+" + v,
             title: v ? "The disc is at level " + v + " — " + (v / 3) + " upgrade" + (v === 3 ? "" : "s") + " spent." : "A fresh disc, no upgrades yet.",
             style: {flex:"1 1 0", minWidth:0, padding:"9px 0", textAlign:"center", cursor:"pointer",
               font:"700 14px/1 'JetBrains Mono',monospace", letterSpacing:".04em",
-              background: lv.level === v ? "#ffda58" : "#0f1114", color: lv.level === v ? "#0b0c0e" : "#ecefe6",
-              border:"1px solid " + (lv.level === v ? "#ffda58" : "#2e333b")},
+              background: lv.level === v ? "#e8ff45" : "#0f1114", color: lv.level === v ? "#0b0c0e" : "#ecefe6",
+              border:"1px solid " + (lv.level === v ? "#e8ff45" : "#2e333b")},
             onClick: () => setLevel(v)})),
           isLevelled: lv.level > 0,
           rollRows: lv.lines.map((name, i) => {
             const late = lv.started === 3 && i === 3;
             return {name: name, count: lv.rolls[i] ? "+" + lv.rolls[i] : "—",
               countStyle: {font:"700 15px/1 'JetBrains Mono',monospace", width:"34px", textAlign:"center",
-                color: lv.rolls[i] ? "#ffda58" : "#5f656e"},
+                color: lv.rolls[i] ? "#e8ff45" : "#5f656e"},
               note: late ? "added at +3" : "",
               canDec: lv.rolls[i] > 0, canInc: lv.placed < lv.T,
               onDec: () => step(i, -1), onInc: () => step(i, 1)};
@@ -7384,7 +7621,7 @@ class Component extends DCLogic {
           rollStatusStyle: {font:"500 13px/1.35 'JetBrains Mono',monospace", letterSpacing:".03em",
             color: toneColor, marginTop:"8px"},
           rollPips: Array.from({length: lv.T}, (_, i) => ({style: {flex:"1 1 0", height:"5px",
-            background: i < lv.placed ? "#ffda58" : "#262a31"}}))
+            background: i < lv.placed ? "#e8ff45" : "#262a31"}}))
         };
       })(),
       showDemandKey: hasDesire && !!st.slot,
@@ -7397,9 +7634,9 @@ class Component extends DCLogic {
             padding:"10px 6px", background:"#0f1114", border:"none", minWidth:0,
             font:"700 13px/1 'JetBrains Mono',monospace", letterSpacing:".1em", textTransform:"uppercase",
             color: ok ? (accent || "#ecefe6") : "#4d535c", cursor: ok ? "pointer" : "not-allowed"},
-          iconStyle: {font:"700 14px/1 sans-serif", color: ok ? (accent || "#ffda58") : "#3f454e"}
+          iconStyle: {font:"700 14px/1 sans-serif", color: ok ? (accent || "#e8ff45") : "#3f454e"}
         });
-        return {tSave: t(ready, "#ffda58"), tUp: t(ready), tNext: t(next)};
+        return {tSave: t(ready, "#e8ff45"), tUp: t(ready), tNext: t(next)};
       })(),
       nextDiscBtnStyle: (() => {
         const ok = !!(st.setName && (st.slot || st.mainStat || curSlotSubs.some(Boolean)));
@@ -7482,11 +7719,22 @@ class Component extends DCLogic {
       othersOpen: res.othersOpen, onToggleOthers: res.onToggleOthers, othersChevron: res.othersChevron,
       othersCount: res.othersCount, hasOthers: res.hasOthers, othersRows: res.othersRows, othersEmptyText: res.othersEmptyText,
       primaryToggle: res.primaryToggle, pieceToggle: res.pieceToggle, mainStatToggle: res.mainStatToggle, sortHeaders: res.sortHeaders,
-      verdictStyle: {background:"repeating-linear-gradient(115deg,rgba(255,255,255,.016) 0 2px,transparent 2px 10px),#131519", border:"1px solid " + this.tone(res.verdict.tone) + "55",
+      verdictStyle: {background:"radial-gradient(rgba(255,255,255,.045) .9px,transparent 1.3px) 0 0/5px 5px,#131519", border:"1px solid " + this.tone(res.verdict.tone) + "55",
         borderLeft:"5px solid " + this.tone(res.verdict.tone), padding:"18px 20px", marginBottom:"24px",
         clipPath:"polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px)"},
-      verdictTagStyle: {font:"700 44px/1 'Chakra Petch',sans-serif", letterSpacing:".01em",
-        textTransform:"uppercase", color: this.tone(res.verdict.tone)},
+      // A decisive call lands as a tilted sticker, like the rank stamp on a ZZZ results screen; the
+      // in-between states (no disc, need substats) stay plain text. The animation is named after
+      // the tone so the stamp slams down again whenever the call changes.
+      verdictTagStyle: ["keep", "maybe", "recycle"].indexOf(res.verdict.tone) >= 0
+        ? {display:"inline-block", font:"700 40px/1 'Chakra Petch',sans-serif", letterSpacing:".02em",
+          textTransform:"uppercase", color:"#0b0c0e", background: this.tone(res.verdict.tone), padding:"7px 16px 5px",
+          margin:"4px 8px 6px 4px", transform:"rotate(-3deg) skewX(-8deg)",
+          boxShadow:"0 0 0 2px #0b0c0e, 0 0 0 4px " + this.tone(res.verdict.tone) + ", 5px 6px 0 4px #000",
+          animation:"stamp-" + res.verdict.tone + " .34s cubic-bezier(.2,1.5,.4,1) both"}
+        : {font:"700 44px/1 'Chakra Petch',sans-serif", letterSpacing:".01em",
+          textTransform:"uppercase", color: this.tone(res.verdict.tone)},
+      canShareDisc: !!(st.setName && st.slot), onShareDisc: () => this.shareDisc(),
+      shareDiscLabel: navigator.share && window.matchMedia && window.matchMedia("(pointer:coarse)").matches ? "Share this disc" : "Copy link to this disc",
       verdictCrumbStyle: {font:"700 13px/1.3 'JetBrains Mono',monospace", letterSpacing:".12em", color:"#8a9099"},
 
       q: st.q, onSearch: e => this.setState({q: e.target.value, pinnedAgent: null}),

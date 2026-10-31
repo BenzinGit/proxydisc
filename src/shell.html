@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--#include head.html-->
+<link rel="preload" href="assets/fonts/barlow-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/chakra-petch-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="<!--#asset assets/fonts.css-->">
+<style>
+html{color-scheme:dark;background:#0b0c0e;}
+body{margin:0;background:#0b0c0e;}
+/* the runtime hides the raw template too, but only once its script has run */
+x-dc{display:none !important;}
+#pd-static{max-width:760px;margin:0 auto;padding:40px 22px;color:#ecefe6;font:400 18px/1.6 Barlow,system-ui,sans-serif;}
+#pd-static h1{font:700 36px/1.15 'Chakra Petch',system-ui,sans-serif;margin:0 0 14px;}
+#pd-static h2{font:700 22px/1.3 'Chakra Petch',system-ui,sans-serif;margin:28px 0 8px;}
+#pd-static p,#pd-static ul{color:#b8bdc4;}
+#pd-static ul{padding-left:22px;}
+#pd-static a{color:#e8ff45;}
+#pd-static .pd-static-foot{color:#8a9099;font-size:15px;}
+#pd-static .pd-static-foot a{color:#9aa0a8;}
+.js #pd-static{display:none;}
+/* Boot screen: shown from first paint until React has put something in #dc-root. */
+#pd-boot{display:none;}
+.js #pd-boot{display:flex;position:fixed;inset:0;align-items:center;justify-content:center;flex-direction:column;gap:18px;
+  background:#0b0c0e;color:#8a9099;font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:.22em;}
+.js body:has(#dc-root > *) #pd-boot{display:none;}
+#pd-boot i{width:56px;height:56px;border-radius:50%;
+  background:radial-gradient(circle,#0b0c0e 0 8px,transparent 9px),conic-gradient(from 0deg,#e8ff45,#4ade80,#6cc6ff,#1a1d22,#e8ff45);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);animation:pdBootSpin 1.1s linear infinite;}
+@keyframes pdBootSpin{to{transform:rotate(360deg);}}
+@media (prefers-reduced-motion: reduce){#pd-boot i{animation:none;}}
+</style>
+<script>
+<!--#include boot.js-->
+</script>
+<script defer src="<!--#asset assets/vendor/react.production.min.js-->"></script>
+<script defer src="<!--#asset assets/vendor/react-dom.production.min.js-->"></script>
+<script defer src="<!--#asset assets/vendor/dc-runtime.js-->"></script>
+</head>
+<body>
+<!--#include static.html-->
+<div id="pd-boot" aria-hidden="true"><i></i>LOADING</div>
+<x-dc>
+<helmet data-dc-atomics="">
+<style>
+<!--#include styles.css-->
+</style>
+<!-- defer: run after the runtime has swapped the raw template out. Executed mid-parse, it would
+     upgrade every <image-slot src="{{ ... }}"> in the raw template and fetch the placeholders. -->
+<script defer src="<!--#asset assets/vendor/image-slot.js-->"></script>
+</helmet>
+<!--#include template.html-->
+</x-dc>
+<script type="text/x-dc" data-dc-script="">
+<!--#include app.js-->
+</script>
+<script>
+<!--#include touch-tips.js-->
+</script>
+</body>
+</html>
