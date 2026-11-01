@@ -1268,17 +1268,6 @@ class Component extends DCLogic {
       });
     })).catch(() => {});
   }
-  // A short burst of TV static over the page when the tab changes, like flipping channels on one
-  // of the Hollow TVs. Pure CSS (see [data-static] in styles.css); reduced motion switches it off.
-  tvStatic(){
-    const el = document.querySelector('[data-pd="main"]');
-    if(!el) return;
-    el.removeAttribute("data-static");
-    void el.offsetWidth;
-    el.setAttribute("data-static", "1");
-    clearTimeout(this._staticT);
-    this._staticT = setTimeout(() => el.removeAttribute("data-static"), 450);
-  }
   // The parody ads' display faces (Pacifico, Bangers, VT323…) are ~130 KB nobody else needs, so
   // they load after the page has settled, and only while the ads are switched on.
   loadJokeFonts(){
@@ -1371,7 +1360,6 @@ class Component extends DCLogic {
           const h = "#" + this.tabSlug(this.state.tab);
           if(location.hash !== h) try { history.pushState(null, "", h); } catch(e){}
         }
-        this.tvStatic();
       }
     }
     if(this.state.adsOn) this.loadJokeFonts();
@@ -1997,7 +1985,16 @@ class Component extends DCLogic {
   // desirable here either. A stat nobody on a given variant wants still counts as a flat 0 for it,
   // so the average reads as popularity and priority combined, not just "how high fans rank it when
   // they want it at all." slotKey is null/omitted to skip the main-stat side entirely (fixed slots).
+  // Same answer for every disc of one set and slot until the roster or the builds change, and
+  // every disc row asks for it, so it's kept rather than re-added across all agents per row.
   setDesireSummary(setName, slotKey){
+    this._memoFresh();
+    if(this._dMemoShown !== this.state.shown){ this._dMemoShown = this.state.shown; this._dMemo = new Map(); }
+    const key = setName + "|" + (slotKey || "");
+    if(!this._dMemo.has(key)) this._dMemo.set(key, this._setDesireSummaryRaw(setName, slotKey));
+    return this._dMemo.get(key);
+  }
+  _setDesireSummaryRaw(setName, slotKey){
     const A = this.constructor;
     const subTotals = new Map(), mainTotals = new Map();
     let n = 0;
@@ -2536,6 +2533,12 @@ class Component extends DCLogic {
   // The Agent Index keeps calling getAgentBuilds: its tab indices ARE the disable keys, so
   // filtering there would renumber them and disable the wrong build on the next press.
   getActiveBuilds(agent){
+    this._memoFresh();
+    let v = this._bMemo.get(agent.n);
+    if(!v){ v = this._getActiveBuildsRaw(agent); this._bMemo.set(agent.n, v); }
+    return v;
+  }
+  _getActiveBuildsRaw(agent){
     const raw = this.getAgentBuilds(agent);
     const sets = raw.sets.filter((b, i) => !this.isBuildDisabled(agent.n, "tier", i));
     const stats = raw.stats.filter((b, i) => !this.isBuildDisabled(agent.n, "stat", i));
@@ -3076,10 +3079,52 @@ class Component extends DCLogic {
   // Set bonuses are counted across the whole loadout, so a disc's own grade is only half the
   // story: swapping a better disc in can still be a net loss if it drops a 4-piece to a 3. This
   // reports what the swap would do to every bonus on that agent.
+  // A saved disc's grade for one agent depends only on the candidate (memoised per scoring setup
+  // by candidatesFor, so a settings change hands over new objects), the disc's lines and its
+  // upgrade ticks. Every render used to redo it for every disc × agent, so a big bag made every
+  // click slow; this keeps each answer until one of those inputs changes.
+  // Long lists draw LIST_STEP rows and a "Show more" button. Drawing hundreds of cards on every
+  // click is what made My discs and Upgrades slow with a big bag. keepIdx (the selected row) is
+  // always inside the cut, so a selection never disappears off the end of the list.
+  static LIST_STEP = 60;
+  // My discs, by agent: each card shows its best AGENT_ROWS discs until "Show all" is pressed.
+  static AGENT_ROWS = 8;
+  capList(name, rows, keepIdx){
+    const A = this.constructor;
+    const cap = Math.max((this.state.listCap || {})[name] || A.LIST_STEP, keepIdx >= 0 ? keepIdx + 1 : 0);
+    const left = rows.length - cap;
+    return {rows: left > 0 ? rows.slice(0, cap) : rows,
+      more: {has: left > 0,
+        label: "Show " + Math.min(left, A.LIST_STEP) + " more",
+        note: left + " not shown",
+        onMore: () => this.setState(s => ({listCap: Object.assign({}, s.listCap, {[name]: cap + A.LIST_STEP})}))}};
+  }
+  cachedGrade(c, d, ticks, compute){
+    if(!this._gradeMemo) this._gradeMemo = new WeakMap();
+    let m = this._gradeMemo.get(c);
+    if(!m) this._gradeMemo.set(c, m = new Map());
+    const key = d.set + "|" + d.slot + "|" + (d.main || "") + "|" + (d.subs || []).join(",") + "|" + ticks.join(",");
+    let v = m.get(key);
+    if(v === undefined){ v = compute(); m.set(key, v); }
+    return v;
+  }
+  // Who wears what, indexed once per discs array: set counts per agent and the disc in each of
+  // their slots. setBonusDelta and swapCost run for every row of every list, and scanning the
+  // whole bag each time made those lists slow down with the square of the bag size.
+  wornIndex(){
+    const discs = this.state.discs;
+    if(this._worn && this._worn.discs === discs) return this._worn;
+    const sets = new Map(), slots = new Map();
+    discs.forEach(x => {
+      if(!x.to) return;
+      const s = sets.get(x.to) || {}; s[x.set] = (s[x.set] || 0) + 1; sets.set(x.to, s);
+      const k = x.to + "|" + x.slot; if(!slots.has(k)) slots.set(k, []); slots.get(k).push(x);
+    });
+    return (this._worn = {discs: discs, sets: sets, slots: slots});
+  }
   setBonusDelta(agentName, incoming, outgoing){
     const tiers = d => ({four: d >= 4, two: d >= 2});
-    const before = {};
-    this.state.discs.forEach(x => { if(x.to === agentName) before[x.set] = (before[x.set] || 0) + 1; });
+    const before = Object.assign({}, this.wornIndex().sets.get(agentName));
     const after = Object.assign({}, before);
     if(outgoing) after[outgoing.set] = Math.max(0, (after[outgoing.set] || 0) - 1);
     if(incoming) after[incoming.set] = (after[incoming.set] || 0) + 1;
@@ -3102,7 +3147,7 @@ class Component extends DCLogic {
   // Fanged Metal 4-piece" is ambiguous when two agents are involved.
   swapCost(disc, targetAgent){
     const to = this.setBonusDelta(targetAgent, disc,
-      this.state.discs.find(x => x.to === targetAgent && x.slot === disc.slot && x.id !== disc.id) || null);
+      (this.wornIndex().slots.get(targetAgent + "|" + disc.slot) || []).find(x => x.id !== disc.id) || null);
     const from = (disc.to && disc.to !== targetAgent)
       ? this.setBonusDelta(disc.to, null, disc)
       : {breaks: [], gains: []};
@@ -3118,7 +3163,7 @@ class Component extends DCLogic {
   _memoFresh(){
     const sig = [this.state.disabledBuilds, this.props.substatThreshold];
     if(!this._memoSig || sig.some((v, i) => v !== this._memoSig[i])){
-      this._memoSig = sig; this._gMemo = new Map(); this._cMemo = new Map();
+      this._memoSig = sig; this._gMemo = new Map(); this._cMemo = new Map(); this._dMemo = new Map(); this._bMemo = new Map();
     }
   }
   discGradeFor(disc, agent){
@@ -4807,13 +4852,15 @@ class Component extends DCLogic {
     // degrades to the old behaviour with no special-casing.
     const gradeFor = (entry, c) => {
       if(!c) return {grade:"—", color:"#5f656e"};
-      const fit = this.ratingFor(Object.assign({mainName: entry.d.main}, c));
       const ticks = entry.d && entry.d.id ? (st.upgrades[entry.d.id] || {ticks: []}).ticks : [];
-      if(!ticks.length) return fit;
-      const v = this.verticalGrade(entry.d, c, ticks, fit.score);
-      if(!v || v.pending) return fit;
-      return {score: v.score, grade: v.band.grade, color: v.band.color,
-        tone: fit.tone, blurb: fit.blurb, vertical: true, lvl: ticks.length * 3};
+      return this.cachedGrade(c, entry.d, ticks, () => {
+        const fit = this.ratingFor(Object.assign({mainName: entry.d.main}, c));
+        if(!ticks.length) return fit;
+        const v = this.verticalGrade(entry.d, c, ticks, fit.score);
+        if(!v || v.pending) return fit;
+        return {score: v.score, grade: v.band.grade, color: v.band.color,
+          tone: fit.tone, blurb: fit.blurb, vertical: true, lvl: ticks.length * 3};
+      });
     };
     const discRow = (entry, ctx, gradeAs, offBuild) => {
       const d = entry.d;
@@ -4942,6 +4989,7 @@ class Component extends DCLogic {
       const vLadder = ctx ? this.flattenSubLadder(ctx.statVar.sub).map(x => x.name).join(" > ") : "";
       return {
         title: this.discLabel(d),
+        discId: d.id,
         setName: d.set,
         hasBuildTag: !!(ctx && ctx.buildLabel),
         buildTag: ctx ? ctx.buildLabel : "",
@@ -5749,7 +5797,8 @@ class Component extends DCLogic {
     const bayBuried = e => !!st.focusAgent && e.d.to !== st.focusAgent
       && (!!st.discHidden[this.hideKey(e.d.id, st.focusAgent)]
         || (!!st.discAssign[e.d.id] && st.discAssign[e.d.id] !== st.focusAgent));
-    const bayList = savedDiscs
+    // The bay only shows inside an agent's editor on Loadouts (focusOn), so it isn't built otherwise.
+    const bayList = (st.tab === "discs" && st.focusAgent ? savedDiscs : [])
       .filter(e => (st.bayAll && st.selSlot) || !st.focusAgent || e.d.to === st.focusAgent || this.fitsSettings(e, st.focusAgent))
       .filter(e => (st.bayAll && st.selSlot) || hiddenOpen[st.focusAgent] || !bayBuried(e))
       .filter(e => !st.selSlot || e.d.slot === st.selSlot)
@@ -6003,8 +6052,11 @@ class Component extends DCLogic {
         onClearSel: () => self.setState({discSel: ""})
       });
     })(this) : null;
+    // Each tab's lists are built only while that tab is open: with a few hundred saved discs,
+    // building every tab's rows on every click is what made the whole app slow down.
+    const onLoadouts = st.tab === "discs", onMine = st.tab === "mine";
     const discAgentGroups = [];
-    A.AGENTS.forEach(a => {
+    (onLoadouts ? A.AGENTS : []).forEach(a => {
       if(this.rosterOf(a.n) === "off") return;
       const pairs = [];
       savedDiscs.forEach(entry => {
@@ -6394,7 +6446,9 @@ class Component extends DCLogic {
     const orphans = savedDiscs.filter(e => e.roster.length === 0);
 
     // Built before the return object so the counts and empty-state copy can read it.
+    let mineCap = null;
     const mineAgentsList = (() => {
+      if(!onMine) return [];
       const q = (st.mineAgentQ || "").trim().toLowerCase();
       const pool = filteredDiscs;
       const out = [];
@@ -6443,7 +6497,11 @@ class Component extends DCLogic {
           elLabel: (a.el || "").toUpperCase(),
           count: rows.length + (rows.length === 1 ? " disc fits" : " discs fit"),
           wornCount: rows.filter(r => r.worn).length,
-          rows: rows.map(r => ({
+          rowCount: rows.length,
+          moreRows: {has: rows.length > A.AGENT_ROWS,
+            label: (st.mineAgentOpen || {})[a.n] ? "Show fewer" : "Show all " + rows.length,
+            onToggle: () => this.setState(s2 => ({mineAgentOpen: Object.assign({}, s2.mineAgentOpen, {[a.n]: !(s2.mineAgentOpen || {})[a.n]})}))},
+          rows: rows.slice(0, (st.mineAgentOpen || {})[a.n] ? rows.length : A.AGENT_ROWS).map(r => ({
             id: r.id, setName: r.setName, slotLabel: r.slotLabel,
             grade: r.grade, gradeStyle: r.gradeStyle,
             lvl: "+" + r.lvlNum,
@@ -6473,13 +6531,14 @@ class Component extends DCLogic {
           }))
         });
       });
-      out.sort((x, y) => y.rows.length - x.rows.length || x.name.localeCompare(y.name));
+      out.sort((x, y) => y.rowCount - x.rowCount || x.name.localeCompare(y.name));
       return out;
       })();
+    const upCap = this.capList("up", upList, upList.findIndex(u => u.id === st.upSel));
 
     return {
       discs: (() => {
-        const rows = filteredDiscs.map(e => discRow(e, null));
+        const rows = onMine ? filteredDiscs.map(e => discRow(e, null)) : [];
         if(st.mineSort === "grade") rows.sort((x, y) =>
           this.gradeRank(y.rowGrade) - this.gradeRank(x.rowGrade)
           || x.setName.localeCompare(y.setName));
@@ -6488,10 +6547,12 @@ class Component extends DCLogic {
           || this.gradeRank(y.rowGrade) - this.gradeRank(x.rowGrade));
         else if(st.mineSort === "set") rows.sort((x, y) =>
           x.setName.localeCompare(y.setName) || x.slotLabel.localeCompare(y.slotLabel));
-        return rows;
+        mineCap = this.capList("mine", rows, rows.findIndex(r => r.discId === st.mineSel));
+        return mineCap.rows;
       })(),
+      discsMore: mineCap.more,
       discAgentGroups: visibleGroups,
-      orphanDiscs: orphans.map(e => discRow(e, null)),
+      orphanDiscs: onLoadouts ? orphans.map(e => discRow(e, null)) : [],
       hasOrphans: orphans.length > 0 && !st.focusAgent,
       noDiscs: savedDiscs.length === 0,
       hasDiscs: savedDiscs.length > 0,
@@ -6813,7 +6874,7 @@ class Component extends DCLogic {
         onFlag: st.tab === t.id ? "1" : "0", current: st.tab === t.id ? "page" : "false",
         onClick: () => this.setState({tab: t.id, moreOpen: false})})),
       tabCaption: (t => ({n: t.n, label: t.label, desc: t.desc}))(A.TABS.find(t => t.id === st.tab) || A.TABS[0]),
-      upList: upList, hasUpList: upList.length > 0,
+      upList: upCap.rows, upListMore: upCap.more, hasUpList: upList.length > 0,
       upSetOptions: [...new Set(savedDiscs.map(e => e.d.set))].sort(),
       upSetFilter: st.upSetFilter,
       onUpSetFilter: e => this.setState({upSetFilter: e.target.value}),

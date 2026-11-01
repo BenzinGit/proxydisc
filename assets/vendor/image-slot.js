@@ -975,6 +975,11 @@
     // clamping against a degenerate 1×1 frame would silently pull the stored
     // pan toward zero.
     _geom() {
+      // ProxyDisc patch: an untouched frame (no zoom, no pan, not reframing) draws exactly like
+      // the no-geometry object-fit path, so skip the clientWidth read. Reading it forced a full
+      // page layout for every slot as it mounted, which made long disc lists slow to render.
+      const v0 = this._view;
+      if (v0 && v0.s === 1 && !v0.x && !v0.y && !this.hasAttribute('data-reframe')) return null;
       const iw = this._img.naturalWidth, ih = this._img.naturalHeight;
       const fw = this.clientWidth, fh = this.clientHeight;
       if (!iw || !ih || !fw || !fh) return null;

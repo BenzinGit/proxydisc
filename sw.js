@@ -5,7 +5,7 @@
 //   assets with ?v=<hash>      cache first: the hash changes whenever the file does
 //   everything else same-site  stale-while-revalidate: instant from cache, refreshed behind the scenes
 //   POST /share-target         a screenshot shared to the installed app (see manifest.webmanifest)
-const VERSION = "c9e1b08f2f";
+const VERSION = "8eced38fae";
 const PRECACHE = [
   "/",
   "/manifest.webmanifest",
@@ -13,7 +13,7 @@ const PRECACHE = [
   "/assets/vendor/react.production.min.js?v=d949f1c368",
   "/assets/vendor/react-dom.production.min.js?v=35f4f974f4",
   "/assets/vendor/dc-runtime.js?v=8fe7df7440",
-  "/assets/vendor/image-slot.js?v=fff26d081c",
+  "/assets/vendor/image-slot.js?v=84ba3a0aae",
   "/assets/fonts/barlow-400.woff2",
   "/assets/fonts/barlow-500.woff2",
   "/assets/fonts/barlow-600.woff2",

@@ -2070,7 +2070,9 @@
                 </button>
               </sc-for>
             </div>
-
+            <sc-if value="{{ discsMore.has }}">
+              <button data-pd="showmore" sc-camel-on-click="{{ discsMore.onMore }}" style="display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:44px;margin-top:10px;padding:12px 14px;background:#0f1114;border:1px solid #2e333b;color:#ecefe6;font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;cursor:pointer">{{ discsMore.label }}<span style="font-weight:500;color:#8a9099;letter-spacing:.06em">{{ discsMore.note }}</span></button>
+            </sc-if>
           </div>
         </sc-if>
         <!-- By agent: the same candidate data pivoted. One card per tracked agent, listing every
@@ -2134,6 +2136,9 @@
                     </button>
                   </sc-for>
                 </div>
+                <sc-if value="{{ g.moreRows.has }}">
+                  <button data-pd="showmore" sc-camel-on-click="{{ g.moreRows.onToggle }}" style="display:flex;align-items:center;justify-content:center;width:100%;min-height:44px;margin-top:6px;padding:10px 12px;background:#0f1114;border:1px solid #2e333b;color:#ecefe6;font:700 12px/1 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;cursor:pointer">{{ g.moreRows.label }}</button>
+                </sc-if>
               </div>
             </sc-for>
           </div>
@@ -2426,6 +2431,9 @@
                   </button>
                 </sc-for>
               </div>
+              <sc-if value="{{ upListMore.has }}">
+              <button data-pd="showmore" sc-camel-on-click="{{ upListMore.onMore }}" style="display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:44px;margin-top:10px;padding:12px 14px;background:#0f1114;border:1px solid #2e333b;color:#ecefe6;font:700 13px/1 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;cursor:pointer">{{ upListMore.label }}<span style="font-weight:500;color:#8a9099;letter-spacing:.06em">{{ upListMore.note }}</span></button>
+              </sc-if>
             </sc-if>
             <sc-if value="{{ upShowEmpty }}">
               <p style="margin:0;padding:18px;border:1px dashed #262a31;font:400 16px/1.45 Barlow,sans-serif;color:#8a9099;text-wrap:pretty">Your disc bag is empty, Proxy. Describe one on Scrap or stash and hit Save to Loadouts.</p>

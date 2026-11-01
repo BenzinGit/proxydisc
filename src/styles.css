@@ -412,19 +412,6 @@ image-slot[data-discslot]::part(empty){font-size:0;line-height:0;gap:0;padding:0
 @keyframes sheetUp{from{transform:translateY(18px);opacity:0;}to{transform:none;opacity:1;}}
 
 /* ===================== Look: ZZZ touches ===================== */
-/* Tab change: a quick burst of TV static, like flipping a Hollow TV to another channel. */
-[data-pd="main"][data-static="1"]::after{content:"";position:fixed;inset:0;z-index:90;pointer-events:none;
-  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='1' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 7 0 0 0 -3.3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
-    repeating-linear-gradient(0deg,rgba(0,0,0,.55) 0 1px,transparent 1px 3px);
-  animation:tvStatic .42s steps(1,end) both;}
-@keyframes tvStatic{
-  0%{opacity:.34;background-position:0 0,0 0;}
-  20%{opacity:.26;background-position:-53px 31px,0 1px;}
-  40%{opacity:.17;background-position:71px -44px,0 2px;}
-  60%{opacity:.1;background-position:-17px 88px,0 0;}
-  80%{opacity:.05;background-position:40px 12px,0 1px;}
-  100%{opacity:0;}}
-@media (prefers-reduced-motion: reduce){ [data-pd="main"][data-static]::after{display:none;} }
 /* KEEP / MAYBE / RECYCLE land as a sticker stamp. One keyframe per tone so the animation name
    changes, and the stamp replays, whenever the call does. */
 @keyframes stamp-keep{0%{opacity:0;transform:rotate(-3deg) skewX(-8deg) scale(1.7);}55%{opacity:1;transform:rotate(-3deg) skewX(-8deg) scale(.93);}100%{opacity:1;transform:rotate(-3deg) skewX(-8deg) scale(1);}}
@@ -439,3 +426,6 @@ image-slot[data-discslot]::part(empty){font-size:0;line-height:0;gap:0;padding:0
   [data-pd="ocrbtn"] > span:first-child > span{background:#0b0c0e !important;}
   [data-pd="ocrbtn"] > span:last-child{background:#0b0c0e !important;color:#e8ff45 !important;}
 }
+/* "Show more" under long lists (My discs, Upgrades) */
+[data-pd="showmore"]:hover{border-color:#e8ff45 !important;color:#e8ff45 !important;}
+[data-pd="showmore"]:focus-visible{outline:2px solid #e8ff45;outline-offset:2px;}
