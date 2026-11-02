@@ -4,3 +4,6 @@
 # secrets and junk
 .env
 node_modules/
+
+# build output: node build.mjs
+dist/

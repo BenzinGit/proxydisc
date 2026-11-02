@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!--#include head.html-->
+<!--#include game/head.html-->
 <link rel="preload" href="assets/fonts/barlow-500.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/chakra-petch-700.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin>
@@ -39,7 +39,7 @@ x-dc{display:none !important;}
 <script defer src="<!--#asset assets/vendor/dc-runtime.js-->"></script>
 </head>
 <body>
-<!--#include static.html-->
+<!--#include game/static.html-->
 <div id="pd-boot" aria-hidden="true"><i></i>LOADING</div>
 <x-dc>
 <helmet data-dc-atomics="">
@@ -53,6 +53,8 @@ x-dc{display:none !important;}
 <!--#include template.html-->
 </x-dc>
 <script type="text/x-dc" data-dc-script="">
+<!--#include game/data.js-->
+<!--#include game/rules.js-->
 <!--#include app.js-->
 </script>
 <script>
