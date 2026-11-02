@@ -81,10 +81,38 @@ Game images (agent portraits, disc icons, backgrounds, enemies) are not in this 
 
 ## Roadmap
 
-1. ~~Move the app out of the Claude Design export into a standalone codebase with a build step.~~ Done.
-2. ~~Split the game's data and rules out of `app.js`, and build one site per game.~~ Done (`engine/` + `games/zzz/`).
-3. Add tests for the grading.
-4. Add **Honkai: Star Rail** (relics), then **Genshin Impact** (artifacts). See [docs/adding-a-game.md](docs/adding-a-game.md).
+### Done
+
+- ~~Move the app out of the Claude Design export into a standalone codebase with a build step.~~
+- ~~Split the game's data and rules out of `app.js`, and build one site per game (`engine/` + `games/zzz/`).~~
+
+### Next
+
+- **Honkai: Star Rail** (relics and planar ornaments), on its own domain. See [docs/adding-a-game.md](docs/adding-a-game.md).
+- **A look per game**: turn the ZZZ colours written out across the app (about 250 places) into theme values each game sets.
+- **Wording per game**: disc / relic / artifact, agent / character, tab names and the tour.
+- **Game rules in the game folder**: slot count, levels per upgrade, and set rules (Star Rail's planar sets).
+- **Tests** for the grading, plus a screen-by-screen check that a change to the engine leaves every site looking the same.
+
+### Later
+
+- **Genshin Impact** (artifacts).
+- **Auto-equip**: spread your whole disc bag across your agents for the best total score.
+- **Import by UID**: pull a player's showcased characters and their gear, through a small Cloudflare Worker.
+- **More languages**: Chinese, Japanese, Korean, Spanish and Portuguese, including screenshot reading.
+- **Agent pages and sitemap built from `data.js`**, so they update whenever the build data does.
+
+### Ideas
+
+- **Wuthering Waves** (echoes).
+- **Import several screenshots at once.**
+- **Team view**: score a whole team and flag when two members want the same set or disc.
+- **Levelling cost planner**: the materials needed for the discs you're keeping.
+- **What's new**: a page listing recent build-data updates.
+- **Sync between phone and PC** with a code, opt-in only, so by default nothing leaves your browser.
+- **Automatic checks and deploys from GitHub**, with the game images stored outside the repo.
+- **A faster Loadouts tab** with many agents, by only drawing what's on screen.
+- **Replace the Claude Design runtime** with plain React: smaller and faster.
 
 ## License
 
